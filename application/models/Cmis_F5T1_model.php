@@ -28,7 +28,7 @@ class Cmis_F5T1_model extends CI_Model
 				}
 				if(isset($payload->docket_no) && !empty($payload->docket_no)  )
 				{
-					$this->db->like('docket_no', $payload->docket_no);
+					$this->db->where('docket_no', $payload->docket_no);
 				}
 				
 
