@@ -72,6 +72,10 @@ class Cmis_F21T13_model extends CI_Model
 								'message' => 'SUCCESS INSERTING DATA'
 							);
 
+							$p2 = (object)array( "created_by" => $payload->created_by,
+									"action" => "Added Data Form 21 Table 13.<br/> Payload: ". json_encode($payload),
+									"module" => "CASELOAD" );
+							$this->Cmis_Feedback_model->AuditInsert($p2);	
 							//DELETE NEXT MONTH
 							$curr_date = strtotime(date($payload->Y_M."-01"));
 							$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
@@ -158,6 +162,10 @@ class Cmis_F21T13_model extends CI_Model
 									'status' => 'SUCCESS',
 									'message' => 'SUCCESSFULLY UPDATED DATA!'
 								);
+								$p2 = (object)array( "created_by" => $payload->created_by,
+										"action" => "Updated Form 21 Table 13.<br/> Payload: ". json_encode($payload),
+										"module" => "CASELOAD" );
+								$this->Cmis_Feedback_model->AuditInsert($p2);
 							}
 							else
 							{

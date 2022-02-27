@@ -156,6 +156,12 @@ class Cmis_F5T4_model extends CI_Model
 							'status' => 'SUCCESS',
 							'message' => 'SUCCESSFULLY INSERTED DATA'
 						);
+
+						$p2 = (object)array( "created_by" => $payload->created_by,
+								"action" => "Added Data Form 5 Table 4.<br/> Payload: ". json_encode($payload),
+								"module" => "CASELOAD" );
+						$this->Cmis_Feedback_model->AuditInsert($p2);
+
 					}
 					else
 					{
@@ -246,6 +252,10 @@ class Cmis_F5T4_model extends CI_Model
 								'status' => 'SUCCESS',
 								'message' => 'SUCCESSFULLY UPDATED DATA'
 							);
+							$p2 = (object)array( "created_by" => $payload->created_by,
+									"action" => "Updated Form 5 Table 4.<br/> Payload: ". json_encode($payload),
+									"module" => "CASELOAD" );
+							$this->Cmis_Feedback_model->AuditInsert($p2);
 						}
 						else
 						{

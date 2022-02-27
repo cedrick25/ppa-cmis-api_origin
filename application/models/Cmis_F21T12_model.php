@@ -67,6 +67,10 @@ class Cmis_F21T12_model extends CI_Model
 								'status' => 'SUCCESS',
 								'message' => 'SUCCESS INSERTING DATA'
 							);
+							$p2 = (object)array( "created_by" => $payload->created_by,
+									"action" => "Added Data Form 21 Table 12.<br/> Payload: ". json_encode($payload),
+									"module" => "CASELOAD" );
+							$this->Cmis_Feedback_model->AuditInsert($p2);	
 						}
 						else
 						{
@@ -142,6 +146,10 @@ class Cmis_F21T12_model extends CI_Model
 									'status' => 'SUCCESS',
 									'message' => 'SUCCESSFULLY UPDATED DATA!'
 								);
+								$p2 = (object)array( "created_by" => $payload->created_by,
+										"action" => "Updated Form 21 Table 12.<br/> Payload: ". json_encode($payload),
+										"module" => "CASELOAD" );
+								$this->Cmis_Feedback_model->AuditInsert($p2);
 							}
 							else
 							{
