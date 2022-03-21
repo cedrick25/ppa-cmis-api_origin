@@ -1210,6 +1210,12 @@
 		{
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
+
+			$start = microtime(true);
+
+		    //Your Script Content here
+
+
 			// echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
 			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
@@ -1573,7 +1579,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -1874,7 +1880,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -1953,7 +1959,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2028,8 +2034,9 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
+						// echo $query_insert;
 						$this->db->close();
 
 						//inserting to audit trail cron
@@ -2037,6 +2044,7 @@
 							$this->db->reconnect();
 							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T5'";
 							$this->db->query($sql1);
+							// echo $sql1;
 						}
 
 					}
@@ -2105,7 +2113,7 @@
 
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
-			var_dump($result);
+			// var_dump($result);
 			foreach($result as $key => $value){
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T7_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and status = '1' and Y_M = '".$date_transfer."' and status = 1");
@@ -2119,7 +2127,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2203,7 +2211,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2273,7 +2281,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2344,7 +2352,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2405,7 +2413,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2466,7 +2474,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2552,7 +2560,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', reasons='".$value['reasons']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2625,7 +2633,7 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-						echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2641,7 +2649,46 @@
 			}
 			echo "\n\nTransferring to F21 T14 PARDON Done....";
 
-		}	
+		
+		    $end 	= microtime(true);
+		    $time 	= number_format(($end - $start), 2);
+		    $time2 	= gmdate("H:i:s", $time);
+
+		    echo "\n\nThis page loaded in ', $time2, ' seconds";
+
+		}
+
+		// public function migrate_offline_checker()
+		// {
+
+		// 	// echo "\nINSERTING ".$value['docket_no']."...";
+		// 	// $this->db->reconnect();
+		// 	$sql = "INSERT INTO F21T5 SET field_office = 'Rizal Parole And Probation Office No. 1', Y_M = '2021-09', docket_no='CPPI-2020-09-00007', petitioner = 'BITUIN, JOVITO Y ESTILEYDES', referring_office = 'Technical Services Division' ,received_date = '2020-09-10' ,reasons = 'Wardens Certificate of Detention' , investigating_officer='SPPO JTESTIGOY', status=1,source=2,created_by=0";
+
+		// 	$query_insert = $this->db->query($sql);
+		// 	echo $sql;
+		// 	echo $this->db->query($sql);
+		// 	$this->db->close();
+
+		// 	//inserting to audit trail cron
+		// 	if ($query_insert) {
+
+		// 		$response = array(
+		// 			'status' => 'SUCCESS',
+		// 			'message' => 'SUCCESSFULLY INSERTED DATA'
+		// 		);
+		// 		$this->db->reconnect();
+		// 		$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T5'";
+		// 		$this->db->query($sql1);
+		// 		echo $sql1;
+		// 	}else{
+		// 		$response = array(
+		// 			'status' => 'ERROR',
+		// 			'message' => 'ERROR INSERTING DATA'
+		// 		);
+		// 	}	
+		// 	return json_encode($response);
+		// }
 
 		public function check_diff_multi($array1, $array2){
 					    foreach($array2 as $key=>$val){
@@ -2662,12 +2709,14 @@
 			$payload = (object)array("REGION"=>$_GET['REGION']);
 			$fieldOffice = json_decode($this->Pis_model->fetchFieldOfficeByRegion($payload));
 			$datenow = date("Y-m-d H:i:s");
-
+			echo $datenow;
 			if($fieldOffice->status == "SUCCESS"){
 				foreach($fieldOffice->payload as $keyFO => $valFO){
 					$field_office = $valFO->NAME;
 					$Y_M = $_GET['date'];
 					echo "\nTransferring to F5 T1 Started....";
+					echo $datenow;
+					echo "------";
 					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
 
 					$array1 = array();
@@ -2745,7 +2794,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T1'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T1', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -2800,7 +2849,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 									}
@@ -2860,7 +2909,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -2939,7 +2988,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T5'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T5', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3007,14 +3056,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3093,7 +3142,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T10'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T10', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3229,7 +3278,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T12'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T12', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3306,14 +3355,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T1'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T1', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3380,14 +3429,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T3'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T3', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3452,14 +3501,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T5'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T5', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3539,14 +3588,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PARDON'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PARDON', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3625,14 +3674,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PAROL'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PAROL', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3696,14 +3745,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PAROL'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PAROL', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3766,14 +3815,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PARDON'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PARDON', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3827,14 +3876,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PAROL'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PAROL', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3888,14 +3937,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PARDON'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PARDON', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -3966,14 +4015,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', reasons='".$value['reasons']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PAROL'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PAROL', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -4039,14 +4088,14 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PARDON'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PARDON', start_date='".$datenow."'";
 									$this->db->query($sql1);
 								}
 
@@ -4413,7 +4462,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -4712,7 +4761,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -4786,7 +4835,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -4858,7 +4907,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -4945,7 +4994,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5031,7 +5080,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5102,7 +5151,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5172,7 +5221,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5233,7 +5282,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5294,7 +5343,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5372,7 +5421,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', reasons='".$value['reasons']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -5445,7 +5494,7 @@
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
-								echo $sql;
+								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
