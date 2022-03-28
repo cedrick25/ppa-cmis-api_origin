@@ -172,6 +172,226 @@ class Cmis_Probationer_model extends CI_Model
 		}
 		return json_encode($response);
 	}
+
+
+	public function upsertMasterlist_request($payload)
+	{
+		if($payload != null)
+		{
+			switch ($payload->method) {
+				case 'insert':
+					// $data = array();
+					// $fields = array('FORM_TABLE','LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'ALIAS', 'SUPVOFFICE', 'REMARKS', 'SDOCKETNO', 'YEAR', 'REGION', 'STARTMM', 'STARTDD', 'STARTYY', 'ENDMM', 'ENDDD', 'ENDYY', 'STATUS');
+					$data = array();
+					if(isset($payload->FORM_TABLE) && $payload->FORM_TABLE != null)
+					{
+						$data = array_merge($data, array('FORM_TABLE' => $payload->FORM_TABLE));
+					}
+					if(isset($payload->LASTNAME) && $payload->LASTNAME != null)
+					{
+						$data = array_merge($data, array('LASTNAME' => $payload->LASTNAME));
+					}
+					if(isset($payload->FIRSTNAME) && $payload->FIRSTNAME != null)
+					{
+						$data = array_merge($data, array('FIRSTNAME' => $payload->FIRSTNAME));
+					}
+					if(isset($payload->MIDDLENAME) && $payload->MIDDLENAME != null)
+					{
+						$data = array_merge($data, array('MIDDLENAME' => $payload->MIDDLENAME));
+					}
+					if(isset($payload->LASTNAME) && $payload->LASTNAME != null)
+					{
+						$data = array_merge($data, array('ALIAS' => $payload->ALIAS));
+					}
+					if(isset($payload->ALIAS) && $payload->ALIAS != null)
+					{
+						$data = array_merge($data, array('LASTNAME' => $payload->LASTNAME));
+					}
+					if(isset($payload->SUPVOFFICE) && $payload->SUPVOFFICE != null)
+					{
+						$data = array_merge($data, array('SUPVOFFICE' => $payload->SUPVOFFICE));
+					}
+					if(isset($payload->REMARKS) && $payload->REMARKS != null)
+					{
+						$data = array_merge($data, array('REMARKS' => $payload->REMARKS));
+					}
+					if(isset($payload->SDOCKETNO) && $payload->SDOCKETNO != null)
+					{
+						$data = array_merge($data, array('SDOCKETNO' => $payload->SDOCKETNO));
+					}
+					if(isset($payload->YEAR) && $payload->YEAR != null)
+					{
+						$data = array_merge($data, array('YEAR' => $payload->YEAR));
+					}
+					if(isset($payload->STARTMM) && $payload->STARTMM != null)
+					{
+						$data = array_merge($data, array('STARTMM' => $payload->STARTMM));
+					}
+					if(isset($payload->STARTDD) && $payload->STARTDD != null)
+					{
+						$data = array_merge($data, array('STARTDD' => $payload->STARTDD));
+					}
+					if(isset($payload->STARTYY) && $payload->STARTYY != null)
+					{
+						$data = array_merge($data, array('STARTYY' => $payload->STARTYY));
+					}
+					if(isset($payload->ENDMM) && $payload->ENDMM != null)
+					{
+						$data = array_merge($data, array('ENDMM' => $payload->ENDMM));
+					}
+					if(isset($payload->ENDDD) && $payload->ENDDD != null)
+					{
+						$data = array_merge($data, array('ENDDD' => $payload->ENDDD));
+					}
+					if(isset($payload->ENDYY) && $payload->ENDYY != null)
+					{
+						$data = array_merge($data, array('ENDYY' => $payload->ENDYY));
+					}
+					if(isset($payload->STATUS) && $payload->STATUS != null)
+					{
+						$data = array_merge($data, array('STATUS' => $payload->STATUS));
+					}
+					$insert = $this->db->insert("request_masterlist", $data);
+					if($insert)
+					{
+						$response = array(
+							'status' => 'SUCCESS',
+							'message' => 'SUCCESS INSERTING DATA'
+						);
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'ERROR INSERTING DATA!'
+						);
+					}
+					break;
+				case 'update':
+					$required_param = 1;
+					$fields = array('LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'ALIAS', 'SUPVOFFICE', 'REMARKS', 'SDOCKETNO', 'YEAR', 'REGION', 'STARTMM', 'STARTDD', 'STARTYY', 'ENDMM', 'ENDDD', 'ENDYY', 'STATUS', 'REQUEST_STATUS');
+					foreach ($payload as $key => $value) {
+						if(in_array($key, $fields))
+						{
+							$this->db->set("".$key."", $value);
+						}
+					}
+					if(isset($payload->id) && $payload->id != null )
+					{
+						$this->db->where('id', $payload->id);
+						$required_param--;
+					}
+					if($required_param == 0)
+					{
+						$update = $this->db->update('request_masterlist');
+						if($this->db->affected_rows() > 0)
+						{
+							$response = array(
+								'status' => 'SUCCESS',
+								'message' => 'DATA HAS BEEN UPDATED!'
+							);
+						}
+						else
+						{
+							$response = array(
+								'status' => 'ERROR',
+								'message' => 'NO DATA HAS BEEN UPDATED!'
+							);
+						}
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'PLEASE FILL UP ALL THE REQURIED FIELDS'
+						);
+					}
+					break;
+				case 'count':
+					$fields = array('LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'ALIAS', 'SUPVOFFICE', 'REMARKS', 'SDOCKETNO', 'YEAR', 'REGION', 'STARTMM', 'STARTDD', 'STARTYY', 'ENDMM', 'ENDDD', 'ENDYY', 'STATUS');
+					foreach ($payload as $key => $value) {
+						if($value != null && in_array($key, $fields))
+						{
+							$this->db->where($key, $value);
+						}
+					}
+					$get = $this->db->get('request_masterlist');
+					if($get->num_rows() > 0 )
+					{
+						$response = array(
+							'status' => 'SUCCESS',
+							'message' => 'SUCCESSFULLY FETCHED DATA',
+							'count' => count($get->result())
+						);
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'DATA NOT FOUND',
+						);
+					}
+					break;
+				case 'fetchAll':
+					$this->db->where('status', 1);
+					$get = $this->db->get('request_masterlist');
+					if($get->num_rows() > 0 )
+					{
+						$response = array(
+							'status' => 'SUCCESS',
+							'message' => 'SUCCESSFULLY FETCHED DATA',
+							'payload' => $get->result()
+						);
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'DATA NOT FOUND',
+						);
+					}
+					break;
+				case 'fetchByID':
+					$required_param = 1;
+
+					if(isset($payload->id) && $payload->id != null )
+					{
+						$this->db->where('id', $payload->id);
+					}
+					$get = $this->db->get('request_masterlist');
+					if($get->num_rows() > 0)
+					{
+						$response = array(
+							'status' => 'SUCCESS',
+							'message' => 'SUCCESS FETCHING DATA',
+							'payload' => $get->row()
+						);
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'DATA NOT FOUND'
+						);
+					}
+					break;
+				default:
+					$response = array(
+						'status' => 'ERROR',
+						'message' => 'METHOD CANNOT BE EMPTY!'
+					);
+					break;
+			}
+		}
+		else
+		{
+			$response = array(
+				'status' => 'ERROR',
+				'message' => 'PLEASE CHECK YOUR DATA'
+			);
+		}
+		return json_encode($response);
+	}
 	public function masterlistSSP()
 	{
 		$region = strtoupper($_GET['REGION']);

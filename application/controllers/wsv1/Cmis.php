@@ -371,6 +371,13 @@ class Cmis extends CI_Controller {
 		echo $this->Cmis_Probationer_model->upsertMasterlist($payload);
 	}
 
+	public function upsertMasterlist_request()
+	{
+		include APPPATH . 'third_party/ssp.php';
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Cmis_Probationer_model->upsertMasterlist_request($payload);
+	}
+
 	public function masterlistSSP()
 	{
 		include APPPATH . 'third_party/ssp.php';

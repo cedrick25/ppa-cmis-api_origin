@@ -89,6 +89,26 @@ class Cmis_F5T4_model extends CI_Model
 					{
 						$data = array_merge($data, array('petitioner' => strtoupper($payload->petitioner)));
 					}
+					if(isset($payload->fname) && $payload->fname != null)
+					{
+						$data = array_merge($data, array('fname' => $payload->fname));
+					}
+					if(isset($payload->mname) && $payload->mname != null)
+					{
+						$data = array_merge($data, array('mname' => $payload->mname));
+					}
+					if(isset($payload->lname) && $payload->lname != null)
+					{
+						$data = array_merge($data, array('lname' => $payload->lname));
+					}
+					if(isset($payload->suffixname) && $payload->suffixname != null)
+					{
+						$data = array_merge($data, array('suffixname' => $payload->suffixname));
+					}
+					if(isset($payload->alias) && $payload->alias != null)
+					{
+						$data = array_merge($data, array('alias' => $payload->alias));
+					}
 					if(isset($payload->disposed_decision) && $payload->disposed_decision != null)
 					{
 						$data = array_merge($data, array('disposed_decision' => $payload->disposed_decision));

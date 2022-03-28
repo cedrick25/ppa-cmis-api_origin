@@ -1210,7 +1210,6 @@
 		{
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
-			$datenow = date("Y-m-d H:i:s");
 
 			// echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
@@ -1299,7 +1298,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T1', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T1'";
 							$this->db->query($sql1);
 						}
 					}
@@ -1357,7 +1356,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3'";
 							$this->db->query($sql1);
 						}
 							}
@@ -1418,7 +1417,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3'";
 							$this->db->query($sql1);
 						}
 
@@ -1503,7 +1502,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T5', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T5'";
 							$this->db->query($sql1);
 						}
 
@@ -1582,7 +1581,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T7', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T7'";
 							$this->db->query($sql1);
 						}
 
@@ -1661,7 +1660,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T10', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T10'";
 							$this->db->query($sql1);
 						}
 
@@ -1798,7 +1797,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T12', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T12'";
 							$this->db->query($sql1);
 						}
 
@@ -1883,7 +1882,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T1', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T1'";
 							$this->db->query($sql1);
 						}
 
@@ -1962,7 +1961,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T3', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T3'";
 							$this->db->query($sql1);
 						}
 
@@ -2038,7 +2037,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T5', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T5'";
 							$this->db->query($sql1);
 							// echo $sql1;
 						}
@@ -2130,7 +2129,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T7_PARDON', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T7_PARDON'";
 							$this->db->query($sql1);
 						}
 
@@ -2214,7 +2213,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T7_PAROL', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T7_PAROL'";
 							$this->db->query($sql1);
 						}
 
@@ -2284,7 +2283,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T10_PAROL', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T10_PAROL'";
 							$this->db->query($sql1);
 						}
 
@@ -2355,7 +2354,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T10_PARDON', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T10_PARDON'";
 							$this->db->query($sql1);
 						}
 
@@ -2416,7 +2415,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T12_PAROL', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T12_PAROL'";
 							$this->db->query($sql1);
 						}
 
@@ -2477,7 +2476,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T12_PARDON', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T12_PARDON'";
 							$this->db->query($sql1);
 						}
 
@@ -2563,7 +2562,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T14_PAROL', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T14_PAROL'";
 							$this->db->query($sql1);
 						}
 
@@ -2636,7 +2635,7 @@
 						//inserting to audit trail cron
 						if ($query_insert) {
 							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T14_PARDON', start_date='".$datenow."'";
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T14_PARDON'";
 							$this->db->query($sql1);
 						}
 
@@ -2653,7 +2652,6 @@
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
 			$datenow = date("Y-m-d H:i:s");
-
 			
 			echo "\n\nTransferring to F21 T10 PAROL Started....";
 
@@ -4240,7 +4238,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T1', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T1'";
 									$this->db->query($sql1);
 								}
 
@@ -4295,7 +4293,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3'";
 									$this->db->query($sql1);
 								}
 									}
@@ -4355,7 +4353,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T3'";
 									$this->db->query($sql1);
 								}
 
@@ -4434,7 +4432,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T5', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T5'";
 									$this->db->query($sql1);
 								}
 
@@ -4509,7 +4507,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7'";
 									$this->db->query($sql1);
 								}
 
@@ -4588,7 +4586,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T10', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T10'";
 									$this->db->query($sql1);
 								}
 
@@ -4724,7 +4722,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T12', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T12'";
 									$this->db->query($sql1);
 								}
 
@@ -4808,7 +4806,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T1', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T1'";
 									$this->db->query($sql1);
 								}
 
@@ -4882,7 +4880,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T3', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T3'";
 									$this->db->query($sql1);
 								}
 
@@ -4954,7 +4952,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T5', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T5'";
 									$this->db->query($sql1);
 								}
 
@@ -5041,7 +5039,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PARDON', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PARDON'";
 									$this->db->query($sql1);
 								}
 
@@ -5127,7 +5125,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PAROL', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T7_PAROL'";
 									$this->db->query($sql1);
 								}
 
@@ -5198,7 +5196,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PAROL', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PAROL'";
 									$this->db->query($sql1);
 								}
 
@@ -5268,7 +5266,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PARDON', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T10_PARDON'";
 									$this->db->query($sql1);
 								}
 
@@ -5329,7 +5327,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PAROL', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PAROL'";
 									$this->db->query($sql1);
 								}
 
@@ -5390,7 +5388,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PARDON', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T12_PARDON'";
 									$this->db->query($sql1);
 								}
 
@@ -5468,7 +5466,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PAROL', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PAROL'";
 									$this->db->query($sql1);
 								}
 
@@ -5541,7 +5539,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PARDON', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F21T14_PARDON'";
 									$this->db->query($sql1);
 								}
 
