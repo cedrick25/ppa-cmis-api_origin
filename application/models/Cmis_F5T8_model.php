@@ -206,13 +206,18 @@ class Cmis_F5T8_model extends CI_Model
 					{
 						$this->db->set('fname', $payload->fname);
 					}
-					
-					$this->db->set('mname', $payload->mname);
+					if(isset($payload->mname) && $payload->mname != null)
+					{
+						$this->db->set('mname', $payload->mname);
+					}
 					if(isset($payload->lname) && $payload->lname != null)
 					{
 						$this->db->set('lname', $payload->lname);
 					}
-					$this->db->set('suffixname', $payload->suffixname);
+					if(isset($payload->suffixname) && $payload->suffixname != null)
+					{
+						$this->db->set('suffixname', $payload->suffixname);
+					}
 					if(isset($payload->alias) && $payload->alias != null)
 					{
 						$this->db->set('alias', $payload->alias);

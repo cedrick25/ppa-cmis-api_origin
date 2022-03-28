@@ -202,6 +202,26 @@ class Cmis_F5T4_model extends CI_Model
 					{
 						$this->db->set('petitioner', strtoupper($payload->petitioner));
 					}
+					if(isset($payload->fname) && $payload->fname != null)
+					{
+						$this->db->set('fname', $payload->fname);
+					}
+					if(isset($payload->mname) && $payload->mname != null)
+					{
+						$this->db->set('mname', $payload->mname);
+					}
+					if(isset($payload->lname) && $payload->lname != null)
+					{
+						$this->db->set('lname', $payload->lname);
+					}
+					if(isset($payload->suffixname) && $payload->suffixname != null)
+					{
+						$this->db->set('suffixname', $payload->suffixname);
+					}
+					if(isset($payload->alias) && $payload->alias != null)
+					{
+						$this->db->set('alias', $payload->alias);
+					}
 					if(isset($payload->disposed_decision) && $payload->disposed_decision != null)
 					{
 						$this->db->set('disposed_decision', $payload->disposed_decision);

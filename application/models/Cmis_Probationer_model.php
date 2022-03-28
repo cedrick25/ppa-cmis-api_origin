@@ -375,6 +375,30 @@ class Cmis_Probationer_model extends CI_Model
 						);
 					}
 					break;
+				case 'fetchByDocket':
+					$required_param = 1;
+
+					if(isset($payload->SDOCKETNO) && $payload->SDOCKETNO != null )
+					{
+						$this->db->where('SDOCKETNO', $payload->SDOCKETNO);
+					}
+					$get = $this->db->get('request_masterlist');
+					if($get->num_rows() > 0)
+					{
+						$response = array(
+							'status' => 'SUCCESS',
+							'message' => 'SUCCESS FETCHING DATA',
+							'payload' => $get->row()
+						);
+					}
+					else
+					{
+						$response = array(
+							'status' => 'ERROR',
+							'message' => 'DATA NOT FOUND'
+						);
+					}
+					break;
 				default:
 					$response = array(
 						'status' => 'ERROR',
