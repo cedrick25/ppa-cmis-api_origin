@@ -247,6 +247,10 @@ class Cmis_Probationer_model extends CI_Model
 					{
 						$data = array_merge($data, array('ENDYY' => $payload->ENDYY));
 					}
+					if(isset($payload->FIELD_OFFICE) && $payload->FIELD_OFFICE != null)
+					{
+						$data = array_merge($data, array('FIELD_OFFICE' => $payload->FIELD_OFFICE));
+					}
 					if(isset($payload->STATUS) && $payload->STATUS != null)
 					{
 						$data = array_merge($data, array('STATUS' => $payload->STATUS));
