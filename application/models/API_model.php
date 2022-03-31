@@ -2757,7 +2757,7 @@
 					echo "\nTransferring to F5 T1 Started....";
 					echo $datenow;
 					echo "------";
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -2770,7 +2770,7 @@
 						}
 					}
 					$this->db->reconnect();
-					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -2784,7 +2784,7 @@
 
 					$this->db->reconnect();
 					//F5 T2 (INSERT TO T1)
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_ACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_ACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -2797,7 +2797,7 @@
 						}
 					}
 					$this->db->reconnect();
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_NOTACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_NOTACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -2818,7 +2818,7 @@
 
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -2847,7 +2847,7 @@
 					//F5 T2 ACTED to T3
 					echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -2862,7 +2862,7 @@
 					foreach($array1 as $key => $value){
 						
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -2871,7 +2871,7 @@
 							}else{
 
 								$this->db->reconnect();
-								$query_check2 = $this->db->query("SELECT docket_no FROM F5T4 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$Y_M."'");
+								$query_check2 = $this->db->query("SELECT docket_no FROM F5T4 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$Y_M."' AND status = 1");
 
 								if($query_check2){
 									if($query_check2->num_rows() > 0){
@@ -2903,7 +2903,7 @@
 					//F5 T4 & T3
 					echo "\n\nTransferring to F5 T3 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -2918,7 +2918,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$query = $this->db->query("SELECT * FROM F5T4 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T4 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -2932,7 +2932,7 @@
 					$result = $this->check_diff_multi($array1, $array2);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -2962,7 +2962,7 @@
 					//F5 T5 & T6
 					echo "\n\nTransferring to F5 T5 Started....";
 
-					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -2976,7 +2976,7 @@
 					}
 
 
-					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -2991,7 +2991,7 @@
 
 					#var_dump($array1);
 
-					$query = $this->db->query("SELECT docket_no,petitioner FROM F5T6_CMPLTD WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner FROM F5T6_CMPLTD WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -3010,7 +3010,7 @@
 
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -3041,7 +3041,7 @@
 					//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
 					echo "\n\nTransferring to F5 T7 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -3053,7 +3053,7 @@
 						}
 					}
 
-					$query = $this->db->query("SELECT * FROM F5T8 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T8 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -3068,7 +3068,7 @@
 
 					#var_dump($array1);
 
-					$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -3085,7 +3085,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -3103,7 +3103,7 @@
 								//inserting to audit trail cron
 								if ($query_insert) {
 									$this->db->reconnect();
-									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7', start_date='".$datenow."'";
+									$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='cron', status='1', form_table='F5T7', start_date='".$datenow."' AND status = 1";
 									$this->db->query($sql1);
 								}
 
@@ -3117,7 +3117,7 @@
 					//F5T10(FEB) = F5T9(JAN) + F5T10(JAN) - F5T11(JAN)
 					$this->db->reconnect();
 					echo "\n\nTransferring to F5 T10 Started....";
-					$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -3132,7 +3132,7 @@
 						}
 					}
 
-					$query = $this->db->query("SELECT *, disposed_decision as `submitted_decision`,disposed_date as `submitted_date`  FROM F5T9 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT *, disposed_decision as `submitted_decision`,disposed_date as `submitted_date`  FROM F5T9 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -3148,7 +3148,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$sql = "SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					$query = $this->db->query($sql);
 
 					if($query){
@@ -3164,7 +3164,7 @@
 					
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -3248,7 +3248,7 @@
 					//F5 T12 & T13
 					$this->db->reconnect();
 					echo "\n\nTransferring to F5 T12 Started....";
-					$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -3263,7 +3263,7 @@
 						}
 					}
 
-					$sql = "SELECT * FROM F5T13_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T13_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -3281,7 +3281,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$sql = "SELECT * FROM F5T13_TERM WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T13_TERM WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -3300,7 +3300,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4163,7 +4163,7 @@
 					$field_office = $valFO->NAME;
 					$Y_M = $_GET['date'];
 					echo "\nTransferring to F5 T1 Started....";
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -4176,7 +4176,7 @@
 						}
 					}
 					$this->db->reconnect();
-					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -4190,7 +4190,7 @@
 
 					$this->db->reconnect();
 					//F5 T2 (INSERT TO T1)
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_ACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_ACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -4203,7 +4203,7 @@
 						}
 					}
 					$this->db->reconnect();
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_NOTACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_NOTACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -4224,7 +4224,7 @@
 
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4253,7 +4253,7 @@
 					//F5 T2 ACTED to T3
 					echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -4268,7 +4268,7 @@
 					foreach($array1 as $key => $value){
 						
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4309,7 +4309,7 @@
 					//F5 T4 & T3
 					echo "\n\nTransferring to F5 T3 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -4324,7 +4324,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$query = $this->db->query("SELECT * FROM F5T4 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T4 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -4338,7 +4338,7 @@
 					$result = $this->check_diff_multi($array1, $array2);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4368,7 +4368,7 @@
 					//F5 T5 & T6
 					echo "\n\nTransferring to F5 T5 Started....";
 
-					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -4382,7 +4382,7 @@
 					}
 
 
-					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -4397,7 +4397,7 @@
 
 					#var_dump($array1);
 
-					$query = $this->db->query("SELECT docket_no,petitioner FROM F5T6_CMPLTD WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT docket_no,petitioner FROM F5T6_CMPLTD WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -4416,7 +4416,7 @@
 
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4447,7 +4447,7 @@
 					//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
 					echo "\n\nTransferring to F5 T7 Started....";
 
-					$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array1 = array();
 					if($query){
@@ -4459,7 +4459,7 @@
 						}
 					}
 
-					$query = $this->db->query("SELECT * FROM F5T8 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T8 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -4474,7 +4474,7 @@
 
 					#var_dump($array1);
 
-					$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."' AND status = 1");
 
 					$array2 = array();
 					if($query){
@@ -4491,7 +4491,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4523,7 +4523,7 @@
 					//F5T10(FEB) = F5T9(JAN) + F5T10(JAN) - F5T11(JAN)
 					$this->db->reconnect();
 					echo "\n\nTransferring to F5 T10 Started....";
-					$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -4538,7 +4538,7 @@
 						}
 					}
 
-					$query = $this->db->query("SELECT *, disposed_decision as `submitted_decision`,disposed_date as `submitted_date`  FROM F5T9 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'");
+					$query = $this->db->query("SELECT *, disposed_decision as `submitted_decision`,disposed_date as `submitted_date`  FROM F5T9 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					
 					if($query){
@@ -4554,7 +4554,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$sql = "SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					$query = $this->db->query($sql);
 
 					if($query){
@@ -4570,7 +4570,7 @@
 					
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -4654,7 +4654,7 @@
 					//F5 T12 & T13
 					$this->db->reconnect();
 					echo "\n\nTransferring to F5 T12 Started....";
-					$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -4669,7 +4669,7 @@
 						}
 					}
 
-					$sql = "SELECT * FROM F5T13_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T13_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -4687,7 +4687,7 @@
 
 					$this->db->reconnect();
 					$array2 = array();
-					$sql = "SELECT * FROM F5T13_TERM WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."'";
+					$sql = "SELECT * FROM F5T13_TERM WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 					#echo $sql;
 					$query = $this->db->query($sql);
 
@@ -4706,7 +4706,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+						$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
 						
 						if($query_check){
@@ -5109,7 +5109,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T7_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T7_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1'");
 
 						
 						if($query_check){
@@ -5180,7 +5180,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T10_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T10_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1'");
 
 						
 						if($query_check){
@@ -5250,7 +5250,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T10_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T10_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1'");
 
 						
 						if($query_check){
@@ -5311,7 +5311,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T12_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T12_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1'");
 
 						
 						if($query_check){
@@ -5372,7 +5372,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T12_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T12_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = '1'");
 
 						
 						if($query_check){
@@ -5523,7 +5523,7 @@
 					#var_dump($result);
 					foreach($result as $key => $value){
 						$this->db->reconnect();
-						$query_check = $this->db->query("SELECT docket_no FROM F21T14_PARDON WHERE field_office = '".$field_office."' and status = '1' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = 1");
+						$query_check = $this->db->query("SELECT docket_no FROM F21T14_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' and status = 1");
 
 						
 						if($query_check){
