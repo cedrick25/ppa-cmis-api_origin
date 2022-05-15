@@ -13,6 +13,7 @@
 		function backup(){
 			$fileName='db_backup.sql.zip';
 			ini_set('memory_limit', '-1');
+			ini_set('max_execution_time', '360');
 		    // Load the DB utility class
 		    $this->load->dbutil();
 			  $prefs = array(
