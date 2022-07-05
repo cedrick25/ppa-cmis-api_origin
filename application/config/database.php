@@ -75,11 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'ppa.staging',
-	// 'hostname' => 'localhost',
+	// 'hostname' => 'ppa.staging',
+	'hostname' => 'localhost',
 	'username' => 'ppa',
-	'password' => 'ppapis',
-	// 'password' => 'P@ssw0rd',
+	// 'password' => 'ppapis',
+	'password' => 'P@ssw0rd',
 	'database' => 'ppa_cmis',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -102,8 +102,8 @@ $db['default'] = array(
 
 $db['pis'] = array(
 	'dsn'	=> '',
-	// 'hostname' => 'localhost',
-	'hostname' => 'pis.staging',
+	'hostname' => 'localhost',
+	// 'hostname' => 'pis.staging',
 	'username' => 'ppa_cmis',
 	'password' => 'pp@p1$2k19',
 	'database' => 'ppa_pis',
