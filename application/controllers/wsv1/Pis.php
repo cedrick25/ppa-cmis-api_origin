@@ -29,6 +29,18 @@ class Pis extends CI_Controller {
 		echo $this->Pis_model->getFieldOfficeByFieldID($payload);
 	}
 
+	public function getRegionByFieldOfficeID()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Pis_model->getRegionByFieldOfficeID($payload);
+	}
+
+	public function getFieldOfficeByFieldOffice()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Pis_model->getFieldOfficeByFieldOffice($payload);
+	}
+
 	public function fetchAllRegion()
 	{
 		echo $this->Pis_model->fetchAllRegion();

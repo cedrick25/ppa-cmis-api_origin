@@ -115,6 +115,80 @@
 		}
 
 
+		public function getFieldOfficeByFieldOffice($payload)
+		{
+			if($payload->field_office != null)
+			{
+				$pis_db = $this->load->database('pis', TRUE);
+				$pis_db->select('*');
+				$pis_db->from('field_office');
+			 	$pis_db->where('field_office.NAME',$payload->field_office);
+	 		 	$sql= $pis_db->get();
+				if($sql->num_rows() > 0 )
+				{
+					$response = array(
+						'status' => 'SUCCESS',
+						'message' => 'SUCCESS FETCHING FIELD OFFICE',
+						'payload' => $sql->row()
+					);
+				}
+				else
+				{
+					$response = array(
+						'status' => 'ERROR',
+						'message' => 'ERRO FETCHING FIELD OFFICE'
+					);
+				}
+			}
+			else
+			{
+				$response = array(
+					'status' => 'ERROR',
+					'message' => 'INVALID PARAMETER'
+				);
+			}
+			return json_encode($response);
+		}
+
+		public function getRegionByFieldOfficeID($payload)
+		{
+			if($payload->field_id != null)
+			{
+				$pis_db = $this->load->database('pis', TRUE);
+				$pis_db->select('*');
+				$pis_db->from('field_office');
+			 	$pis_db->join('system_codes', 'field_office.REGION = system_codes.ID', 'left');
+			 	$pis_db->where('field_office.ID',$payload->field_id);
+	 		 	$sql= $pis_db->get();
+				// $pis_db->join('system_codes', 'system_codes.ID = field_office.REGION', 'left');
+				// $sql = $pis_db->get('field_office', array('ID' => $payload->field_id));
+				if($sql->num_rows() > 0 )
+				{
+					$response = array(
+						'status' => 'SUCCESS',
+						'message' => 'SUCCESS FETCHING REGION',
+						'payload' => $sql->row()
+					);
+				}
+				else
+				{
+					$response = array(
+						'status' => 'ERROR',
+						'message' => 'ERRO FETCHING REGION'
+					);
+				}
+			}
+			else
+			{
+				$response = array(
+					'status' => 'ERROR',
+					'message' => 'INVALID PARAMETER'
+				);
+			}
+			return json_encode($response);
+		}
+
+
 		public function fetchAllRegion2()
 		{
 			$pis_db = $this->load->database('pis', TRUE);
