@@ -242,7 +242,7 @@
 		public function fetchFieldOfficeByRegion($payload)
 		{
 			$pis_db = $this->load->database('pis', TRUE);
-			$pis_db->select('NAME');
+			$pis_db->select('NAME, REGION, ID');
 			$pis_db->where('ENABLED', 1);
 			$pis_db->where('REGION', $payload->REGION);
 			$sql = $pis_db->get('field_office');
