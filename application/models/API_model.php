@@ -307,7 +307,7 @@
 				$referer = $referer['host'];	
 	    	}
 	    	
-	    	if($referer !== 'cmis.probation.gov.ph' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
+	    	if($referer !== 'cmis.probation.gov.ph' && $referer!=='192.168.43.45' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
 			    die('Unauthorized access');
 			}
 	    	
