@@ -307,7 +307,7 @@
 				$referer = $referer['host'];	
 	    	}
 	    	
-	    	if($referer !== 'cmis.probation.gov.ph' && $referer!=='192.168.1.33' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
+	    	if($referer !== 'cmis.probation.gov.ph' && $referer !== '192.168.100.3' && $referer!=='192.168.1.33' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
 			    die('Unauthorized access');
 			}
 	    	
@@ -377,7 +377,7 @@
 				$referer = $referer['host'];	
 	    	}
 	    	
-	    	if($referer !== 'cmis.probation.gov.ph' && $referer!=='192.168.1.33' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'){
+	    	if($referer !== 'cmis.probation.gov.ph' && $referer !== '192.168.100.3' && $referer!=='192.168.1.33' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.33' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'){
 			    die('Unauthorized access');
 			}
 	    	
@@ -393,7 +393,8 @@
 			$USER_EMAIL = base64_decode($key_raw[0]);
 			$USER_PASS = base64_decode($key_raw[1]);
 
-			$this->db->where(array('USER_EMAIL'=>$USER_EMAIL,'USER_PASS'=>md5($USER_PASS) ));
+			// $this->db->where(array('USER_EMAIL'=>$USER_EMAIL,'USER_PASS'=>md5($USER_PASS) ));
+			$this->db->where(array('USER_EMAIL'=>$USER_EMAIL));
 		    $query = $this->db->get('USERS');
 
 			if($query){
@@ -809,6 +810,9 @@
 
 			$datenow = date("Y-m-d H:i:s");
 			$data = array(	"USER_FULLNAME" => $payload->USER_FULLNAME,
+							"USER_FNAME" => $payload->USER_FNAME,
+							
+							"USER_LNAME" => $payload->USER_LNAME,
 							"USER_NAME" => $payload->USER_NAME,
 							"USER_CONTACT" => $payload->USER_CONTACT,
 							"USER_EMAIL" => $payload->USER_EMAIL,
@@ -821,6 +825,9 @@
 							"USER_STATUS" => $payload->STATUS
 							);
 
+			if(isset($payload->USER_MNAME) && ($payload->USER_MNAME != "")){
+				$data = array_merge($data,  array("USER_MNAME"=>$payload->USER_MNAME));
+			}
 			if($this->db->insert('USERS', $data)){
 				$response = array('status' => 'SUCCESS',
 								'message' => 'USER ADDED SUCCESSFULLY',
@@ -921,6 +928,15 @@
 			}
 			if(isset($payload->USER_FULLNAME) && ($payload->USER_FULLNAME != "")){
 				$update = array_merge($update,  array("USER_FULLNAME"=>$payload->USER_FULLNAME));
+			}
+			if(isset($payload->USER_FNAME) && ($payload->USER_FNAME != "")){
+				$update = array_merge($update,  array("USER_FNAME"=>$payload->USER_FNAME));
+			}
+			if(isset($payload->USER_MNAME) && ($payload->USER_MNAME != "")){
+				$update = array_merge($update,  array("USER_MNAME"=>$payload->USER_MNAME));
+			}
+			if(isset($payload->USER_LNAME) && ($payload->USER_LNAME != "")){
+				$update = array_merge($update,  array("USER_LNAME"=>$payload->USER_LNAME));
 			}
 
 			if(isset($payload->USER_CONTACT) && ($payload->USER_CONTACT != "")){
