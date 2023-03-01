@@ -808,37 +808,54 @@
 		public function AddUser($payload){
 			header('Content-Type: application/json');
 
-			$datenow = date("Y-m-d H:i:s");
-			$data = array(	"USER_FULLNAME" => $payload->USER_FULLNAME,
-							"USER_FNAME" => $payload->USER_FNAME,
-							
-							"USER_LNAME" => $payload->USER_LNAME,
-							"USER_NAME" => $payload->USER_NAME,
-							"USER_CONTACT" => $payload->USER_CONTACT,
-							"USER_EMAIL" => $payload->USER_EMAIL,
-							"USER_PASS" =>	md5($payload->USER_PASS),
-							"USER_LEVEL_ID" => $payload->USER_LEVEL_ID,
-							"FIELD_OFFICE" => $payload->FIELD_OFFICE,
-							"USER_EXPIRY" => $payload->USER_EXPIRY,
-							"CREATED_DATE" => $datenow,
-							"CREATED_BY" => $payload->CREATED_BY,
-							"USER_STATUS" => $payload->STATUS
-							);
+			$query = $this->db->query("SELECT * FROM USERS WHERE USER_EMAIL = '".$payload->USER_EMAIL."'");
+		    #echo $query;
+			if($query){
+				if($query->num_rows() > 0){
+						$response = array('status' => 'SUCCESS',
+					 	'message' => ' Email exist');
+					return json_encode($response);
+				}else{
+					$datenow = date("Y-m-d H:i:s");
+					$data = array(	"USER_FULLNAME" => $payload->USER_FULLNAME,
+									"USER_FNAME" => $payload->USER_FNAME,
+									
+									"USER_LNAME" => $payload->USER_LNAME,
+									"USER_NAME" => $payload->USER_NAME,
+									"USER_CONTACT" => $payload->USER_CONTACT,
+									"USER_EMAIL" => $payload->USER_EMAIL,
+									"USER_PASS" =>	md5($payload->USER_PASS),
+									"USER_LEVEL_ID" => $payload->USER_LEVEL_ID,
+									"FIELD_OFFICE" => $payload->FIELD_OFFICE,
+									"USER_EXPIRY" => $payload->USER_EXPIRY,
+									"CREATED_DATE" => $datenow,
+									"CREATED_BY" => $payload->CREATED_BY,
+									"USER_STATUS" => $payload->STATUS
+									);
 
-			if(isset($payload->USER_MNAME) && ($payload->USER_MNAME != "")){
-				$data = array_merge($data,  array("USER_MNAME"=>$payload->USER_MNAME));
-			}
-			if($this->db->insert('USERS', $data)){
-				$response = array('status' => 'SUCCESS',
-								'message' => 'USER ADDED SUCCESSFULLY',
-								 'USER_ID' =>  $this->db->insert_id()
-								 );
-				return json_encode($response);
+					if(isset($payload->USER_MNAME) && ($payload->USER_MNAME != "")){
+						$data = array_merge($data,  array("USER_MNAME"=>$payload->USER_MNAME));
+					}
+
+					if($this->db->insert('USERS', $data)){
+						$response = array('status' => 'SUCCESS',
+										'message' => 'USER ADDED SUCCESSFULLY',
+										 'USER_ID' =>  $this->db->insert_id()
+										 );
+						return json_encode($response);
+					}else{
+						$response = array('status' => 'ERROR',
+										  'message' => 'FAILED ADDING USER');
+						return json_encode($response);
+					}
+			
+				}
 			}else{
-				$response = array('status' => 'ERROR',
-								  'message' => 'FAILED ADDING USER');
-				return json_encode($response);
+					$response = array('status' => 'ERROR',
+									  'message' => 'ERROR FETCHING RECORDS');
+					return json_encode($response);
 			}
+			
 		}
 
 		public function AddUserType($payload){
