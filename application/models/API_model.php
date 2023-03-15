@@ -2792,10 +2792,16 @@
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
-			$datenow = date("Y-m-d H:i:s");//F5 T2 ACTED to T3
+			$datenow = date("Y-m-d H:i:s");
+			//F5 T2 ACTED to T3
 
 			echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+			
 			$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
@@ -2921,6 +2927,11 @@
 				//F5 T5 & T6
 			echo "\n\nTransferring to F5 T5 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
@@ -3010,6 +3021,11 @@
 			//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
 			echo "\n\nTransferring to F5 T7 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
@@ -3094,6 +3110,11 @@
 			//F5T10(FEB) = F5T9(JAN) + F5T10(JAN) - F5T11(JAN)
 			$this->db->reconnect();
 			echo "\n\nTransferring to F5 T10 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 			$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 			#echo $sql;
 			$query = $this->db->query($sql);
@@ -3178,6 +3199,11 @@
 			//F5 T12 & T13
 			$this->db->reconnect();
 			echo "\n\nTransferring to F5 T12 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 			$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 			#echo $sql;
 			$query = $this->db->query($sql);
@@ -3269,6 +3295,11 @@
 			//F21 T1-T2 -> T1
 			echo "\n\nTransferring to F21 T1 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' and status = '1'");
 
 			$array1 = array();
@@ -3355,6 +3386,11 @@
 			//F21 T3 & T4-> T3
 			echo "\n\nTransferring to F21 T3 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' and status = '1'");
 
 			$array1 = array();
@@ -3436,6 +3472,11 @@
 			
 			echo "\n\nTransferring to F21 T5 Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T5 WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
 			$array1 = array();
@@ -3516,6 +3557,11 @@
 			$Y_M = $_GET['date'];
 			$datenow = date("Y-m-d H:i:s");			
 			echo "\n\nTransferring to F21 T7 Pardon Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$query = $this->db->query("SELECT * FROM F21T7_PARDON WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
@@ -3612,6 +3658,11 @@
 			
 			echo "\n\nTransferring to F21 T7 PAROL Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T7_PAROL WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
 			$array1 = array();
@@ -3703,6 +3754,11 @@
 			
 			echo "\n\nTransferring to F21 T10 PARDON Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T10_PARDON WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
 			$array1 = array();
@@ -3779,6 +3835,11 @@
 			$Y_M = $_GET['date'];
 			$datenow = date("Y-m-d H:i:s");
 			echo "\n\nTransferring to F21 T10 PAROL Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$query = $this->db->query("SELECT * FROM F21T10_PAROL WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
@@ -3857,6 +3918,11 @@
 			
 			echo "\n\nTransferring to F21 T12 PARDON Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T12_PARDON WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
 			$array1 = array();
@@ -3924,6 +3990,11 @@
 			
 			echo "\n\nTransferring to F21 T12 PAROL Started....";
 
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
 			$query = $this->db->query("SELECT * FROM F21T12_PAROL WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
 			$array1 = array();
@@ -3990,6 +4061,11 @@
 			$datenow = date("Y-m-d H:i:s");
 			
 			echo "\n\nTransferring to F21 T14 PARDON Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$query = $this->db->query("SELECT * FROM F21T14_PARDON WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'");
 
@@ -4070,6 +4146,11 @@
 			$datenow = date("Y-m-d H:i:s");
 			
 			echo "\n\nTransferring to F21 T14 PAROL Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$sql = "SELECT * FROM F21T14_PAROL WHERE field_office = '".$field_office."' and status = '1' and Y_M = '".$Y_M."'";
 			#echo "\n".$sql;
