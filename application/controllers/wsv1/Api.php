@@ -234,6 +234,91 @@ class Api extends CI_Controller {
 		echo $this->API_model->isActive($payload);
 	}
 
+	public function migrate_f5t1()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t1($payload);
+	}
+	public function migrate_f5t3()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t3($payload);
+	}
+	public function migrate_f5t5()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t5($payload);
+	}
+	public function migrate_f5t7()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t7($payload);
+	}
+	public function migrate_f5t10()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t10($payload);
+	}
+	public function migrate_f5t12()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f5t12($payload);
+	}
 
 
+	public function migrate_f21t1()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t1($payload);
+	}
+	public function migrate_f21t3()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t3($payload);
+	}
+	public function migrate_f21t5()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t5($payload);
+	}
+	public function migrate_f21t7_pardon()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t7_pardon($payload);
+	}
+	public function migrate_f21t7_parol()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t7_parol($payload);
+	}
+	public function migrate_f21t10_pardon()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t10_pardon($payload);
+	}
+	public function migrate_f21t10_parol()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t10_parol($payload);
+	}
+	public function migrate_f21t12_pardon()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t12_pardon($payload);
+	}
+	public function migrate_f21t12_parol()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t12_parol($payload);
+	}
+	public function migrate_f21t14_pardon()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t14_pardon($payload);
+	}
+	public function migrate_f21t14_parol()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_f21t14_parol($payload);
+	}
 }
