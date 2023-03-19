@@ -307,7 +307,7 @@
 				$referer = $referer['host'];	
 	    	}
 	    	
-	    	if($referer !== 'cmis.probation.gov.ph' && $referer !== '192.168.1.36'  && $referer !== '192.168.1.33'  && $referer !== '192.168.1.38'  && $referer !== '192.168.1.35' && $referer!=='192.168.100.3' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
+	    	if($referer !== 'eppcmis.probation.gov.ph' && $referer !== '192.168.1.36'  && $referer !== '192.168.1.33'  && $referer !== '192.168.1.38'  && $referer !== '192.168.1.35' && $referer!=='192.168.100.3' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer!=='192.168.1.108' && $referer!=='192.168.1.105' && $referer !== '192.168.100.4' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'&& $referer !== '127.0.0.1'){
 			    die('Unauthorized access');
 			}
 	    	
@@ -377,7 +377,7 @@
 				$referer = $referer['host'];	
 	    	}
 	    	
-	    	if($referer !== 'cmis.probation.gov.ph' && $referer !== '192.168.1.36'  && $referer !== '192.168.1.33'  && $referer !== '192.168.1.38'  && $referer !== '192.168.1.35' && $referer !== '192.168.100.3' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.33' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'){
+	    	if($referer !== 'eppcmis.probation.gov.ph' && $referer !== '192.168.1.36'  && $referer !== '192.168.1.33'  && $referer !== '192.168.1.38'  && $referer !== '192.168.1.35' && $referer !== '192.168.100.3' && $referer!=='192.168.254.167' && $referer!=='192.168.1.112' && $referer!=='192.168.100.122' && $referer!=='192.168.1.109' && $referer!=='192.168.1.73' && $referer!=='192.168.1.33' && $referer!=='192.168.1.73' && $referer!=='192.168.1.184' && $referer!=='192.168.1.191' && $referer!=='192.168.100.14' && $referer!=='192.168.1.155' && $referer !== '192.168.254.115' && $referer !== '192.168.1.224' && $referer !== '127.0.0.1' && $referer !== 'ks' && $referer !== '202.90.136.122'){
 			    die('Unauthorized access');
 			}
 	    	
@@ -818,9 +818,9 @@
 				}else{
 					$datenow = date("Y-m-d H:i:s");
 					$data = array(	"USER_FULLNAME" => $payload->USER_FULLNAME,
-									"USER_FNAME" => $payload->USER_FNAME,
+									// "USER_FNAME" => $payload->USER_FNAME,
 									
-									"USER_LNAME" => $payload->USER_LNAME,
+									// "USER_LNAME" => $payload->USER_LNAME,
 									"USER_NAME" => $payload->USER_NAME,
 									"USER_CONTACT" => $payload->USER_CONTACT,
 									"USER_EMAIL" => $payload->USER_EMAIL,
@@ -833,8 +833,14 @@
 									"USER_STATUS" => $payload->STATUS
 									);
 
+					if(isset($payload->USER_FNAME) && ($payload->USER_FNAME != "")){
+						$data = array_merge($data,  array("USER_FNAME"=>$payload->USER_FNAME));
+					}
 					if(isset($payload->USER_MNAME) && ($payload->USER_MNAME != "")){
 						$data = array_merge($data,  array("USER_MNAME"=>$payload->USER_MNAME));
+					}
+					if(isset($payload->USER_LNAME) && ($payload->USER_LNAME != "")){
+						$data = array_merge($data,  array("USER_LNAME"=>$payload->USER_LNAME));
 					}
 
 					if($this->db->insert('USERS', $data)){
