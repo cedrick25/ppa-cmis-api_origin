@@ -25,7 +25,7 @@
 				#print_r($data1);
 				//@TODO
 				$pis_db->reconnect();
-				$pis_db->where('REGION', $data1->REGION );;
+				$pis_db->where('REGION', $data1->REGION );
 				$sql = $pis_db->get('field_office');	
 
 
