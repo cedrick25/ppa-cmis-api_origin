@@ -3026,7 +3026,7 @@
 
 			//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
 			echo "\n\nTransferring to F5 T7 Started....";
-
+			$this->db->reconnect();
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
@@ -3062,7 +3062,7 @@
 
 			#var_dump($array1);
 
-
+			$this->db->reconnect();
 			$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array2 = array();
