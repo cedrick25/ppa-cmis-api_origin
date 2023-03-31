@@ -3095,6 +3095,8 @@
 						$query_insert = $this->db->query($sql);
 						echo $query_insert;
 						var_dump($query_insert);
+						$error = $this->db->error();
+						echo $error['message'];
 						$this->db->close();
 
 						//inserting to audit trail cron
