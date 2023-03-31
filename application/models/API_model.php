@@ -3093,6 +3093,8 @@
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 						echo $sql;
 						$query_insert = $this->db->query($sql);
+						echo $query_insert;
+						var_dump($query_insert);
 						$this->db->close();
 
 						//inserting to audit trail cron
