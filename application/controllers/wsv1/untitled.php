@@ -12,6 +12,7 @@
 		}
 
 		function backup(){
+    		set_time_limit(2700);
 			$fileName='db_backup.sql.zip';
 			ini_set('memory_limit', '-1');
 		    // Load the DB utility class
