@@ -833,21 +833,21 @@ class Cmis_Widgets_model extends CI_Model
 							$count += $query->num_rows();
 						}
 						$InvestigationCases = $count;
-						echo "per FO";
+						// echo "per FO";
 					}else{
 						if($payload->field_office === "ALL" ){
 
 							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
 							$InvestigationCases = $query->num_rows();
-							echo $InvestigationCases;
-							echo "all";
+							// echo $InvestigationCases;
+							// echo "all";
 
 						}else{
 
 							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
 							$InvestigationCases = $query->num_rows();
-							echo $InvestigationCases;
-							echo "per region";
+							// echo $InvestigationCases;
+							// echo "per region";
 						}
 					}
 					$this->db->reconnect();
@@ -866,10 +866,20 @@ class Cmis_Widgets_model extends CI_Model
 						}
 						$DrugRelated = $count;
 					}else{
+						if($payload->field_office === "ALL" ){
+
+							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='DRUG'");
+							// old
+							// $query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='YES'");
+							$DrugRelated = $query->num_rows();
+
+						}else{
+
 							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='DRUG'");
 							// old
 							// $query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='YES'");
-						$DrugRelated = $query->num_rows();
+							$DrugRelated = $query->num_rows();
+						}
 					}
 					$this->db->reconnect();
 					if(strpos($payload->field_office,'Region') !== false ){
@@ -886,11 +896,22 @@ class Cmis_Widgets_model extends CI_Model
 						}
 						$NonDrugRelated = $count;
 					}else{
+						if($payload->field_office === "ALL" ){
+
+							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='NON-DRUG'");
+							//old
+							// $query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain !='YES'");
+							// $NonDrugRelated = "123";
+							$NonDrugRelated= $query->num_rows();
+
+						}else{
+
 							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain ='NON-DRUG'");
 							//old
-						// $query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain !='YES'");
-						// $NonDrugRelated = "123";
-						$NonDrugRelated= $query->num_rows();
+							// $query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1 and plea_bargain !='YES'");
+							// $NonDrugRelated = "123";
+							$NonDrugRelated= $query->num_rows();
+						}
 					}
 
 					$NonPlea = $InvestigationCases - ($DrugRelated + $NonDrugRelated);
