@@ -833,11 +833,22 @@ class Cmis_Widgets_model extends CI_Model
 							$count += $query->num_rows();
 						}
 						$InvestigationCases = $count;
-						// echo $InvestigationCases;
+						echo "per FO";
 					}else{
-						$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
-						$InvestigationCases = $query->num_rows();
-						// echo $InvestigationCases;
+						if(strpos($payload->field_office,'ALL') ==true ){
+
+							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
+							$InvestigationCases = $query->num_rows();
+							echo $InvestigationCases;
+							echo "all";
+
+						}else{
+
+							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE field_office = '".$payload->field_office."' and Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
+							$InvestigationCases = $query->num_rows();
+							echo $InvestigationCases;
+							echo "per region";
+						}
 					}
 					$this->db->reconnect();
 
