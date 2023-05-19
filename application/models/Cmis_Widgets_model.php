@@ -835,7 +835,7 @@ class Cmis_Widgets_model extends CI_Model
 						$InvestigationCases = $count;
 						echo "per FO";
 					}else{
-						if(strpos($payload->field_office,'ALL') ==true ){
+						if($payload->field_office === "ALL" ){
 
 							$query = $this->db->query("SELECT * FROM F5T2_RCV WHERE Y_M  >= '".$payload->start_date."' and Y_M <= '".$payload->end_date."' and status = 1");
 							$InvestigationCases = $query->num_rows();
