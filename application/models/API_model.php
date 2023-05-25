@@ -1395,8 +1395,29 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
+						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."',psir_date = '".$value['psir_date']."'";
+
+						if (isset($value['petitioner'])) {
+						    $sql .= ", petitioner = '".$value['petitioner']."'";
+						}
+
+						if (isset($value['psir_rec'])) {
+						    $sql .= ", psir_rec = '".$value['psir_rec']."'";
+						}
+
+						if (isset($value['manifest'])) {
+						    $sql .= ", manifest = '".$value['manifest']."'";
+						}
+
+						if (isset($value['investigating_officer'])) {
+						    $sql .= ", investigating_officer = '".$value['investigating_officer']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
+						// echo $sql;
+						
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -3456,7 +3477,27 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// echo $sql;
+						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."',psir_date = '".$value['psir_date']."'";
+
+						if (isset($value['petitioner'])) {
+						    $sql .= ", petitioner = '".$value['petitioner']."'";
+						}
+
+						if (isset($value['psir_rec'])) {
+						    $sql .= ", psir_rec = '".$value['psir_rec']."'";
+						}
+
+						if (isset($value['manifest'])) {
+						    $sql .= ", manifest = '".$value['manifest']."'";
+						}
+
+						if (isset($value['investigating_officer'])) {
+						    $sql .= ", investigating_officer = '".$value['investigating_officer']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -4994,7 +5035,27 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// echo $sql;
+						$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."',psir_date = '".$value['psir_date']."'";
+
+						if (isset($value['petitioner'])) {
+						    $sql .= ", petitioner = '".$value['petitioner']."'";
+						}
+
+						if (isset($value['psir_rec'])) {
+						    $sql .= ", psir_rec = '".$value['psir_rec']."'";
+						}
+
+						if (isset($value['manifest'])) {
+						    $sql .= ", manifest = '".$value['manifest']."'";
+						}
+
+						if (isset($value['investigating_officer'])) {
+						    $sql .= ", investigating_officer = '".$value['investigating_officer']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -6512,7 +6573,27 @@
 								//INSERT
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// $sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// echo $sql;
+								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."',psir_date = '".$value['psir_date']."'";
+
+								if (isset($value['petitioner'])) {
+								    $sql .= ", petitioner = '".$value['petitioner']."'";
+								}
+
+								if (isset($value['psir_rec'])) {
+								    $sql .= ", psir_rec = '".$value['psir_rec']."'";
+								}
+
+								if (isset($value['manifest'])) {
+								    $sql .= ", manifest = '".$value['manifest']."'";
+								}
+
+								if (isset($value['investigating_officer'])) {
+								    $sql .= ", investigating_officer = '".$value['investigating_officer']."'";
+								}
+
+								$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
@@ -7918,7 +7999,27 @@
 								//INSERT
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// $sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// echo $sql;
+								$sql = "INSERT INTO F21T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."',psir_date = '".$value['psir_date']."'";
+
+								if (isset($value['petitioner'])) {
+								    $sql .= ", petitioner = '".$value['petitioner']."'";
+								}
+
+								if (isset($value['psir_rec'])) {
+								    $sql .= ", psir_rec = '".$value['psir_rec']."'";
+								}
+
+								if (isset($value['manifest'])) {
+								    $sql .= ", manifest = '".$value['manifest']."'";
+								}
+
+								if (isset($value['investigating_officer'])) {
+								    $sql .= ", investigating_officer = '".$value['investigating_officer']."'";
+								}
+
+								$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
