@@ -4334,7 +4334,7 @@
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						echo $query_insert;
-						var_dump($query_insert);
+						// var_dump($query_insert);
 						$this->db->close();
 
 						//inserting to audit trail cron
