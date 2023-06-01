@@ -2781,7 +2781,7 @@
 			$Y_M = $payload->Y_M;
 			$datenow = date("Y-m-d H:i:s");
 
-			echo "\nTransferring to F5 T1 Started....";
+			// echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
 			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
@@ -2844,7 +2844,7 @@
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 
 			#var_dump($result);
 
@@ -2854,10 +2854,10 @@
 
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
@@ -2874,7 +2874,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T1 Done....";
+			// echo "\n\nTransferring to F5 T1 Done....";
 		}
 		public function migrate_f5t3_v2($payload){
 
@@ -2883,12 +2883,12 @@
 			$datenow = date("Y-m-d H:i:s");
 			//F5 T2 ACTED to T3
 
-			echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
+			// echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
 
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 			
 			$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."' AND status = 1");
 
@@ -2910,7 +2910,7 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 
 
@@ -2920,13 +2920,13 @@
 						
 						if($query_check2){
 							if($query_check2->num_rows() > 0){
-								echo "\n".$value['docket_no']." ALREADY EXISTS...";
+								// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 							}else{
 
 
 								//INSERT
 								$datenow = date("Y-m-d H:i:s");
-								echo "\nINSERTING ".$value['docket_no']."...";
+								// echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 								#echo $sql;
@@ -2948,7 +2948,7 @@
 
 
 			//F5 T4 & T3
-			echo "\n\nTransferring to F5 T3 Started....";
+			// echo "\n\nTransferring to F5 T3 Started....";
 
 			$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
@@ -2984,13 +2984,13 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						#echo $sql;
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -3004,7 +3004,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T3 Done....";
+			// echo "\n\nTransferring to F5 T3 Done....";
 			//
 		}
 		public function migrate_f5t5_v2($payload){
@@ -3013,12 +3013,12 @@
 			$Y_M = $payload->Y_M;
 			$datenow = date("Y-m-d H:i:s");
 				//F5 T5 & T6
-			echo "\n\nTransferring to F5 T5 Started....";
+			// echo "\n\nTransferring to F5 T5 Started....";
 
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
@@ -3078,10 +3078,10 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', received_date = '".$value['received_date'] ."' , investigating_officer='".$value['investigating_officer']."', reasons='".$value['reasons']."', referring_office='".$value['referring_office']."', status=1,source=2,created_by=0";
 						#echo $sql;
@@ -3098,7 +3098,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T5 Done....";
+			// echo "\n\nTransferring to F5 T5 Done....";
 		}
 		public function migrate_f5t7_v2($payload){
 
@@ -3107,12 +3107,12 @@
 			$datenow = date("Y-m-d H:i:s");
 
 			//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
-			echo "\n\nTransferring to F5 T7 Started....";
+			// echo "\n\nTransferring to F5 T7 Started....";
 			$this->db->reconnect();
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 
 			$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
@@ -3167,10 +3167,10 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 						// echo $sql;
@@ -3191,7 +3191,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T7 Done....";
+			// echo "\n\nTransferring to F5 T7 Done....";
 			
 		}
 		public function migrate_f5t10_v2($payload){
@@ -3201,12 +3201,12 @@
 			$datenow = date("Y-m-d H:i:s");
 			//F5T10(FEB) = F5T9(JAN) + F5T10(JAN) - F5T11(JAN)
 			$this->db->reconnect();
-			echo "\n\nTransferring to F5 T10 Started....";
+			// echo "\n\nTransferring to F5 T10 Started....";
 
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 			$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 			#echo $sql;
 			$query = $this->db->query($sql);
@@ -3259,10 +3259,10 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
@@ -3279,7 +3279,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T10 Done....";
+			// echo "\n\nTransferring to F5 T10 Done....";
 			//
 			
 		}
@@ -3290,12 +3290,12 @@
 			$datenow = date("Y-m-d H:i:s");
 			//F5 T12 & T13
 			$this->db->reconnect();
-			echo "\n\nTransferring to F5 T12 Started....";
+			// echo "\n\nTransferring to F5 T12 Started....";
 
 			$curr_date = strtotime(date($Y_M."-01"));
 			#echo $curr_date;
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
-			echo "\nTransferring to date: ".$date_transfer."\n";
+			// echo "\nTransferring to date: ".$date_transfer."\n";
 			$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
 			#echo $sql;
 			$query = $this->db->query($sql);
@@ -3353,10 +3353,10 @@
 				
 				if($query_check){
 					if($query_check->num_rows() > 0){
-						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
 						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						// echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
 						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
@@ -3373,7 +3373,7 @@
 					}
 				}
 			}
-			echo "\n\nTransferring to F5 T12 Done....";
+			// echo "\n\nTransferring to F5 T12 Done....";
 			//
 			
 		}
