@@ -2755,18 +2755,18 @@
 		    $executionTime5 = $endTime5 - $startTime5;
 		    $minutes5 = $executionTime5 / 60;
 
-		    echo "\nExecution time for f5t1: " . $executionTime . " seconds";
-			echo "\nMinutes: " . $minutes . "\n";
-		    echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
-			echo "\nMinutes: " . $minutes1 . "\n";
-		    echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
-			echo "\nMinutes: " . $minutes2 . "\n";
-		    echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
-			echo "\nMinutes: " . $minutes3 . "\n";
-		    echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
-			echo "\nMinutes: " . $minutes4 . "\n";
-		    echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
-			echo "\nMinutes: " . $minutes5 . "\n";
+		    // echo "\nExecution time for f5t1: " . $executionTime . " seconds";
+			// echo "\nMinutes: " . $minutes . "\n";
+		    // echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
+			// echo "\nMinutes: " . $minutes1 . "\n";
+		    // echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
+			// echo "\nMinutes: " . $minutes2 . "\n";
+		    // echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
+			// echo "\nMinutes: " . $minutes3 . "\n";
+		    // echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
+			// echo "\nMinutes: " . $minutes4 . "\n";
+		    // echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
+			// echo "\nMinutes: " . $minutes5 . "\n";
 
 			$response = array('status' => 'SUCCESS',
 				'message' => 'CARRYOVER SUCCESSFULLY',
