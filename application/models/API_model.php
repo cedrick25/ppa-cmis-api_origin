@@ -2755,18 +2755,18 @@
 		    $executionTime5 = $endTime5 - $startTime5;
 		    $minutes5 = $executionTime5 / 60;
 
-		    // echo "\nExecution time for f5t1: " . $executionTime . " seconds";
-			// echo "\nMinutes: " . $minutes . "\n";
-		    // echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
-			// echo "\nMinutes: " . $minutes1 . "\n";
-		    // echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
-			// echo "\nMinutes: " . $minutes2 . "\n";
-		    // echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
-			// echo "\nMinutes: " . $minutes3 . "\n";
-		    // echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
-			// echo "\nMinutes: " . $minutes4 . "\n";
-		    // echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
-			// echo "\nMinutes: " . $minutes5 . "\n";
+		    echo "\nExecution time for f5t1: " . $executionTime . " seconds";
+			echo "\nMinutes: " . $minutes . "\n";
+		    echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
+			echo "\nMinutes: " . $minutes1 . "\n";
+		    echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
+			echo "\nMinutes: " . $minutes2 . "\n";
+		    echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
+			echo "\nMinutes: " . $minutes3 . "\n";
+		    echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
+			echo "\nMinutes: " . $minutes4 . "\n";
+		    echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
+			echo "\nMinutes: " . $minutes5 . "\n";
 
 			$response = array('status' => 'SUCCESS',
 				'message' => 'CARRYOVER SUCCESSFULLY',
@@ -3979,6 +3979,68 @@
 			echo "\n\nTransferring to F5 T12 Done....";
 			//
 			
+		}
+		
+		public function migrate_trigger_f21($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+
+		 	$startTime = microtime(true);
+    		$this->migrate_f21t1($payload);
+		    $endTime = microtime(true);
+		    $executionTime = $endTime - $startTime;
+		    $minutes = $executionTime / 60;
+
+		 	$startTime1 = microtime(true);
+    		$this->migrate_f21t3($payload);
+		    $endTime1 = microtime(true);
+		    $executionTime1 = $endTime1 - $startTime1;
+		    $minutes1 = $executionTime1 / 60;
+
+		 	$startTime2 = microtime(true);
+    		$this->migrate_f21t5($payload);
+		    $endTime2 = microtime(true);
+		    $executionTime2 = $endTime2 - $startTime2;
+		    $minutes2 = $executionTime2 / 60;
+
+		 	$startTime3 = microtime(true);
+    		$this->migrate_f21t7_pardon($payload);
+		    $endTime3 = microtime(true);
+		    $executionTime3 = $endTime3 - $startTime3;
+		    $minutes3 = $executionTime3 / 60;
+		 	
+		 	$startTime4 = microtime(true);
+    		$this->migrate_f5t10_v2($payload);
+		    $endTime4 = microtime(true);
+		    $executionTime4 = $endTime4 - $startTime4;
+		    $minutes4 = $executionTime4 / 60;
+		 	
+		 	$startTime5 = microtime(true);
+    		$this->migrate_f5t12_v2($payload);
+		    $endTime5 = microtime(true);
+		    $executionTime5 = $endTime5 - $startTime5;
+		    $minutes5 = $executionTime5 / 60;
+
+		    echo "\nExecution time for f5t1: " . $executionTime . " seconds";
+			echo "\nMinutes: " . $minutes . "\n";
+		    echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
+			echo "\nMinutes: " . $minutes1 . "\n";
+		    echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
+			echo "\nMinutes: " . $minutes2 . "\n";
+		    echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
+			echo "\nMinutes: " . $minutes3 . "\n";
+		    echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
+			echo "\nMinutes: " . $minutes4 . "\n";
+		    echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
+			echo "\nMinutes: " . $minutes5 . "\n";
+
+			$response = array('status' => 'SUCCESS',
+				'message' => 'CARRYOVER SUCCESSFULLY',
+				);
+			return json_encode($response);
+
 		}
 		public function migrate_f21t1($payload){
 
@@ -6506,7 +6568,7 @@
 					    	foreach($array1 as $key2=>$val2){
 					    		$val['docket_no'] = preg_replace('/\s+/', '', $val['docket_no']);
 					    		$val2['docket_no'] = preg_replace('/\s+/', '', $val2['docket_no']);
-					    		echo "\n".$val['docket_no'] ." ".$val2['docket_no'];
+					    		// echo "\n".$val['docket_no'] ." ".$val2['docket_no'];
 					    		if(strtoupper($val['docket_no']) == strtoupper($val2['docket_no'])){
 					    			unset($array1[$key2]);
 					    		}

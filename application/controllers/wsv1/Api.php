@@ -246,6 +246,12 @@ class Api extends CI_Controller {
 		$payload = json_decode(file_get_contents('php://input'));
 		echo $this->API_model->migrate_trigger($payload);
 	}
+
+	public function migrate_trigger_f21()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->API_model->migrate_trigger_f21($payload);
+	}
 	public function migrate_f5t3()
 	{
 		$payload = json_decode(file_get_contents('php://input'));
