@@ -2715,38 +2715,42 @@
 		}
 		public function migrate_trigger($payload){
 
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+
 		 	$startTime = microtime(true);
-    		$this->migrate_f5t1($payload);
+    		$this->migrate_f5t1_v2($payload);
 		    $endTime = microtime(true);
 		    $executionTime = $endTime - $startTime;
 		    $minutes = $executionTime / 60;
 
 		 	$startTime1 = microtime(true);
-    		$this->migrate_f5t3($payload);
+    		$this->migrate_f5t3_v2($payload);
 		    $endTime1 = microtime(true);
 		    $executionTime1 = $endTime1 - $startTime1;
 		    $minutes1 = $executionTime1 / 60;
 
 		 	$startTime2 = microtime(true);
-    		$this->migrate_f5t5($payload);
+    		$this->migrate_f5t5_v2($payload);
 		    $endTime2 = microtime(true);
 		    $executionTime2 = $endTime2 - $startTime2;
 		    $minutes2 = $executionTime2 / 60;
 
 		 	$startTime3 = microtime(true);
-    		$this->migrate_f5t7($payload);
+    		$this->migrate_f5t7_v2($payload);
 		    $endTime3 = microtime(true);
 		    $executionTime3 = $endTime3 - $startTime3;
 		    $minutes3 = $executionTime3 / 60;
 		 	
 		 	$startTime4 = microtime(true);
-    		$this->migrate_f5t10($payload);
+    		$this->migrate_f5t10_v2($payload);
 		    $endTime4 = microtime(true);
 		    $executionTime4 = $endTime4 - $startTime4;
 		    $minutes4 = $executionTime4 / 60;
 		 	
 		 	$startTime5 = microtime(true);
-    		$this->migrate_f5t12($payload);
+    		$this->migrate_f5t12_v2($payload);
 		    $endTime5 = microtime(true);
 		    $executionTime5 = $endTime5 - $startTime5;
 		    $minutes5 = $executionTime5 / 60;
@@ -2771,13 +2775,609 @@
 
 		}
 
-		public function test($payload){
-			
-			$field_office = $_GET['field'];
-			$Y_M = $_GET['date'];
+		public function migrate_f5t1_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
 			$datenow = date("Y-m-d H:i:s");
 
+			echo "\nTransferring to F5 T1 Started....";
+			//F5 T2 (INSERT TO T1)
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+			$this->db->reconnect();
+			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+			// var_dump($array1);
+			// exit();
+			$this->db->reconnect();
+			//F5 T2 (INSERT TO T1)
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_ACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array2 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			$this->db->reconnect();
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner` FROM F5T2_NOTACTED WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			#var_dump($array2);
+
+			$result = $this->check_diff_multi($array1, $array2);
+			
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
+			#var_dump($result);
+
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						#echo $sql;
+						$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T1', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T1 Done....";
 		}
+		public function migrate_f5t3_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+			//F5 T2 ACTED to T3
+
+			echo "\n\nTransferring from F5 T2 Acted to F5 T3 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+			
+			$query = $this->db->query("SELECT * FROM F5T2_ACTED WHERE field_office = '".$field_office."' and transfer_date is NULL and Y_M = '".$Y_M."' AND status = 1");
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+			foreach($array1 as $key => $value){
+				
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+
+
+						$this->db->reconnect();
+						$query_check2 = $this->db->query("SELECT docket_no FROM F5T4 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$Y_M."' AND status = 1");
+
+						
+						if($query_check2){
+							if($query_check2->num_rows() > 0){
+								echo "\n".$value['docket_no']." ALREADY EXISTS...";
+							}else{
+
+
+								//INSERT
+								$datenow = date("Y-m-d H:i:s");
+								echo "\nINSERTING ".$value['docket_no']."...";
+								$this->db->reconnect();
+								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
+								#echo $sql;
+								$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+							}
+						}
+
+					}
+				}
+			}
+
+
+			//F5 T4 & T3
+			echo "\n\nTransferring to F5 T3 Started....";
+
+			$query = $this->db->query("SELECT * FROM F5T3 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+			$this->db->reconnect();
+			$array2 = array();
+			$query = $this->db->query("SELECT * FROM F5T4 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			$result = $this->check_diff_multi($array1, $array2);
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						#echo $sql;
+						$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T3', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T3 Done....";
+			//
+		}
+		public function migrate_f5t5_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+				//F5 T5 & T6
+			echo "\n\nTransferring to F5 T5 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+
+
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+
+			#var_dump($array1);
+
+
+
+
+			$query = $this->db->query("SELECT docket_no,petitioner FROM F5T6_CMPLTD WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array2 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			#var_dump($array2);
+			$result = $this->check_diff_multi($array1, $array2);
+			#var_dump($result);
+
+
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', received_date = '".$value['received_date'] ."' , investigating_officer='".$value['investigating_officer']."', reasons='".$value['reasons']."', referring_office='".$value['referring_office']."', status=1,source=2,created_by=0";
+						#echo $sql;
+						$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T5', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T5 Done....";
+		}
+		public function migrate_f5t7_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+
+			//F5T7(FEB) = F5T7(JAN) + F5T8(JAN) - F5T11 (JAN)
+			echo "\n\nTransferring to F5 T7 Started....";
+			$this->db->reconnect();
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+
+			$query = $this->db->query("SELECT * FROM F5T7 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+
+			$query = $this->db->query("SELECT * FROM F5T8 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+
+			#var_dump($array1);
+
+			$this->db->reconnect();
+			$query = $this->db->query("SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and disposed_decision != 'Extension of Probation Period' and Y_M = '".$Y_M."' AND status = 1");
+
+			$array2 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			#var_dump($array2);
+			$result = $this->check_diff_multi($array1, $array2);
+			#var_dump($result);
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
+						// echo $sql;
+						$query_insert = $this->db->query($sql);
+						// echo $query_insert;
+						// var_dump($query_insert);
+						// $error = $this->db->error();
+						// echo $error['message'];
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T7', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T7 Done....";
+			
+		}
+		public function migrate_f5t10_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+			//F5T10(FEB) = F5T9(JAN) + F5T10(JAN) - F5T11(JAN)
+			$this->db->reconnect();
+			echo "\n\nTransferring to F5 T10 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+			$sql = "SELECT * FROM F5T10 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
+			#echo $sql;
+			$query = $this->db->query($sql);
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+			$query = $this->db->query("SELECT *, disposed_decision as `submitted_decision`,disposed_date as `submitted_date`  FROM F5T9 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+
+			
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+
+			$this->db->reconnect();
+			$array2 = array();
+			$sql = "SELECT * FROM F5T11 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
+			$query = $this->db->query($sql);
+
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			$result = $this->check_diff_multi($array1, $array2);
+			
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
+						#echo $sql;
+						$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T10', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T10 Done....";
+			//
+			
+		}
+		public function migrate_f5t12_v2($payload){
+
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");
+			//F5 T12 & T13
+			$this->db->reconnect();
+			echo "\n\nTransferring to F5 T12 Started....";
+
+			$curr_date = strtotime(date($Y_M."-01"));
+			#echo $curr_date;
+			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
+			echo "\nTransferring to date: ".$date_transfer."\n";
+			$sql = "SELECT * FROM F5T12 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
+			#echo $sql;
+			$query = $this->db->query($sql);
+
+			$array1 = array();
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+
+			$sql = "SELECT * FROM F5T13_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
+			#echo $sql;
+			$query = $this->db->query($sql);
+
+			
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array1, $value);
+					}
+					
+				}
+			}
+			#var_dump($array1);
+
+			$this->db->reconnect();
+			$array2 = array();
+			$sql = "SELECT * FROM F5T13_TERM WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1";
+			#echo $sql;
+			$query = $this->db->query($sql);
+
+			if($query){
+				if($query->num_rows() > 0){
+					$data = $query->result_array();
+					foreach ($data as $key => $value) {
+						array_push($array2, $value);
+					}
+					
+				}
+			}
+			$result = $this->check_diff_multi($array1, $array2);
+			
+			#var_dump($array2);
+			#var_dump($result);
+			foreach($result as $key => $value){
+				$this->db->reconnect();
+				$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
+
+				
+				if($query_check){
+					if($query_check->num_rows() > 0){
+						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+					}else{
+						//INSERT
+						echo "\nINSERTING ".$value['docket_no']."...";
+						$this->db->reconnect();
+						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
+						#echo $sql;
+						$query_insert = $this->db->query($sql);
+						$this->db->close();
+
+						//inserting to audit trail cron
+						if ($query_insert) {
+							$this->db->reconnect();
+							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F5T12', start_date='".$datenow."'";
+							$this->db->query($sql1);
+						}
+
+					}
+				}
+			}
+			echo "\n\nTransferring to F5 T12 Done....";
+			//
+			
+		}
+		
 		public function migrate_f5t1($payload){
 			
 			$field_office = $_GET['field'];
