@@ -4018,6 +4018,7 @@
     		$this->migrate_f21t12_parol_v2($payload);
     		$this->migrate_f21t14_pardon_v2($payload);
     		$this->migrate_f21t14_parol_v2($payload);
+    		
 			$response = array('status' => 'SUCCESS',
 				'message' => 'CARRYOVER SUCCESSFULLY',
 				);
@@ -4313,9 +4314,9 @@
 		}
 		public function migrate_f21t7_pardon_v2($payload){
 
-			$field_office = $_GET['field'];
-			$Y_M = $_GET['date'];
-			$datenow = date("Y-m-d H:i:s");			
+			$field_office = $payload->field_office;
+			$Y_M = $payload->Y_M;
+			$datenow = date("Y-m-d H:i:s");	
 			// echo "\n\nTransferring to F21 T7 Pardon Started....";
 
 			$curr_date = strtotime(date($Y_M."-01"));
