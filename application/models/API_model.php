@@ -2017,7 +2017,15 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						
+						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."'";
+
+						if (isset($value['reasons'])) {
+						    $sql .= ", reasons = '".$value['reasons']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -5963,7 +5971,14 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."'";
+
+						if (isset($value['reasons'])) {
+						    $sql .= ", reasons = '".$value['reasons']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
@@ -7352,7 +7367,15 @@
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+
+						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."'";
+
+						if (isset($value['reasons'])) {
+						    $sql .= ", reasons = '".$value['reasons']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -8875,7 +8898,14 @@
 								//INSERT
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+								// $sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."'";
+
+						if (isset($value['reasons'])) {
+						    $sql .= ", reasons = '".$value['reasons']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
@@ -10301,7 +10331,15 @@
 								//INSERT
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+								// $sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', ". (isset($value['reasons']) ? "reasons='".$value['reasons']."" : "")."', status=1,source=2,created_by=0";
+
+						$sql = "INSERT INTO F21T14_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."'";
+
+						if (isset($value['reasons'])) {
+						    $sql .= ", reasons = '".$value['reasons']."'";
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
