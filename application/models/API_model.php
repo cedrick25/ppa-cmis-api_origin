@@ -5281,22 +5281,41 @@
 					if($query_check->num_rows() > 0){
 						echo "\n".$value['docket_no']." ALREADY EXISTS...";
 					}else{
-						//INSERT
-						echo "\nINSERTING ".$value['docket_no']."...";
+						echo "\nINSERTING " . $value['docket_no'] . "...";
 						$this->db->reconnect();
-						$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						// echo $sql;
-						$query_insert = $this->db->query($sql);
-						// echo $query_insert;
-						$this->db->close();
 
-						//inserting to audit trail cron
-						if ($query_insert) {
-							$this->db->reconnect();
-							$sql1 = "INSERT INTO audit_trail_carryover SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', origin='manual', status='1', form_table='F21T5', start_date='".$datenow."'";
-							$this->db->query($sql1);
-							// echo $sql1;
+						// Insert data into 'F21T5' table
+						$data1 = array(
+						    'field_office' => $this->db->escape_str($field_office),
+						    'Y_M' => $this->db->escape_str($date_transfer),
+						    'docket_no' => $this->db->escape_str($value['docket_no']),
+						    'petitioner' => $this->db->escape_str($value['petitioner']),
+						    'referring_office' => $this->db->escape_str($value['referring_office']),
+						    'received_date' => $this->db->escape_str($value['received_date']),
+						    'reasons' => $this->db->escape_str($value['reasons']),
+						    'investigating_officer' => $this->db->escape_str($value['investigating_officer']),
+						    'status' => 1,
+						    'source' => 2,
+						    'created_by' => 0
+						);
+
+						$this->db->insert('F21T5', $data1);
+
+						// Insert data into 'audit_trail_carryover' table
+						if ($this->db->affected_rows() > 0) {
+						    $data2 = array(
+						        'field_office' => $this->db->escape_str($field_office),
+						        'Y_M' => $this->db->escape_str($date_transfer),
+						        'docket_no' => $this->db->escape_str($value['docket_no']),
+						        'origin' => 'manual',
+						        'status' => 1,
+						        'form_table' => 'F21T5',
+						        'start_date' => $datenow
+						    );
+
+						    $this->db->insert('audit_trail_carryover', $data2);
 						}
+						$this->db->close();
 
 					}
 				}
