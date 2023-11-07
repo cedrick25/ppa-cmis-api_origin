@@ -278,8 +278,8 @@ class Cmis_F21PCS_model extends CI_Model
 		$totalReportSubmittedRegional = (object)array("count"=> ( $totalReportSubmittedRegionalParol->count + $totalReportSubmittedRegionalPardon->count));
 
 		$totalSupervisionCasesActed =  (object)array("count"=> ( $totalReportSubmittedtoBoard->count + $totalReportSubmittedRegional->count ));
-		$totalActiveSupervisionCasesParole =  (object)array("count"=> ( $totalSupvCasesHandledParol->count - $totalCasesResolvedFinalParol->count - $totalCasesResolvedArrestParol->count - $totalCasesResolvedDeathParol->count - $totalCasesResolvedRegionalParol->count   ));
-		$totalActiveSupervisionCasesPardon =  (object)array("count"=> ( $totalSupvCasesHandledPardon->count - $totalCasesResolvedFinalPardon->count - $totalCasesResolvedArrestPardon->count - $totalCasesResolvedDeathPardon->count - $totalCasesResolvedRegionalPardon->count   ));
+		$totalActiveSupervisionCasesParole =  (object)array("count"=> ( $totalSupvCasesHandledParol->count - $totalCasesResolvedFinalParol->count - $totalCasesResolvedArrestParol->count - $totalCasesResolvedDeathParol->count - $totalCasesResolvedRegionalParol->count - $totalCasesResolvedOtherParol->count  ));
+		$totalActiveSupervisionCasesPardon =  (object)array("count"=> ( $totalSupvCasesHandledPardon->count - $totalCasesResolvedFinalPardon->count - $totalCasesResolvedArrestPardon->count - $totalCasesResolvedDeathPardon->count - $totalCasesResolvedRegionalPardon->count    - $totalCasesResolvedOtherPardon->count));
 		$totalActiveSupervisionCases =  (object)array("count"=> ( $totalActiveSupervisionCasesParole->count + $totalActiveSupervisionCasesPardon->count ));
 
 
