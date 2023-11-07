@@ -205,7 +205,7 @@ class Cmis_F21PCS_model extends CI_Model
 		$totalCasesResolvedPSOther = (object)array("count"=> ($totalCasesResolvedOtherParol->count + $totalCasesResolvedOtherPardon->count ));		
 
 
-		$totalCasesResolvedBoard = (object)array("count"=> ( $totalCasesResolvedFinal->count + $totalCasesResolvedArrest->count + $totalCasesResolvedDeath->count + $totalCasesResolvedPSOther->count));
+		$totalCasesResolvedBoard = (object)array("count"=> ( $totalCasesResolvedFinal->count + $totalCasesResolvedArrest->count + $totalCasesResolvedDeath->count));
 
 		/*New 2021-01-16*/
 		$payload->filter = Null; $payload->table = "F21T11_PAROL"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "OTHERS"; 
@@ -224,7 +224,7 @@ class Cmis_F21PCS_model extends CI_Model
 		$totalCasesResolvedRegionalPardon = json_decode($this->callProcedure1($payload));
 		$totalCasesResolvedRegional = (object)array("count"=> ($totalCasesResolvedRegionalParol->count + $totalCasesResolvedRegionalPardon->count ));		
 
-		$totalSupervisionCasesDropped = (object)array("count"=> ($totalCasesResolvedFinal->count +  $totalCasesResolvedArrest->count +  $totalCasesResolvedDeath->count +  $totalCasesResolvedRegional->count));		
+		$totalSupervisionCasesDropped = (object)array("count"=> ($totalCasesResolvedFinal->count +  $totalCasesResolvedArrest->count +  $totalCasesResolvedDeath->count +  $totalCasesResolvedRegional->count + $totalCasesResolvedPSOther->count));		
 
 // 		SUMMARY
 // INFRACTION
