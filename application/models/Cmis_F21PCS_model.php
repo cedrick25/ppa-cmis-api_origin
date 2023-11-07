@@ -205,7 +205,7 @@ class Cmis_F21PCS_model extends CI_Model
 		$totalCasesResolvedPSOther = (object)array("count"=> ($totalCasesResolvedOtherParol->count + $totalCasesResolvedOtherPardon->count ));		
 
 
-		$totalCasesResolvedBoard = (object)array("count"=> ( $totalCasesResolvedFinal->count + $totalCasesResolvedArrest->count + $totalCasesResolvedDeath->count));
+		$totalCasesResolvedBoard = (object)array("count"=> ( $totalCasesResolvedFinal->count + $totalCasesResolvedArrest->count + $totalCasesResolvedDeath->count + $totalCasesResolvedPSOther->count));
 
 		/*New 2021-01-16*/
 		$payload->filter = Null; $payload->table = "F21T11_PAROL"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "OTHERS"; 
