@@ -2204,8 +2204,25 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 
 						$this->db->reconnect();
-						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
-						#echo $sql;
+						// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// #echo $sql;
+						// $query_insert = $this->db->query($sql);
+						
+						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+						$optionalFields = [
+						    'petitioner',
+						    'investigating_officer'
+						];
+
+						foreach ($optionalFields as $field) {
+						    if (isset($value[$field])) {
+						        $sql .= ", $field = '".$value[$field]."'";
+						    }
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
+						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
 
@@ -2868,7 +2885,24 @@
 						// echo "\nINSERTING ".$value['docket_no']."...";
 
 						$this->db->reconnect();
-						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// #echo $sql;
+						// $query_insert = $this->db->query($sql);
+						
+						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+						$optionalFields = [
+						    'petitioner',
+						    'investigating_officer'
+						];
+
+						foreach ($optionalFields as $field) {
+						    if (isset($value[$field])) {
+						        $sql .= ", $field = '".$value[$field]."'";
+						    }
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -3471,7 +3505,24 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 
 						$this->db->reconnect();
-						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// #echo $sql;
+						// $query_insert = $this->db->query($sql);
+						
+						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+						$optionalFields = [
+						    'petitioner',
+						    'investigating_officer'
+						];
+
+						foreach ($optionalFields as $field) {
+						    if (isset($value[$field])) {
+						        $sql .= ", $field = '".$value[$field]."'";
+						    }
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -6102,7 +6153,24 @@
 						echo "\nINSERTING ".$value['docket_no']."...";
 
 						$this->db->reconnect();
-						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+						// #echo $sql;
+						// $query_insert = $this->db->query($sql);
+						
+						$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+						$optionalFields = [
+						    'petitioner',
+						    'investigating_officer'
+						];
+
+						foreach ($optionalFields as $field) {
+						    if (isset($value[$field])) {
+						        $sql .= ", $field = '".$value[$field]."'";
+						    }
+						}
+
+						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
@@ -7670,7 +7738,24 @@
 							}else{
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// #echo $sql;
+								// $query_insert = $this->db->query($sql);
+								
+								$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+								$optionalFields = [
+								    'petitioner',
+								    'investigating_officer'
+								];
+
+								foreach ($optionalFields as $field) {
+								    if (isset($value[$field])) {
+								        $sql .= ", $field = '".$value[$field]."'";
+								    }
+								}
+
+								$sql .= ", status = 1, source = 2, created_by = 0";
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
@@ -9103,7 +9188,25 @@
 							}else{
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
-								$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								
+								// $sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
+								// #echo $sql;
+								// $query_insert = $this->db->query($sql);
+								
+								$sql = "INSERT INTO F5T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', date_rcv = '".$value['date_rcv']."'";
+
+								$optionalFields = [
+								    'petitioner',
+								    'investigating_officer'
+								];
+
+								foreach ($optionalFields as $field) {
+								    if (isset($value[$field])) {
+								        $sql .= ", $field = '".$value[$field]."'";
+								    }
+								}
+
+								$sql .= ", status = 1, source = 2, created_by = 0";
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
 
