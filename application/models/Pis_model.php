@@ -26,6 +26,7 @@
 				//@TODO
 				$pis_db->reconnect();
 				$pis_db->where('REGION', $data1->REGION );
+				$pis_db->where('ENABLED', 1);
 				$sql = $pis_db->get('field_office');	
 
 
