@@ -98,16 +98,16 @@ class Cmis_F21PCS_model extends CI_Model
 		$totalCasesResolvedGranted = (object)array("count"=> ($totalCasesResolvedGrantedParole->count + $totalCasesResolvedGrantedComm->count + $totalCasesResolvedGrantedCond->count + $totalCasesResolvedGrantedAbs->count));		
 
 
-		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "PAROLE - Denied"; 
+		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "PAROLE - Denial"; 
 		$totalCasesResolvedDeniedParole = json_decode($this->callProcedure1($payload));
 		
-		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "COMMUTATION - Denied"; 
+		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "COMMUTATION - Denial"; 
 		$totalCasesResolvedDeniedComm = json_decode($this->callProcedure1($payload));
 
-		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "CONDITIONAL - Denied"; 
+		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "CONDITIONAL - Denial"; 
 		$totalCasesResolvedDeniedCond = json_decode($this->callProcedure1($payload));
 
-		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "ABSOLUTE - Denied"; 
+		$payload->table = "F21T4"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "ABSOLUTE - Denial"; 
 		$totalCasesResolvedDeniedAbs = json_decode($this->callProcedure1($payload));
 
 		$totalCasesResolvedDenied = (object)array("count"=> ($totalCasesResolvedDeniedParole->count + $totalCasesResolvedDeniedComm->count + $totalCasesResolvedDeniedCond->count + $totalCasesResolvedDeniedAbs->count));		
