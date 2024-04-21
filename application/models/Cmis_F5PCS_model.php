@@ -178,6 +178,34 @@ class Cmis_F5PCS_model extends CI_Model
 		$response['notactedInvestigationJICLTotal'] = $getTotalNotActedJICLInvestigation;
 		$response['notactedInvestigationTotal'] = $getTotalNotActedInvestigation;
 
+		//II.E, II.E.1, II.E.2 start
+		$ii_e_1_adult =  $this->getTotalInvestigationCasesCourtIssued($payload,"PI","Recall") + $this->getTotalInvestigationCasesCourtIssued($payload,"RPI","Recall") + $this->getTotalInvestigationCasesCourtIssued($payload,"TPI","Recall");
+		$ii_e_1_JICL = $this->getTotalInvestigationCasesCourtIssued($payload,"JPI","Recall") + $this->getTotalInvestigationCasesCourtIssued($payload,"JRPI","Recall") + $this->getTotalInvestigationCasesCourtIssued($payload,"JTPI","Recall");
+		$ii_e_1_total = $ii_e_1_adult + $ii_e_1_JICL;
+
+
+		$response['ii_e_1_adult'] = $ii_e_1_adult;
+		$response['ii_e_1_JICL'] = $ii_e_1_JICL;
+		$response['ii_e_1_total'] = $ii_e_1_total;
+
+
+		$ii_e_2_adult =   $this->getTotalInvestigationCasesCourtIssued($payload,"PI","Warrant") + $this->getTotalInvestigationCasesCourtIssued($payload,"RPI","Warrant") + $this->getTotalInvestigationCasesCourtIssued($payload,"TPI","Warrant");
+		$ii_e_2_JICL =  $this->getTotalInvestigationCasesCourtIssued($payload,"JPI","Warrant ") + $this->getTotalInvestigationCasesCourtIssued($payload,"JRPI","Warrant ") + $this->getTotalInvestigationCasesCourtIssued($payload,"JTPI","Warrant");
+		$ii_e_2_total = $ii_e_2_adult + $ii_e_2_JICL;
+
+		$response['ii_e_2_adult'] = $ii_e_2_adult;
+		$response['ii_e_2_JICL'] = $ii_e_2_JICL;
+		$response['ii_e_2_total'] = $ii_e_2_total;
+
+		$total_adult  =  $ii_e_1_adult + $ii_e_2_adult;
+		$total_JICL =  $ii_e_1_JICL + $ii_e_2_JICL;
+		$total_adult_JICL = $total_adult + $total_JICL;
+
+		$response['total_adult'] = $total_adult;
+		$response['total_JICL'] = $total_JICL;
+		$response['total_adult_JICL'] = $total_adult_JICL;
+		//II.E, II.E.1, II.E.2 end
+
 		$response['activeInvestigationTotalJICL'] = $response['CaseHandledJICL'] - $response['actedInvestigationJICL'] - $response['notactedInvestigationJICLTotal'];
 		$response['activeInvestigationTotalADULT'] = $response['CaseHandledAdult'] - $response['actedInvestigationAdult'] - $response['notactedInvestigationAdultTotal'];
 		$response['activeInvestigationTotalTOTAL'] = $response['activeInvestigationTotalJICL'] +  $response['activeInvestigationTotalADULT'];
@@ -1488,6 +1516,30 @@ class Cmis_F5PCS_model extends CI_Model
 		$this->db->where('status',1);
 		$this->db->order_by("docket_no","asc");
 		$sql = $this->db->get('F5T2_NOTACTED');
+		$response = $sql->num_rows();
+		return $response;
+	}
+	
+	public function getTotalInvestigationCasesCourtIssued($payload,$option,$decision){
+		if(isset($payload->field_office) && $payload->field_office != null && $payload->field_office != "ALL")
+		{	
+			$this->db->where('field_office', $payload->field_office);
+		}
+		if(isset($payload->Y_M) && !empty($payload->Y_M))
+		{
+			$this->db->where('Y_M', $payload->Y_M);
+		}
+	
+		
+		
+		if($decision != ""){
+			$this->db->LIKE('disposed_decision', $decision);
+		}	
+
+		$this->db->LIKE('docket_no', $option, 'after');
+		$this->db->where('status',1);
+		$this->db->order_by("docket_no","asc");
+		$sql = $this->db->get('F5T4');
 		$response = $sql->num_rows();
 		return $response;
 	}
