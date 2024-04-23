@@ -2848,19 +2848,19 @@ class Cmis_Reports_model extends CI_Model
 
 
 									$payload->filter = ""; $payload->table = "F5T1"; $payload->field_office = $value1->NAME; $payload->filter_val="";$payload->filter_field="";
-									$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+									$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 									$totalCarryOver += $carryOver->count;
 
-									$payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Grant"; $payload->field_office = $value1->NAME;
+									$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Grant"; $payload->field_office = $value1->NAME;
 									$grant_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 									$totalGrant += $grant_upon->count;
 
-									$payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
+									$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
 									$denial_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 									$totalDenial += $denial_upon->count;
 									$totalPSIR += $totalGrant + $totalDenial;
 
-									$payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
+									$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 									$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 									$totalManifest += $upon->count;
 
@@ -3119,7 +3119,7 @@ class Cmis_Reports_model extends CI_Model
 							$totalActive = 0;
 
 							$payload->filter = ""; $payload->table = "F5T5"; $payload->field_office = $value1->NAME;
-							$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+							$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 							$totalCarryOver += $carryOver->count;
 
 							$payload->filter = ""; $payload->table = "F5T6_RCV"; $payload->field_office = $value1->NAME;
@@ -3127,16 +3127,6 @@ class Cmis_Reports_model extends CI_Model
 							$totalRcv += $rcv->count;
 
 							$totalInvestigation = $totalCarryOver + $totalRcv;
-
-							$totalJPCIRcv = 0;
-							$payload->filter = "JCPI"; $payload->table = "F5T6_RCV"; $payload->field_office = $value1->NAME;
-							$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-							$totalJPCIRcv += $rcv->count;
-
-							$totalCPIRcv = 0;
-							$payload->filter = "CPI"; $payload->table = "F5T6_RCV"; $payload->field_office = $value1->NAME;
-							$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-							$totalCPIRcv += $rcv->count;
 
 							$totalJPCICmpltd = 0;
 							$payload->filter = "JCPI"; $payload->table = "F5T6_CMPLTD"; $payload->field_office = $value1->NAME;
@@ -3148,14 +3138,7 @@ class Cmis_Reports_model extends CI_Model
 							$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 							$totalCPICmpltd += $rcv->count;
 							
-							$totalRcvPartial = $totalJPCIRcv + $totalCPIRcv;
 							$totalCmpltdPartial = $totalJPCICmpltd + $totalCPICmpltd;
-							$totalPartial = $totalRcvPartial - $totalCmpltdPartial;
-
-							$totalFBCIRcv = 0;
-							$payload->filter = "FBCI"; $payload->table = "F5T6_RCV"; $payload->field_office = $value1->NAME;
-							$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-							$totalFBCIRcv += $rcv->count;
 
 							$totalFBCICmpltd = 0;
 							$payload->filter = "FBCI"; $payload->table = "F5T6_CMPLTD"; $payload->field_office = $value1->NAME;
@@ -3165,8 +3148,8 @@ class Cmis_Reports_model extends CI_Model
 							$totalFullBlown = 0;
 							$totalD = 0;
 
-							$totalFullBlown = $totalFBCIRcv - $totalFBCICmpltd;
-							$totalD = $totalPartial + $totalFullBlown;
+							$totalFullBlown = $totalFBCICmpltd;
+							$totalD = $totalCmpltdPartial + $totalFullBlown;
 
 							$totalActive = $totalInvestigation - $totalD;
 
@@ -3174,7 +3157,7 @@ class Cmis_Reports_model extends CI_Model
 											'carryOver' => $totalCarryOver,
 											'totalRcv' => $totalRcv,
 											'totalInvestigation' => $totalInvestigation,
-											'totalPartial' => $totalPartial,
+											'totalCmpltdPartial' => $totalCmpltdPartial,
 											'totalFullBlown' => $totalFullBlown,
 											'totalD' => $totalD,
 											'totalActive' => $totalActive,
