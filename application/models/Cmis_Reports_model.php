@@ -2553,19 +2553,76 @@ class Cmis_Reports_model extends CI_Model
 							foreach ($fieldOffice->payload as $key1 => $value1){
 								$totalCarryOver = 0;
 								$totalRcv = 0;
-								$totalJPRIRPI = 0;
+								$reInvRef = 0;
 								$totalRcvJRPI = 0;
 								$totalRcvRPI = 0;
 								$total = 0;
 								$totalInvestigation = 0;
 
+								$JCIL_a = 0;
+								$JCIL_b = 0;
+								$JCIL_total = 0;
+								$adult_a = 0;
+								$adult_b = 0;
+								$adult_total = 0;
+								$civil_total = 0;
+
 								$payload->filter = ""; $payload->table = "F5T1"; $payload->field_office = $value1->NAME;
 								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOver += $carryOver->count;
 
-								$payload->filter = ""; $payload->table = "F5T2_RCV"; $payload->field_office = $value1->NAME;
-								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalRcv += $rcv->count;
+								// civil JICL
+								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationJICLCivilNewJPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$JCIL_a += $rcvInvestigationJICLCivilNewJPI->count;
+								
+								$payload->filter = "JTPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationJICLCivilNewJTPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$JCIL_b += $rcvInvestigationJICLCivilNewJTPI->count;
+								
+								$JCIL_total = $JCIL_a + $JCIL_b;
+
+								// civil Adult
+								$payload->filter = "PI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationAdultCivilNewJPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$adult_a += $rcvInvestigationAdultCivilNewJPI->count;
+								
+								$payload->filter = "TPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1";
+								$rcvInvestigationAdultCivilNewJTPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$adult_b += $rcvInvestigationAdultCivilNewJTPI->count;
+
+								$adult_total = $adult_a + $adult_b;
+								$civil_total = $JCIL_total + $adult_total;
+
+								$military_JCIL_a = 0;
+								$military_JCIL_b = 0;
+								$military_JCIL_total = 0;
+								$military_adult_a = 0;
+								$military_adult_b = 0;
+								$military_adult_total = 0;
+								$military_total = 0;
+								// military JICL
+								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$a = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_JCIL_a += $a->count;
+								
+								$payload->filter = "JTPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$b = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_JCIL_b += $b->count;
+								
+								$military_JCIL_total = $military_JCIL_a + $military_JCIL_b;
+
+								// military Adult
+								$payload->filter = "PI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "0"; 
+								$c = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_adult_a += $c->count;
+								
+								$payload->filter = "TPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "0";
+								$d = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_adult_b += $d->count;
+
+								$military_adult_total = $military_adult_a + $military_adult_b;
+								$military_total = $military_JCIL_total + $military_adult_total;
 
 								$payload->filter = "JRPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; 
 								$rcvJRPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
@@ -2575,14 +2632,15 @@ class Cmis_Reports_model extends CI_Model
 								$rcvRPI= json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRcvRPI += $rcvRPI->count;
 
-								$totalJPRIRPI = $totalRcvJRPI + $totalRcvRPI;
-								$total = $totalRcv + $totalJPRIRPI;
+								$reInvRef = $totalRcvJRPI + $totalRcvRPI;
+								$total = $civil_total + $military_total + $reInvRef;
 								$totalInvestigation = $totalCarryOver + $total;
 
 								$data[] = array('FIELD' => $value1->NAME,
 										'carryOver' => $totalCarryOver,
-										'totalRcv' => $totalRcv,
-										'totalJPRIRPI' => $totalJPRIRPI,
+										'civil_total' => $civil_total,
+										'military_total' => $military_total,
+										'reInvRef' => $reInvRef,
 										'total' => $total,
 										'totalInvestigation' => $totalInvestigation,
 
