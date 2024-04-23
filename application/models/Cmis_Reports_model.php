@@ -3179,16 +3179,7 @@ class Cmis_Reports_model extends CI_Model
 							
 						$fieldOffice = json_decode($this->Pis_model->fetchFieldOfficeByRegion($payload));
 						if($fieldOffice->status == 'SUCCESS'){
-							foreach ($fieldOffice->payload as $key1 => $value1){									
-								$getTotalCarryAdultInvestigation = 0;
-								$getTotalCarryAdultInvestigationRpi = 0;
-								$getTotalCarryAdultInvestigationTpi = 0;
-								$getTotalCarryJICLInvestigation = 0;
-								$getTotalCarryJICLInvestigationJRPI = 0;
-								$getTotalCarryJICLInvestigationJTPI = 0;
-
-								$carryOverInvestigationAdult = 0;
-								$carryOverInvestigationJICL = 0;
+							foreach ($fieldOffice->payload as $key1 => $value1){
 								$carryOverInvestigationTotal = 0;
 								
 								$rcvInvestigationJICLMilNewJPI = 0;
@@ -3262,32 +3253,11 @@ class Cmis_Reports_model extends CI_Model
 
 								$totalInvRefref = 0;
 
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryAdultInvestigation    = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"PI"));
+								$payload->filter = ""; $payload->table = "F5T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
+								$carryOverInvestigationTotal += $carryOver->count;
 
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryAdultInvestigationRpi = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"RPI"));
-
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryAdultInvestigationTpi = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"TPI"));
-
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryJICLInvestigation     = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"JPI"));
-
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryJICLInvestigationJRPI = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"JRPI"));
-
-								$payload->field_office = $value1->NAME;
-								$getTotalCarryJICLInvestigationJTPI = json_decode($this->Cmis_F5PCS_model->getTotalCarryInvestigation($payload,"JTPI"));
-
-								$carryOverInvestigationAdult = $getTotalCarryAdultInvestigation + $getTotalCarryAdultInvestigationRpi + $getTotalCarryAdultInvestigationTpi;
-
-								$carryOverInvestigationJICL = $getTotalCarryJICLInvestigation + $getTotalCarryJICLInvestigationJRPI + $getTotalCarryJICLInvestigationJTPI;
-
-								$carryOverInvestigationTotal = $carryOverInvestigationAdult + $carryOverInvestigationJICL;
-								/////////
-
-								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1";$payload->field_office = $value1->NAME; 
+								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1";$payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$rcvInvestigationJICLCivilNewJPI += $upon->count;
 								
@@ -3350,69 +3320,35 @@ class Cmis_Reports_model extends CI_Model
 								$totalHandled = $carryOverInvestigationTotal + $rcvInvestigationTotal;
 								///////////////////
 
-								$payload->field_office = $value1->NAME;
-								$getTotalActedAdultInvestigationTransfer = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","",0,1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","",0,1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","",0,1));
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME;
+								$grant_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$actedInvestigationTotalGrant += $grant_upon->count;
 
-								$payload->field_office = $value1->NAME;
-								$getTotalActedJICLInvestigationTransfer =  json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","",0,1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","",0,1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","",0,1));
-								$actedInvestigationAdultTransfer = $getTotalActedAdultInvestigationTransfer;
-								$actedInvestigationJICLTransfer  = $getTotalActedJICLInvestigationTransfer;
-								$actedInvestigationTotalTransfer = $getTotalActedAdultInvestigationTransfer + $getTotalActedJICLInvestigationTransfer;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
+								$denial_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$actedInvestigationTotalDenial += $denial_upon->count;
 
-								////////////////////////
-								$payload->field_office = $value1->NAME;
-								$getTotalNotActedAdultInvestigationRecalled =  json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","Recall")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","Recall")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","Recall"));
-								$payload->field_office = $value1->NAME;
-								$getTotalNotActedJICLInvestigationRecalled = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","Recall")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","Recall")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","Recall"));
-								$getTotalNotActedTotalInvestigationRecalled = $getTotalNotActedAdultInvestigationRecalled + $getTotalNotActedJICLInvestigationRecalled;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
+								$manifest_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$actedInvestigationTotalManifest += $manifest_upon->count;
 
-								$notactedAdultInvestigationRecalled = $getTotalNotActedAdultInvestigationRecalled;
-								$notactedJICLInvestigationRecalled = $getTotalNotActedJICLInvestigationRecalled;
-								$notactedTotalInvestigationRecalled = $getTotalNotActedTotalInvestigationRecalled;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "transfer_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
+								$transfer_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$actedInvestigationTotalTransfer += $transfer_upon->count;
 
+								$payload->filter = ""; $payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Recall"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$notactedTotalInvestigationRecalled += $upon->count;
 
-								$payload->field_office = $value1->NAME;
-								$getTotalNotActedAdultInvestigationWarrant =  json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","Warrant"))  + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","Warrant")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","Warrant"));
+								$payload->filter = ""; $payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Warrant"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$notactedTotalInvestigationWarrant += $upon->count;
 
-								$payload->field_office = $value1->NAME;
-								$getTotalNotActedJICLInvestigationWarrant = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","Warrant "))  + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","Warrant ")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","Warrant"));
-								$getTotalNotActedTotalInvestigationWarrant = $getTotalNotActedAdultInvestigationWarrant + $getTotalNotActedJICLInvestigationWarrant;
-
-								$notactedAdultInvestigationWarrant = $getTotalNotActedAdultInvestigationWarrant;
-								$notactedJICLInvestigationWarrant  = $getTotalNotActedJICLInvestigationWarrant;
-								$notactedTotalInvestigationWarrant = $getTotalNotActedTotalInvestigationWarrant;
-								$totalRef = $notactedTotalInvestigationRecalled + $notactedTotalInvestigationWarrant;
-
-								/////////////
-								
-								$getTotalActedAdultInvestigationGrant = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","FOR GRANT")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","FOR GRANT")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","FOR GRANT"));
-								$getTotalActedAdultInvestigationDenial = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","FOR DENIAL")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","FOR DENIAL")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","FOR DENIAL"));
-
-								$actedInvestigationAdultGrant = $getTotalActedAdultInvestigationGrant;
-								$actedInvestigationAdultDenial = $getTotalActedAdultInvestigationDenial;
-
-								$getTotalActedJICLInvestigationGrant = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","FOR GRANT")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","FOR GRANT")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","FOR GRANT"));
-								$getTotalActedJICLInvestigationDenial = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","FOR DENIAL")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","FOR DENIAL")) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","FOR DENIAL"));
-
-								$actedInvestigationJICLGrant = $getTotalActedJICLInvestigationGrant;
-								$actedInvestigationJICLDenial = $getTotalActedJICLInvestigationDenial;
-
-								$actedInvestigationTotalGrant = $getTotalActedAdultInvestigationGrant  + $getTotalActedJICLInvestigationGrant;
-								$actedInvestigationTotalDenial = $getTotalActedAdultInvestigationDenial  + $getTotalActedJICLInvestigationDenial;
-								
-
-								$getTotalActedAdultInvestigationManifest = json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"PI","",1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"RPI","",1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"TPI","",1));
-								$getTotalActedJICLInvestigationManifest =  json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JPI","",1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JRPI","",1)) + json_decode($this->Cmis_F5PCS_model->getTotalReferralsActedReport($payload,"JTPI","",1));
-
-								$actedInvestigationAdultManifest = $getTotalActedAdultInvestigationManifest;
-								$actedInvestigationJICLManifest = $getTotalActedJICLInvestigationManifest;
-								$actedInvestigationTotalManifest = $getTotalActedAdultInvestigationManifest + $getTotalActedJICLInvestigationManifest;
 								$totalInvRefref = $actedInvestigationTotalGrant +
 											$actedInvestigationTotalDenial +
-											$actedInvestigationTotalTransfer +
-											$actedInvestigationTotalManifest 
+											$actedInvestigationTotalManifest +
+											$actedInvestigationTotalTransfer
 											;
-
 								$data[] = array('FIELD' => $value1->NAME,
 												'carryOverInvestigationTotal' => $carryOverInvestigationTotal,
 												'rcvInvestigationTotal' => $rcvInvestigationTotal,
