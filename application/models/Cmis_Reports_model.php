@@ -2673,57 +2673,115 @@ class Cmis_Reports_model extends CI_Model
 								$totalWarrant = 0;
 								$totalNotActed = 0;
 
+								$totalActive = 0;
+
 								$totalCarryOver = 0;
 								$totalRcv = 0;
-								$totalJPRIRPI = 0;
+								$reInvRef = 0;
 								$totalRcvJRPI = 0;
 								$totalRcvRPI = 0;
 								$total = 0;
 								$totalInvestigation = 0;
-								$totalActive = 0;
+
+								$JCIL_a = 0;
+								$JCIL_b = 0;
+								$JCIL_total = 0;
+								$adult_a = 0;
+								$adult_b = 0;
+								$adult_total = 0;
+								$civil_total = 0;
 
 								$payload->filter = ""; $payload->table = "F5T1"; $payload->field_office = $value1->NAME; $payload->filter_val="";$payload->filter_field="";
-								$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOver += $carryOver->count;
 
-								$payload->filter = ""; $payload->table = "F5T2_RCV"; $payload->field_office = $value1->NAME; $payload->filter_val="";$payload->filter_field="";
-								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalRcv += $rcv->count;
+								// civil JICL
+								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationJICLCivilNewJPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$JCIL_a += $rcvInvestigationJICLCivilNewJPI->count;
+								
+								$payload->filter = "JTPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationJICLCivilNewJTPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$JCIL_b += $rcvInvestigationJICLCivilNewJTPI->count;
+								
+								$JCIL_total = $JCIL_a + $JCIL_b;
 
-								$payload->filter = "JRPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->filter_val="";$payload->filter_field="";
+								// civil Adult
+								$payload->filter = "PI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$rcvInvestigationAdultCivilNewJPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$adult_a += $rcvInvestigationAdultCivilNewJPI->count;
+								
+								$payload->filter = "TPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1";
+								$rcvInvestigationAdultCivilNewJTPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$adult_b += $rcvInvestigationAdultCivilNewJTPI->count;
+
+								$adult_total = $adult_a + $adult_b;
+								$civil_total = $JCIL_total + $adult_total;
+
+								$military_JCIL_a = 0;
+								$military_JCIL_b = 0;
+								$military_JCIL_total = 0;
+								$military_adult_a = 0;
+								$military_adult_b = 0;
+								$military_adult_total = 0;
+								$military_total = 0;
+								// military JICL
+								$payload->filter = "JPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$a = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_JCIL_a += $a->count;
+								
+								$payload->filter = "JTPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "1"; 
+								$b = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_JCIL_b += $b->count;
+								
+								$military_JCIL_total = $military_JCIL_a + $military_JCIL_b;
+
+								// military Adult
+								$payload->filter = "PI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "0"; 
+								$c = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_adult_a += $c->count;
+								
+								$payload->filter = "TPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = "is_civil"; $payload->filter_val = "0";
+								$d = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$military_adult_b += $d->count;
+
+								$military_adult_total = $military_adult_a + $military_adult_b;
+								$military_total = $military_JCIL_total + $military_adult_total;
+
+								$payload->filter = "JRPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; 
 								$rcvJRPI = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRcvJRPI += $rcvJRPI->count;
 
-								$payload->filter = "RPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->filter_val="";$payload->filter_field=""; 
+								$payload->filter = "RPI"; $payload->table = "F5T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; 
 								$rcvRPI= json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRcvRPI += $rcvRPI->count;
 
-								$totalJPRIRPI = $totalRcvJRPI + $totalRcvRPI;
-								$total = $totalRcv + $totalJPRIRPI;
+								$reInvRef = $totalRcvJRPI + $totalRcvRPI;
+								$total = $civil_total + $military_total + $reInvRef;
 								$totalInvestigation = $totalCarryOver + $total;
 
 								#echo $this->Cmis_F5T2_model->fetchF5T2_RCV_ByYM($payload);
-								$payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Grant"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME;
 								$grant_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalGrant += $grant_upon->count;
 
-								$payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
 								$denial_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalDenial += $denial_upon->count;
 
-								$payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 								$manifest_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalManifest += $manifest_upon->count;
 
-								$payload->table = "F5T2_ACTED"; $payload->filter_field = "transfer_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "transfer_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 								$transfer_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalTransfer += $transfer_upon->count;
 
-								$payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Recall"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Recall"; $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRecall += $upon->count;
 
-								$payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Warrant"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T2_NOTACTED"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Warrant"; $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalWarrant += $upon->count;
 
