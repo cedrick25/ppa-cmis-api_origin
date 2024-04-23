@@ -1519,7 +1519,7 @@ class Cmis_F5PCS_model extends CI_Model
 		$response = $sql->num_rows();
 		return $response;
 	}
-	
+
 	public function getTotalInvestigationCasesCourtIssued($payload,$option,$decision){
 		if(isset($payload->field_office) && $payload->field_office != null && $payload->field_office != "ALL")
 		{	
@@ -1602,6 +1602,61 @@ class Cmis_F5PCS_model extends CI_Model
 		}
 	}
 
+	public function carryOver($payload){
+		#print_r($payload);
+		$field_office = "";
+		$start_date = "";
+		$end_date = "";
+		$table = "";
+		$filter_field = "";
+		$filter_val = "";
+		if(isset($payload->field_office)){
+			$field_office = $payload->field_office;
+		}
+		if(isset($payload->Y_M)){
+			$start_date = $payload->Y_M;
+			$end_date = $payload->Y_M;
+		}
+		if(isset($payload->END_Y_M)){
+			$end_date = $payload->END_Y_M;	
+		}
+		if(isset($payload->filter)){
+			$filter = $payload->filter;
+		}
+		if(isset($payload->table)){
+			$table = $payload->table;
+		}
+		if(isset($payload->filter_field)){
+			$filter_field = $payload->filter_field;
+		}
+
+		if(isset($payload->filter_val)){
+			$filter_val = $payload->filter_val;
+		}
+		#print_r($payload);
+
+	    $query = $this->db->query("CALL CarryOver('".$start_date."','".$start_date."','".$field_office."','".$filter."','".$table."','".$filter_field."','".$filter_val."')");
+
+		if($query){
+			if($query->num_rows() > 0){
+				$data = $query->row();
+					$response = $data;
+					$query->next_result(); 
+					$query->free_result(); 
+				return json_encode($response);
+			}else{
+					$response = array('status' => 'ERROR',
+						  'message' => 'Fail Retrieving Data');
+				return json_encode($response);
+		
+			}
+		}else{
+				$response = array('status' => 'ERROR',
+								  'message' => 'ERROR FETCHING RECORDS',
+								  'error_code' => mysqli_error($this->con));
+				return json_encode($response);
+		}
+	}
 
 
 	public function callProcedure1AA($payload){

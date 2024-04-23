@@ -2560,7 +2560,7 @@ class Cmis_Reports_model extends CI_Model
 								$totalInvestigation = 0;
 
 								$payload->filter = ""; $payload->table = "F5T1"; $payload->field_office = $value1->NAME;
-								$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOver += $carryOver->count;
 
 								$payload->filter = ""; $payload->table = "F5T2_RCV"; $payload->field_office = $value1->NAME;
