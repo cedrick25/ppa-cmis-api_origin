@@ -507,25 +507,25 @@ class Cmis_F5PCS_model extends CI_Model
 		$response['totalActiveCPITotal'] = (object)array("count"=> ($response['totalHandledCPITotal']->count - $response['totalCmpltdCPITotal']->count));
 		
 
-		$payload->filter = "JPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "JPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvJICLJPS'] = json_decode($this->callProcedure1($payload));
 
-		$payload->filter = "JTPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "JTPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvJICLJTPS'] = json_decode($this->callProcedure1($payload));
 
-		$payload->filter = "JRPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "JRPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvJICLJPRS'] = json_decode($this->callProcedure1($payload));
 
 		$response['totalCarryOverSupvJICL'] = (object)array("count"=> ($response['totalCarryOverSupvJICLJPS']->count + $response['totalCarryOverSupvJICLJTPS']->count+ $response['totalCarryOverSupvJICLJPRS']->count));
 
 
-		$payload->filter = "PS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "PS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvAdultPS'] = json_decode($this->callProcedure1($payload));
 
-		$payload->filter = "RPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "RPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvAdultRPS'] = json_decode($this->callProcedure1($payload));
 
-		$payload->filter = "TPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; 
+		$payload->filter = "TPS"; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = "";
 		$response['totalCarryOverSupvAdultTPS'] = json_decode($this->callProcedure1($payload));
 
 
@@ -1282,25 +1282,25 @@ class Cmis_F5PCS_model extends CI_Model
 
 		$payload->filter = "J"; $payload->table = "F5T10"; $payload->filter_field = ""; $payload->filter_val = ""; 
 		$response['carryOverDispSupvJICL'] = json_decode($this->callProcedure1($payload));
+
 		$payload->filter = "TPS"; $payload->table = "F5T10"; $payload->filter_field = ""; $payload->filter_val = ""; 
 		$response['carryOverDispSupvAdultTPS'] = json_decode($this->callProcedure1($payload));
 		$payload->filter = "PS"; $payload->table = "F5T10"; $payload->filter_field = ""; $payload->filter_val = ""; 
 		$response['carryOverDispSupvAdultPS'] = json_decode($this->callProcedure1($payload));
-
 		$payload->filter = "RPS"; $payload->table = "F5T10"; $payload->filter_field = ""; $payload->filter_val = ""; 
 		$response['carryOverDispSupvAdultRPS'] = json_decode($this->callProcedure1($payload));
+
 		$response['carryOverDispSupvAdult'] = (object)array("count"=> ($response['carryOverDispSupvAdultTPS']->count + $response['carryOverDispSupvAdultPS']->count + $response['carryOverDispSupvAdultRPS']->count));
 
 		$response['carryOverDispSupvTotal'] = (object)array("count"=> ($response['carryOverDispSupvJICL']->count + $response['carryOverDispSupvAdult']->count));
 		
 		$payload->filter = "J"; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Term"; 
 		$response['carryOverDispTermSupvJICL'] = json_decode($this->callProcedure1($payload));
+		
 		$payload->filter = "PS"; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Term"; 
 		$response['carryOverDispTermSupvAdultPS'] = json_decode($this->callProcedure1($payload));
-
 		$payload->filter = "RPS"; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Term"; 
 		$response['carryOverDispTermSupvAdultRPS'] = json_decode($this->callProcedure1($payload));
-
 		$payload->filter = "TPS"; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Term"; 
 		$response['carryOverDispTermSupvAdultTPS'] = json_decode($this->callProcedure1($payload));
 

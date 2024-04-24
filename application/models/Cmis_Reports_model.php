@@ -3375,32 +3375,54 @@ class Cmis_Reports_model extends CI_Model
 				case 'f5_field_office_ps_f1_p1':
 						//var_dump($payload);
 						$fieldOffice = json_decode($this->Pis_model->fetchFieldOfficeByRegion($payload));
-
 						
 						if($fieldOffice->status == 'SUCCESS'){
 
 							foreach ($fieldOffice->payload as $key1 => $value1){
 								$totalCarryOver = 0;
-								$totalRcv = 0;
+								$b1 = 0;
+								$b2 = 0;
+								$b3 = 0;
+								$b4 = 0;
+								$b5 = 0;
+								$totalb = 0;
 								$totalInvestigation = 0;
-								$totalRcv2 = 0;
 
-								$payload->filter = ""; $payload->table = "F5T7"; $payload->field_office = $value1->NAME;
-								$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOver += $carryOver->count;
 
-
-								$payload->filter = ""; $payload->table = "F5T8"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = "referral_type"; $payload->filter_val = "Local"; $payload->field_office = $value1->NAME;
 								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalRcv += $rcv->count;
+								$b1 += $rcv->count;
 
-								$totalRcv2 = $totalRcv;
-								$totalInvestigation = $totalCarryOver + $totalRcv;
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = "referral_type"; $payload->filter_val = "Direct"; $payload->field_office = $value1->NAME;
+								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$b2 += $rcv->count;
+								
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = "referral_type"; $payload->filter_val = "Militar"; $payload->field_office = $value1->NAME;
+								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$b3 += $rcv->count;
+								
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = "referral_type"; $payload->filter_val = "Transfer From"; $payload->field_office = $value1->NAME;
+								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$b4 += $rcv->count;
+								
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = "referral_type"; $payload->filter_val = "Recon"; $payload->field_office = $value1->NAME;
+								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$b5 += $rcv->count;
+
+								$totalb = $b1 + $b2 + $b3 + $b4 + $b5;
+								$totalInvestigation = $totalCarryOver + $totalb;
 							
 								$data[] = array('FIELD' => $value1->NAME,
-										'carryOver' => $totalCarryOver,
-										'totalRcv' => $totalRcv,
-										'totalRcv2' => $totalRcv2,
+										'totalCarryOver' => $totalCarryOver,
+										'b1' => $b1,
+										'b2' => $b2,
+										'b3' => $b3,
+										'b4' => $b4,
+										'b5' => $b5,
+										'totalb' => $totalb,
 										'totalInvestigation' => $totalInvestigation,
 
 									);
@@ -3441,49 +3463,48 @@ class Cmis_Reports_model extends CI_Model
 								$totalDropped = 0;
 								$totalActive = 0;
 
-								$payload->filter_val = ""; $payload->filter_field = ""; $payload->filter = ""; $payload->table = "F5T7"; $payload->field_office = $value1->NAME;
-								$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T7"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$carryOver = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOver += $carryOver->count;
 
-
-								$payload->filter_val = ""; $payload->filter_field = ""; $payload->filter = ""; $payload->table = "F5T8"; $payload->field_office = $value1->NAME;
+								$payload->filter = ""; $payload->table = "F5T8"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
 								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRcv += $rcv->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Full Term"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Full Term"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalFullTerm += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Early"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Early"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalEarlyTerm += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Died"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Died"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalDiedTerm += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Abs"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Abs"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalAbs += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Comm"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Comm"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalComm += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Vio"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Vio"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalVio += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revocation - Other"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revocation - Other"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalOther += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalTransfer += $upon->count;
 
-								$payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T11"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalOthers += $upon->count;
 
 								$totalTerm = $totalFullTerm + $totalEarlyTerm + $totalDiedTerm;
@@ -3521,13 +3542,10 @@ class Cmis_Reports_model extends CI_Model
 					break;
 
 			case 'f5_field_office_ps_f1_p3':
-						//var_dump($payload);
 						
 						$fieldOffice = json_decode($this->Pis_model->fetchFieldOfficeByRegion($payload));
 
-							
 						if($fieldOffice->status == 'SUCCESS'){
-								
 								
 							foreach ($fieldOffice->payload as $key1 => $value1){
 								$totalFullTerm = 0;
@@ -3540,8 +3558,6 @@ class Cmis_Reports_model extends CI_Model
 								$totalOther = 0;
 								$totalRevoc = 0;
 
-
-								
 								$totalTerm = 0;
 
 								$totalTransfer = 0;
@@ -3550,44 +3566,44 @@ class Cmis_Reports_model extends CI_Model
 								$totalExt = 0;
 								
 						
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Full Term"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Full Term"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalFullTerm += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Early"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Early"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalEarlyTerm += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Died"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Died"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalDiedTerm += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Abs"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Abs"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalAbs += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Comm"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Comm"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalComm += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Vio"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Vio"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalVio += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revocation - Other"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revocation - Other"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalOther += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalTransfer += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalExt += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalOthers += $upon->count;
 
 								$totalTerm = $totalFullTerm + $totalEarlyTerm + $totalDiedTerm;
@@ -3595,7 +3611,7 @@ class Cmis_Reports_model extends CI_Model
 								
 								$totalRevoc = $totalAbs + $totalComm + $totalVio + $totalOther;
 
-								$totalDropped = $totalTerm + $totalRevoc + $totalTransfer + $totalOthers;
+								$totalDropped = $totalTerm + $totalRevoc + $totalExt + $totalTransfer + $totalOthers;
 								
 								$data[] = array('FIELD' => $value1->NAME,
 										'totalFullTerm' => $totalFullTerm,
@@ -3650,49 +3666,48 @@ class Cmis_Reports_model extends CI_Model
 								// (C)
 								$totalCasesBeActed = 0;
 
-
 								// (A) CARRY OVER
-								$payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Termina"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Termina"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryTerm += $upon->count;
 
-								$payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Revoc"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Revoc"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryRevoc += $upon->count;
 
-								$payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryExt += $upon->count;
 
-								$payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryTrans += $upon->count;
 
-								$payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T10"; $payload->filter_field = "submitted_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->carryOver($payload));
 								$totalCarryOth += $upon->count;
 
-								$totalCarryOver = 	$totalCarryTerm + $totalCarryRevoc + $totalCarryExt + $totalCarryExt + $totalCarryOth;
+								$totalCarryOver = 	$totalCarryTerm + $totalCarryRevoc + $totalCarryExt + $totalCarryTrans + $totalCarryOth;
 								
 								// (B) SUBMITTED TO COURT
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Term"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Term"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalTerm += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revoc"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Revoc"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalRevoc += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Extension"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalExt += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Others"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalOther += $upon->count;
 
-								$payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F5T9"; $payload->filter_field = "disposed_decision"; $payload->filter_val = "Transfer"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
 								$totalTrans += $upon->count;
 
 								$totalSubmitted = $totalTerm + $totalRevoc + $totalExt + $totalOther + $totalTrans;
