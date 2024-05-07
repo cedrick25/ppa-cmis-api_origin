@@ -3946,28 +3946,43 @@ class Cmis_Reports_model extends CI_Model
 								$totalCarryOver = 0;
 								
 								// (B)
-								$totalRcv = 0;
+								$IRRPenal = 0;
+								$IRRPrison = 0;
+								$IRRJails = 0;
+								$IRRTotal = 0;
 
 								// (C)
 								$totalCasesHandled = 0;
 								
 								// (A) CARRY OVER
-								$payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOver += $upon->count;
 
 								
 								// (B) COURTESY REFERRALS RECEIVED	
-								$payload->table = "F21T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$payload->table = "F21T2_RCV"; $payload->filter_field = "prison_type"; $payload->filter_val = "Penal";  $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
-								$totalRcv += $upon->count;
+								$IRRPenal += $upon->count;
+								
+								$payload->table = "F21T2_RCV"; $payload->filter_field = "prison_type"; $payload->filter_val = "Prison";  $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$IRRPrison += $upon->count;
+								
+								$payload->table = "F21T2_RCV"; $payload->filter_field = "prison_type"; $payload->filter_val = "Jail";  $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$IRRJails += $upon->count;
 
+								$IRRTotal = $IRRPenal + $IRRPrison + $IRRJails;
 								//( C)
-								$totalCasesHandled = $totalCarryOver + $totalRcv;
+								$totalCasesHandled = $totalCarryOver + $IRRTotal;
 
 								$data[] = array('FIELD' => $value1->NAME,
 												'totalCarryOver'=> $totalCarryOver,
-												'totalRcv'=> $totalRcv,
+												'IRRPenal'=> $IRRPenal,
+												'IRRPrison'=> $IRRPrison,
+												'IRRJails'=> $IRRJails,
+												'IRRTotal'=> $IRRTotal,
 												'totalCasesHandled'=> $totalCasesHandled
 									);
 
@@ -3990,25 +4005,11 @@ class Cmis_Reports_model extends CI_Model
 								$totalDenial = 0;
 								$commutationTotalGrant = 0;
 								$commutationTotalDenial = 0;
+								$conditionGrant = 0;
+								$conditionDenial = 0;
 								$absoluteTotalGrant = 0;
+								$absoluteTotalDenial = 0;
 								$totalppir = 0;
-
-								$totalCarryOver = 0;
-								$totalRcv = 0;
-								$totalInvestigation = 0;
-								$totalRcv2 = 0;
-
-
-								$payload->filter = ""; $payload->table = "F21T1"; $payload->field_office = $value1->NAME; $payload->filter_val="";$payload->filter_field="";
-								$carryOver = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalCarryOver += $carryOver->count;
-
-								$payload->filter = ""; $payload->table = "F21T2_RCV"; $payload->field_office = $value1->NAME;$payload->filter_val="";$payload->filter_field="";
-								$rcv = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalRcv += $rcv->count;
-
-								$totalRcv2 = $totalRcv;
-								$totalInvestigation = $totalCarryOver + $totalRcv;
 
 								///////
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Parole - For Granted"; $payload->field_office = $value1->NAME;
@@ -4027,19 +4028,33 @@ class Cmis_Reports_model extends CI_Model
 								$commutation_denial_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$commutationTotalDenial += $commutation_denial_upon->count;
 
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Granted"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionGrant += $upon->count;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionDenial += $upon->count;
+
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Granted"; $payload->field_office = $value1->NAME;
 								$absolute_grant_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$absoluteTotalGrant += $absolute_grant_upon->count;
 
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$absoluteTotalDenial += $upon->count;
 
-								$totalppir = $totalGrant + $totalDenial + $commutationTotalGrant + $commutationTotalDenial + $absoluteTotalGrant;
+
+								$totalppir = $totalGrant + $totalDenial + $commutationTotalGrant + $commutationTotalDenial + $absoluteTotalGrant + $absoluteTotalDenial + $conditionGrant + $conditionDenial;
 
 								$data[] = array('FIELD' => $value1->NAME,
 												'totalGrant'=> $totalGrant,
 												'totalDenial'=> $totalDenial,
 												'commutationTotalGrant' => $commutationTotalGrant,
 												'commutationTotalDenial'=> $commutationTotalDenial,
+												'conditionGrant'=> $conditionGrant,
+												'conditionDenial'=> $conditionDenial,
 												'absoluteTotalGrant'=> $absoluteTotalGrant,
+												'absoluteTotalDenial'=> $absoluteTotalDenial,
 												'totalppir'=> $totalppir,
 									);
 
@@ -4062,40 +4077,13 @@ class Cmis_Reports_model extends CI_Model
 						
 						foreach ($fieldOffice->payload as $key1 => $value1){
 
-							$totalCarryOver = 0;
-							
-							// (B)
-							$totalRcv = 0;
-
-							// (C)
-							$totalCasesHandled = 0;
-
-
 							// (D1)
 							$totalInvestigationReport = 0;
 							// (D2)
 							$totalTransfer = 0;
-							
 							$totalRefOthers = 0;
-
 							$totalActed = 0;
-
 							$totalActive = 0;
-
-							// (A) CARRY OVER
-							$payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = "";
-							$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
-							$totalCarryOver += $upon->count;
-
-							
-							// (B) COURTESY REFERRALS RECEIVED	
-							$payload->table = "F21T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-							$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
-							$totalRcv += $upon->count;
-
-							//( C)
-							$totalCasesHandled = $totalCarryOver + $totalRcv;
-
 
 							// (D1)
 							$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "-"; $payload->field_office = $value1->NAME;
@@ -4111,7 +4099,7 @@ class Cmis_Reports_model extends CI_Model
 							$upon = json_decode($this->Cmis_F21PCS_model->callProcedure2($payload));
 							$totalRefOthers += $upon->count;
 
-							$totalActed = $totalInvestigationReport  + $totalTransfer + $totalRefOthers;
+							$totalActed = $totalTransfer + $totalRefOthers;
 
 							$totalActive = $totalInvestigationReport - $totalActed;
 
@@ -4152,8 +4140,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalRefOthers = 0;
 
 								$totalReportSubmitted = 0;
-								$payload->table = "F21T3"; $payload->filter_field = ""; $payload->filter_val = "Pardon - For Denial"; $payload->field_office = $value1->NAME;
-								$grant_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T3"; $payload->filter_field = ""; $payload->filter_val = "Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$grant_upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingResolution += $grant_upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Parole - For Granted"; $payload->field_office = $value1->NAME;
@@ -4171,10 +4159,24 @@ class Cmis_Reports_model extends CI_Model
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Commutation - For Denial"; $payload->field_office = $value1->NAME;
 								$commutation_denial_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$commutationTotalDenial += $commutation_denial_upon->count;
+								$conditionalGrant = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Granted"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionalGrant += $upon->count;
+
+								$conditionalDenial = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionalDenial += $upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Granted"; $payload->field_office = $value1->NAME;
 								$absolute_grant_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$absoluteTotalGrant += $absolute_grant_upon->count;
+
+								$absoluteTotalDenial = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$absoluteTotalDenial += $upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Other"; $payload->additional_operator = "="; 
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure2($payload));
@@ -4182,13 +4184,16 @@ class Cmis_Reports_model extends CI_Model
 
 								$totalParole = $totalGrant + $totalDenial;
 								$totalCommutation = $commutationTotalGrant + $commutationTotalDenial;
-								$totalReportSubmitted = $totalParole + $totalCommutation + $absoluteTotalGrant + $totalRefOthers;
+								$totalConditional = $conditionalGrant + $conditionalDenial;
+								$totalabsolute = $absoluteTotalGrant + $absoluteTotalDenial;
+								$totalReportSubmitted = $totalParole + $totalCommutation + $totalConditional + $totalabsolute + $totalRefOthers;
 								$totalCasestobeActedUpon = $totalCarryOverPendingResolution + $totalReportSubmitted;
 								$data[] = array('FIELD' => $value1->NAME,
 												'totalCarryOverPendingResolution'=> $totalCarryOverPendingResolution,
 												'totalParole'=> $totalParole,
 												'totalCommutation'=> $totalCommutation,
-												'absoluteTotalGrant'=> $absoluteTotalGrant,
+												'totalConditional'=> $totalConditional,
+												'totalabsolute'=> $totalabsolute,
 												'totalRefOthers'=> $totalRefOthers,
 												'totalReportSubmitted'=> $totalReportSubmitted,
 												'totalCasestobeActedUpon'=> $totalCasestobeActedUpon,
@@ -4296,7 +4301,9 @@ class Cmis_Reports_model extends CI_Model
 
 								$totalCasesResolvedCount = $totalCasesResolvedGranted + $totalCasesResolvedDenied + $totalCasesResolvedCancelled + $totalCasesResolvedDied+ $totalCasesResolvedOther;	
 
+								//(A)
 								$totalCarryOverPendingResolution = 0;
+								// (B)
 								$totalGrant = 0;
 								$totalDenial = 0;
 								$totalParole = 0;
@@ -4307,8 +4314,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalRefOthers = 0;
 
 								$totalReportSubmitted = 0;
-								$payload->table = "F21T3"; $payload->filter_field = ""; $payload->filter_val = "Pardon - For Denial"; $payload->field_office = $value1->NAME;
-								$grant_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T3"; $payload->filter_field = ""; $payload->filter_val = "Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$grant_upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingResolution += $grant_upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Parole - For Granted"; $payload->field_office = $value1->NAME;
@@ -4326,10 +4333,24 @@ class Cmis_Reports_model extends CI_Model
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Commutation - For Denial"; $payload->field_office = $value1->NAME;
 								$commutation_denial_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$commutationTotalDenial += $commutation_denial_upon->count;
+								$conditionalGrant = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Granted"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionalGrant += $upon->count;
+
+								$conditionalDenial = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Conditional Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$conditionalDenial += $upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Granted"; $payload->field_office = $value1->NAME;
 								$absolute_grant_upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$absoluteTotalGrant += $absolute_grant_upon->count;
+
+								$absoluteTotalDenial = 0;
+								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Absolute Pardon - For Denial"; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$absoluteTotalDenial += $upon->count;
 
 								$payload->table = "F21T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Other"; $payload->additional_operator = "="; 
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure2($payload));
@@ -4337,10 +4358,12 @@ class Cmis_Reports_model extends CI_Model
 
 								$totalParole = $totalGrant + $totalDenial;
 								$totalCommutation = $commutationTotalGrant + $commutationTotalDenial;
-								$totalReportSubmitted = $totalParole + $totalCommutation + $absoluteTotalGrant + $totalRefOthers;
+								$totalConditional = $conditionalGrant + $conditionalDenial;
+								$totalabsolute = $absoluteTotalGrant + $absoluteTotalDenial;
+								$totalReportSubmitted = $totalParole + $totalCommutation + $totalConditional + $totalabsolute + $totalRefOthers;
 								$totalCasestobeActedUpon = $totalCarryOverPendingResolution + $totalReportSubmitted;
 
-								$totalCasesPending = $totalCasesResolvedCount + $totalReportSubmitted;
+								$totalCasesPending = $totalCasestobeActedUpon - $totalCasesResolvedCount;
 								$data[] = array('FIELD' => $value1->NAME,
 												'totalCasesResolvedGrantedParole'=> $totalCasesResolvedGrantedParole,
 												'totalCasesResolvedGrantedComm'=> $totalCasesResolvedGrantedComm,
@@ -4388,8 +4411,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalCmpltdCI = 0;
 								$totalCountActiveCI = 0;
 
-								$payload->table = "F21T5"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T5"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverCI += $upon->count;
 
 								$payload->table = "F21T6_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; 
@@ -4437,8 +4460,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalRefCondGrantActed = 0;
 								$totalRefCondDeniedActed = 0;
 
-								$payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverInvestigation += $upon->count;
 
 								$payload->table = "F21T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
@@ -4515,8 +4538,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalInvRef = 0;
 								$disRate = 0;
 
-								$payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T1"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverInvestigation += $upon->count;
 
 								$payload->table = "F21T2_RCV"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
@@ -4575,8 +4598,13 @@ class Cmis_Reports_model extends CI_Model
 									$totalRefAbsDeniedActed ;
 								
 								$totalInvRef = $totalPPIR + $totalTransferredSubmitted + $totalRefOthers;
-
-								// $disRate = $totalInvRef / $totalPPIR;
+								if ($totalCasesHandled != 0) {
+								    $disRate = $totalInvRef / $totalCasesHandled;
+								} else {
+								    // Handle the case where $totalCasesHandled is zero
+								    // For example, you could set $disRate to some default value or display an error message
+								    $disRate = 0; // Setting to zero as an example, you can adjust as needed
+								}
 
 								$data[] = array('FIELD' => $value1->NAME,
 												'totalRefAbsGrantActed'=> $totalRefAbsGrantActed,
@@ -4585,7 +4613,7 @@ class Cmis_Reports_model extends CI_Model
 												'totalTransferredSubmitted'=> $totalTransferredSubmitted,
 												'totalRefOthers'=> $totalRefOthers,
 												'totalInvRef'=> $totalInvRef,
-												// 'disRate'=> $disRate,
+												'disRate'=> $disRate,
 									);
 
 							}
@@ -4614,12 +4642,12 @@ class Cmis_Reports_model extends CI_Model
 								$totalSupervCasesHandledPD = 0;
 								$totalSupervCasesHandled = 0;
 
-								$payload->table = "F21T7_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T7_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvParolIV += $upon->count;
 
-								$payload->table = "F21T7_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T7_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvPardonIV += $upon->count;
 
 								$totalCarryOverSupvIV = $totalCarryOverSupvParolIV + $totalCarryOverSupvPardonIV;		
@@ -4699,12 +4727,12 @@ class Cmis_Reports_model extends CI_Model
 								$totalCasesResolvedRegionalPardon = 0;
 								$totalCasesResolvedRegional = 0;
 
-								$payload->table = "F21T7_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T7_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvParolIV += $upon->count;
 
-								$payload->table = "F21T7_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T7_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvPardonIV += $upon->count;
 
 								$totalCarryOverSupvIV = $totalCarryOverSupvParolIV + $totalCarryOverSupvPardonIV;		
@@ -4967,12 +4995,12 @@ class Cmis_Reports_model extends CI_Model
 								$SupvActedOtherParol = 0;
 								$SupvActedOtherPardon = 0;
 
-								$payload->table = "F21T10_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME; 
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T10_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME; 
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingParol += $upon->count;
 
-								$payload->table = "F21T10_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T10_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingPardon += $upon->count;
 								$totalCarryOverPending = $totalCarryOverPendingParol + $totalCarryOverPendingPardon;	
 
@@ -5108,12 +5136,12 @@ class Cmis_Reports_model extends CI_Model
 								$totalCasesResolvedDeathPardon = 0;
 								$totalCasesResolvedOtherParol = 0;
 								$totalCasesResolvedOtherPardon = 0;
-								$payload->table = "F21T10_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME; 
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T10_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME; 
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingParol += $upon->count;
 
-								$payload->table = "F21T10_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T10_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingPardon += $upon->count;
 								$totalCarryOverPending = $totalCarryOverPendingParol + $totalCarryOverPendingPardon;	
 
@@ -5281,23 +5309,31 @@ class Cmis_Reports_model extends CI_Model
 								
 								$totalCasesResolvedRegionalParol = 0;
 								$totalCasesResolvedRegionalPardon = 0;
-								$payload->table = "F21T12_PAROL"; $payload->filter_field = ""; $payload->filter_val = "";  $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T12_PAROL"; $payload->filter_field = ""; $payload->filter_val = "";  $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingRegionalParol += $upon->count;
 
-								$payload->table = "F21T12_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T12_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverPendingRegionalPardon += $upon->count;
 								$totalCarryOverPendingRegional = $totalCarryOverPendingRegionalParol + $totalCarryOverPendingRegionalPardon;
 
 								$payload->table = "F21T9_PAROL"; $payload->filter_field = "transfer"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$totalReportSubmittedRegionalParol += $upon->count;
-
 								$payload->table = "F21T9_PARDON"; $payload->filter_field = "transfer"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
 								$totalReportSubmittedRegionalPardon += $upon->count;
 								$totalReportSubmittedRegional = $totalReportSubmittedRegionalParol + $totalReportSubmittedRegionalPardon;	
+
+
+								$totalCasesActedUponByRDPR = 0;
+								$totalCasesActedUponByRDPD = 0;
+								$totalCasesActedUponByRDTotal = 0;
+								$totalCasesActedUponByRDPR = $totalCarryOverPendingRegionalParol + $totalReportSubmittedRegionalParol;
+								$totalCasesActedUponByRDPD = $totalCarryOverPendingRegionalPardon + $totalReportSubmittedRegionalPardon;
+								$totalCasesActedUponByRDTotal = $totalCasesActedUponByRDPR + $totalCasesActedUponByRDPD;
+
 
 								$payload->table = "F21T13_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
 								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
@@ -5308,8 +5344,8 @@ class Cmis_Reports_model extends CI_Model
 								$totalCasesResolvedRegionalPardon += $upon->count;
 								$totalCasesResolvedRegional = $totalCasesResolvedRegionalParol + $totalCasesResolvedRegionalPardon;	
 
-								$totalCasesPendingResolutionRegionalParol = $totalCarryOverPendingRegionalParol - $totalCasesResolvedRegionalParol;		
-								$totalCasesPendingResolutionRegionalPardon = $totalCarryOverPendingRegionalPardon - $totalCasesResolvedRegionalPardon;		
+								$totalCasesPendingResolutionRegionalParol = $totalCasesActedUponByRDPR - $totalCasesResolvedRegionalParol;		
+								$totalCasesPendingResolutionRegionalPardon = $totalCasesActedUponByRDPD - $totalCasesResolvedRegionalPardon;		
 								$totalCasesPendingResolutionRegional = $totalCasesPendingResolutionRegionalParol + $totalCasesPendingResolutionRegionalPardon;		
 
 								$data[] = array('FIELD' => $value1->NAME,
@@ -5319,9 +5355,15 @@ class Cmis_Reports_model extends CI_Model
 												'totalReportSubmittedRegionalParol'=> $totalReportSubmittedRegionalParol,
 												'totalReportSubmittedRegionalPardon'=> $totalReportSubmittedRegionalPardon,
 												'totalReportSubmittedRegional'=> $totalReportSubmittedRegional,
+
+												'totalCasesActedUponByRDPR'=> $totalCasesActedUponByRDPR,
+												'totalCasesActedUponByRDPD'=> $totalCasesActedUponByRDPD,
+												'totalCasesActedUponByRDTotal'=> $totalCasesActedUponByRDTotal,
+
 												'totalCasesResolvedRegionalParol'=> $totalCasesResolvedRegionalParol,
 												'totalCasesResolvedRegionalPardon'=> $totalCasesResolvedRegionalPardon,
 												'totalCasesResolvedRegional'=> $totalCasesResolvedRegional,
+
 												'totalCasesPendingResolutionRegionalParol'=> $totalCasesPendingResolutionRegionalParol,
 												'totalCasesPendingResolutionRegionalPardon'=> $totalCasesPendingResolutionRegionalPardon,
 												'totalCasesPendingResolutionRegional'=> $totalCasesPendingResolutionRegional,
@@ -5360,12 +5402,12 @@ class Cmis_Reports_model extends CI_Model
 								$totalTermSupvParol = 0;
 								$totalTermSupvPardon = 0;
 								
-								$payload->table = "F21T14_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T14_PAROL"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvParol += $upon->count;
 
-								$payload->table = "F21T14_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
-								$upon = json_decode($this->Cmis_F21PCS_model->callProcedure1($payload));
+								$payload->filter = ""; $payload->table = "F21T14_PARDON"; $payload->filter_field = ""; $payload->filter_val = ""; $payload->field_office = $value1->NAME;
+								$upon = json_decode($this->Cmis_F21PCS_model->carryOver($payload));
 								$totalCarryOverSupvPardon += $upon->count;
 								$totalCarryOverSupv = $totalCarryOverSupvParol + $totalCarryOverSupvPardon;
 
