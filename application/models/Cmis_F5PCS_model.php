@@ -1657,6 +1657,69 @@ class Cmis_F5PCS_model extends CI_Model
 				return json_encode($response);
 		}
 	}
+	
+
+	public function actedUpon($payload) {
+	    $this->db->reconnect();
+
+		#print_r($payload);
+		$field_office = "";
+		$start_date = "";
+		$end_date = "";
+		$table = "";
+		$filter_field = "";
+		$filter_val = "";
+		$filter = "";
+		$actedUpon = "";
+		$actedUponFor = "";
+		if(isset($payload->field_office)){
+			$field_office = $payload->field_office;
+		}
+		if(isset($payload->Y_M)){
+			$start_date = $payload->Y_M;
+			$end_date = $payload->Y_M;
+		}
+		if(isset($payload->END_Y_M)){
+			$end_date = $payload->END_Y_M;	
+		}
+		if(isset($payload->filter)){
+			$filter = $payload->filter;
+		}
+		if(isset($payload->table)){
+			$table = $payload->table;
+		}
+		if(isset($payload->filter_field)){
+			$filter_field = $payload->filter_field;
+		}
+		if(isset($payload->filter_val)){
+			$filter_val = $payload->filter_val;
+		}
+		if(isset($payload->actedUpon)){
+			$actedUpon = $payload->actedUpon;
+		}
+		if(isset($payload->actedUponFor)){
+			$actedUponFor = $payload->actedUponFor;
+		}
+
+		$query = "SELECT COUNT(*) AS count FROM ".$table." WHERE docket_no LIKE '%".$filter."%' and Y_M >= '".$start_date."' and Y_M <= '".$end_date."' and status = 1 and field_office='".$field_office."' and ".$filter_field." LIKE '%".$filter_val."%' AND TIMESTAMPDIFF(DAY, ".$actedUponFor.", created_date) ".$actedUpon."";
+	    
+	    $query_result = $this->db->query($query);
+
+	    if ($query_result) {
+	        if ($query_result->num_rows() > 0) {
+	            $data = $query_result->row();
+	            $response = $data;
+	            $query_result->free_result();
+	            return json_encode($response);
+	        } else {
+	            $response = array('status' => 'ERROR', 'message' => 'Fail Retrieving Data');
+	            return json_encode($response);
+	        }
+	    } else {
+	        $response = array('status' => 'ERROR', 'message' => 'ERROR FETCHING RECORDS', 'error_code' => $this->db->error());
+	        return json_encode($response);
+	    }
+	}
 
 
 	public function callProcedure1AA($payload){

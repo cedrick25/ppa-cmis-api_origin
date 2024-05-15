@@ -2761,17 +2761,62 @@ class Cmis_Reports_model extends CI_Model
 								$totalInvestigation = $totalCarryOver + $total;
 
 								#echo $this->Cmis_F5T2_model->fetchF5T2_RCV_ByYM($payload);
-								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME;
-								$grant_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalGrant += $grant_upon->count;
+								// GRANT START
+								$grant30 = 0;
+								$grant3160 = 0;
+								$grant60 = 0;
 
-								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "Denial"; $payload->field_office = $value1->NAME;
-								$denial_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalDenial += $denial_upon->count;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME; $payload->actedUpon = "<= 30"; $payload->actedUponFor = "psir_date";
+								$grant_upon = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$grant30 += $grant_upon->count;
 
-								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
-								$manifest_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
-								$totalManifest += $manifest_upon->count;
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME; $payload->actedUpon = "BETWEEN 31 AND 60"; $payload->actedUponFor = "psir_date";
+								$grant_upon = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$grant3160 += $grant_upon->count;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "FOR GRANT"; $payload->field_office = $value1->NAME; $payload->actedUpon = ">= 60"; $payload->actedUponFor = "psir_date";
+								$grant_upon = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$grant60 += $grant_upon->count;
+								$totalGrant = $grant30 + $grant3160 + $grant60;
+								// GRANT END
+
+								// DENIAL START
+								$denial30 = 0;
+								$denial3160 = 0;
+								$denial60 = 0;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "denial"; $payload->field_office = $value1->NAME; $payload->actedUpon = "<= 30"; $payload->actedUponFor = "psir_date";
+								$upon_denial = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$denial30 += $upon_denial->count;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "denial"; $payload->field_office = $value1->NAME; $payload->actedUpon = "BETWEEN 31 AND 60"; $payload->actedUponFor = "psir_date";
+								$upon_denial = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$denial3160 += $upon_denial->count;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "ppo_recommendation"; $payload->filter_val = "denial"; $payload->field_office = $value1->NAME; $payload->actedUpon = ">= 60"; $payload->actedUponFor = "psir_date";
+								$upon_denial = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$denial60 += $upon_denial->count;
+								$totalDenial = $denial30 + $denial3160 + $denial60;
+								// DENIAL END
+
+								// MANIFESTATION START
+								$manifest30 = 0;
+								$manifest3160 = 0;
+								$manifest60 = 0;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME; $payload->actedUpon = "<= 30"; $payload->actedUponFor = "manifest_date";
+								$upon_manifest = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$manifest30 += $upon_manifest->count;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME; $payload->actedUpon = "BETWEEN 31 AND 60"; $payload->actedUponFor = "manifest_date";
+								$upon_manifest = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$manifest3160 += $upon_manifest->count;
+
+								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "manifest_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME; $payload->actedUpon = ">= 60"; $payload->actedUponFor = "manifest_date";
+								$upon_manifest = json_decode($this->Cmis_F5PCS_model->actedUpon($payload));
+								$manifest60 += $upon_manifest->count;
+								$totalManifest = $manifest30 + $manifest3160 + $manifest60;
+								// MANIFESTATION END
 
 								$payload->filter = ""; $payload->table = "F5T2_ACTED"; $payload->filter_field = "transfer_date"; $payload->filter_val = "20"; $payload->field_office = $value1->NAME;
 								$transfer_upon = json_decode($this->Cmis_F5PCS_model->callProcedure1($payload));
@@ -2792,10 +2837,19 @@ class Cmis_Reports_model extends CI_Model
 								
 								/// based on formula (D+E)
 								$totalActiveCase = $totalActed + $totalNotActed;
-								#($act_upon);
+								($act_upon);
 								$data[] = array('FIELD' => $value1->NAME,
+										'grant30' => $grant30,
+										'grant3160' => $grant3160,
+										'grant60' => $grant60,
 										'totalGrant' => $totalGrant,
+										'denial30' => $denial30,
+										'denial3160' => $denial3160,
+										'denial60' => $denial60,
 										'totalDenial' => $totalDenial,
+										'manifest30' => $manifest30,
+										'manifest3160' => $manifest3160,
+										'manifest60' => $manifest60,
 										'totalManifest' => $totalManifest,
 										'totalTransfer' => $totalTransfer,
 										'totalActed' => $totalActed,
