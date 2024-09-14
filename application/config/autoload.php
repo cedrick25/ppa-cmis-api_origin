@@ -134,6 +134,7 @@ $autoload['language'] = array();
 */
 $autoload['model'] = array(	'API_model',
 							'Pis_model', 
+							'Expansion_model', 
 							'Cmis_F5T1_model',
 							'Cmis_F5T2_model',
 							'Cmis_F5T3_model',
