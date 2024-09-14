@@ -74,12 +74,9 @@ class Cmis_F5T1_model extends CI_Model
 		$this->db->order_by("id","asc");
 		//$this->db->order_by("date_rcv","asc");
 		
-
-		
 		$sql = $this->db->get('F5T1');
 		if($sql->num_rows() > 0 )
 		{
-
 			$output = array();
 			foreach($sql->result() as &$row) {
 			    $row->docket_no_display = "<span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span>";
