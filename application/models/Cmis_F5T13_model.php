@@ -70,6 +70,11 @@ class Cmis_F5T13_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+
+					if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					if(isset($payload->created_date) && $payload->created_date != null)
 					{
 						$data = array_merge($data, array('created_date' => $payload->created_date));
