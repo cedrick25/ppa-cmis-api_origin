@@ -270,8 +270,11 @@ class Cmis_F5T6_model extends CI_Model
 					if($fetch->num_rows() > 0)
 					{
 						foreach($fetch->result() as &$row) {
-						    $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
-						    $row->petitioner = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+						    // $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
+						    // $row->petitioner = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+
+						    $row->docket_no_display = $row->docket_no;
+						    $row->petitioner = $row->petitioner;
 						}
 						$response = array(
 							'status' => 'SUCCESS',
@@ -417,6 +420,10 @@ class Cmis_F5T6_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+					if(isset($payload->field_office_id) && $payload->field_office_id != null)
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					$insert = $this->db->insert('F5T6_CMPLTD', $data);
 					if($insert)
 					{
@@ -489,6 +496,11 @@ class Cmis_F5T6_model extends CI_Model
 					{
 						$this->db->set('field_office', $payload->field_office);
 					}
+
+					if(isset($payload->field_office_id) && $payload->field_office_id != null)
+					{
+						$this->db->set('field_office_id', $payload->field_office_id);
+					}
 					if(isset($payload->id))
 					{
 						$this->db->where('id', $payload->id);
@@ -539,8 +551,11 @@ class Cmis_F5T6_model extends CI_Model
 					if($fetch->num_rows() > 0)
 					{
 						foreach($fetch->result() as &$row) {
-						    $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
-						    $row->petitioner = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+						    // $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
+						    // $row->petitioner = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+						    
+						    $row->docket_no_display = $row->docket_no;
+						    $row->petitioner = $row->petitioner;
 						}
 						$response = array(
 							'status' => 'SUCCESS',

@@ -127,6 +127,10 @@ class Cmis_F21T4_model extends CI_Model
 					{
 						$this->db->set('field_office', $payload->field_office);
 					}
+					if(isset($payload->field_office_id) && $payload->field_office_id != null)
+					{
+						$this->db->set('field_office_id', $payload->field_office_id);
+					}
 					if(isset($payload->id) && $payload->id != null)
 					{
 						$this->db->where('id', $payload->id);
