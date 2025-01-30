@@ -89,5 +89,148 @@ class Records_check_model extends CI_Model
 	        SSP::simple($_GET, $sql_details, $query, $primaryKey, $columns)
 	    );
 	}
+	public function get_data($db_name, $table_name, $docket_no = null, $name = null) {
+        // Load the database dynamically
+        $db = $this->load->database($db_name, TRUE);
+
+        // Column mapping for petitioner and probationer based on table
+        $column_map = [
+            'f5t1' => 'petitioner',
+            'f5t2_acted' => 'petitioner_name',
+            'f5t2_notacted' => 'petitioner_name',
+            'f5t2_rcv' => 'petitioner_name',
+            'f5t3' => 'petitioner',
+            'f5t4' => 'petitioner',
+            'f5t5' => 'petitioner',
+            'f5t6_cmpltd' => 'petitioner',
+            'f5t6_rcv' => 'petitioner',
+            'f5t7' => 'probationer',
+            'f5t8' => 'probationer',
+            'f5t9' => 'probationer',
+            'f5t10' => 'probationer',
+            'f5t11' => 'probationer',
+            'f5t12' => 'probationer',
+            'f5t13_rcv' => 'probationer',
+            'f5t13_term' => 'probationer',
+		    // f21 table mappings
+		    'f21t1' => 'petitioner',
+		    'f21t2_rcv' => 'petitioner_name',
+		    'f21t2_acted' => 'petitioner_name',
+		    'f21t4' => 'petitioner',
+		    'f21t5' => 'petitioner',
+		    'f21t6_rcv' => 'petitioner',
+		    'f21t6_cmpltd' => 'petitioner',
+		    'f21t7_pardon' => 'probationer',
+		    'f21t7_parol' => 'probationer',
+		    'f21t8_pardon' => 'probationer',
+		    'f21t8_parol' => 'probationer',
+		    'f21t9_pardon' => 'probationer',
+		    'f21t9_parol' => 'probationer',
+		    'f21t10_pardon' => 'probationer',
+		    'f21t10_parol' => 'probationer',
+		    'f21t11_pardon' => 'probationer',
+		    'f21t11_parol' => 'probationer',
+		    'f21t12_pardon' => 'probationer',
+		    'f21t12_parol' => 'probationer',
+		    'f21t13_pardon' => 'probationer',
+		    'f21t13_parol' => 'probationer',
+		    'f21t14_pardon' => 'probationer',
+		    'f21t14_parol' => 'probationer',
+		    'f21t15_rcv_pardon' => 'probationer',
+		    'f21t15_rcv_parol' => 'probationer',
+		    'f21t15_term_pardon' => 'probationer',
+		    'f21t15_term_parol' => 'probationer',
+		];
+
+        // Check if the table is in the column map
+        if (!isset($column_map[$table_name])) {
+            return ['error' => 'Invalid table name or table not mapped'];
+        }
+
+        // Get the column name based on the table
+        $name_column = $column_map[$table_name];
+
+	    $docket_no = $this->security->xss_clean($docket_no);
+	    $name = $this->security->xss_clean($name);
+        // Build the query
+        $db->from($table_name);
+        $db->where('status', 1);
+        if ($docket_no) {
+            $db->where('docket_no', $docket_no); // Assuming 'docket_no' is a common column
+        }
+        if ($name) {
+    		$db->like($name_column, trim($name));
+        }
+
+        // Execute the query
+        $query = $db->get();
+    	$result = $query->result_array();
+
+	    // Check for errors in query execution
+	    if ($query === FALSE) {
+	        log_message('error', 'Database query failed: ' . $db->last_query());
+	        return ['error' => 'Failed to fetch data from the database'];
+	    }
+	    foreach ($result as &$row) {
+	        if (isset($row[$name_column])) {
+	            $row['name'] = $row[$name_column];  // Assign the name column to 'name'
+	            unset($row[$name_column]);  // Optionally remove the original column
+	        }
+	    }
+        return $result;
+    }
+    public function get_data_expansion($db_name, $table_name, $docket_no = null, $name = null) {
+	    // Load the database dynamically
+	    $db = $this->load->database($db_name, TRUE);
+
+	    // Sanitize inputs
+	    $docket_no = $this->security->xss_clean($docket_no);
+	    $name = $this->security->xss_clean($name);
+
+	    // Start building the query
+	    $db->select("$table_name.*, CONCAT(client_profile.first_name, ' ', client_profile.middle_name, ' ', client_profile.last_name, ' ', client_profile.suffix) AS name");
+	    $db->from($table_name);
+	    $db->join('client_profile', "$table_name.profile_id = client_profile.id", 'left'); // Join client_profile based on profile_id
+
+	    // Apply filters if provided
+	    if ($docket_no) {
+	        $db->where("$table_name.docket_number", $docket_no);
+	    }
+	    if ($name) {
+	        $db->like("CONCAT(client_profile.first_name, ' ', client_profile.middle_name, ' ', client_profile.last_name, ' ', client_profile.suffix)", trim($name));
+	    }
+
+	    // Ensure active records are fetched
+	    $db->where("$table_name.status", 1);
+	    $db->where('client_profile.status', 1);
+	    
+	    // Execute the query
+	    $query = $db->get();
+
+	    // If query was successful, fetch the result
+	    $result = $query->result_array();
+
+	    // Initialize response array
+	    $response = [];
+
+	    if (!empty($result)) {
+	        // Customize the response to match your frontend's table structure
+	        foreach ($result as $item) {
+	            $response[] = [
+	                'docket_no'    => $item['docket_number'],
+	                'name'         => $item['name'],
+	                'field_office' => $item['field_office'],
+	                'Y_M'          => $item['y_m'],
+	                'created_date' => $item['created_date']
+	            ];
+	        }
+	    } else {
+	        // If no results, return a custom message or empty array
+	        $response = ['error' => 'No data found'];
+	    }
+
+	    return $response;
+	}
+
 }
 ?>
