@@ -31,7 +31,7 @@ class No_reports extends CI_Controller {
         // Read the incoming JSON data from the request body
         $payload = json_decode(file_get_contents('php://input'), true);
 
-        if (!$payload || !isset($payload['office']) || !isset($payload['first_name'])) {
+        if (!$payload || !isset($payload['office'])) {
             echo json_encode(['status' => 'Invalid Input']);
             return;
         }
@@ -51,7 +51,7 @@ class No_reports extends CI_Controller {
         $payload = json_decode(file_get_contents('php://input'), true);
 
 	    // Check if the payload and necessary fields are provided
-	    if (!$payload || !isset($payload['office']) || !isset($payload['first_name'])) {
+	    if (!$payload || !isset($payload['office'])) {
 	        echo json_encode(['status' => 'Invalid Input']);
 	        return;
 	    }

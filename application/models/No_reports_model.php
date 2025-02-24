@@ -7,18 +7,21 @@ class No_reports_model extends CI_Model {
         header('Access-Control-Allow-Origin: *');
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
     }
-
-    // Get all reports
     public function get_reports($type = NULL) {
-	    if ($type) {
-	        $this->db->where('type', $type); // Filter by type if it's provided
-	    }
+        $this->db->select('no_reports.*, field_office.NAME as office_name, system_codes.VALUE_ as region_name');
+        $this->db->from('no_reports');
+        $this->db->join('field_office', 'no_reports.office = field_office.NAME', 'left');
+        $this->db->join('system_codes', 'field_office.REGION = system_codes.ID', 'left');
 
-	    $this->db->order_by('date_created', 'ASC'); // Sort by date_created (ascending)
-	    
-	    $query = $this->db->get('no_reports');
-	    return $query->result_array();
-	}
+        if ($type) {
+            $this->db->where('no_reports.type', $type); // Filter by type if provided
+        }
+
+        $this->db->order_by('no_reports.date_created', 'ASC'); // Sort by date_created (ascending)
+
+        $query = $this->db->get();
+        return $query->result_array();
+    }
 
     // Get a specific report by ID
     public function get_report($id) {
@@ -46,7 +49,7 @@ class No_reports_model extends CI_Model {
 
     public function update_report($id, $data) {
         // Ensure office_id or other required fields are present in $data
-        if (isset($data['office']) && isset($data['first_name'])) {
+        if (isset($data['office'])) {
             $this->db->where('id', $id);
             $this->db->update('no_reports', $data);
 
