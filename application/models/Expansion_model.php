@@ -125,6 +125,81 @@ class Expansion_model extends CI_Model
 	    );
 	}
 	
+	public function community_json()
+	{
+	    $this->expansion_db = $this->load->database('expansion', TRUE);
+
+	    $this->expansion_db->select("f53t10.id, f53t10.docket_number, 
+	        CONCAT(client_profile.first_name, ' ', IFNULL(client_profile.middle_name, ''), ' ', client_profile.last_name, ' ', IFNULL(client_profile.suffix, '')) AS full_name, 
+	        f53t10.criminal_case_number, f53t10.court_of_origin, f53t10.assigned_officer, 
+	        f53t10.date_received_by_ppo, f53t10.community_service_start, f53t10.community_service_end, f53t10.field_office,
+	        CASE
+	            WHEN f53t10.community_service_start IS NULL AND f53t10.community_service_end IS NULL THEN ''
+	            WHEN f53t10.community_service_start IS NULL THEN CONCAT(YEAR(f53t10.community_service_end))
+	            WHEN f53t10.community_service_end IS NULL THEN CONCAT(YEAR(f53t10.community_service_start))
+	            ELSE CONCAT(YEAR(f53t10.community_service_start), '-', YEAR(f53t10.community_service_end))
+	        END AS year_range
+	    ");
+	    $this->expansion_db->from('f53t10');
+	    $this->expansion_db->join('client_profile', 'f53t10.profile_id = client_profile.id');
+	    $this->expansion_db->where('f53t10.status', 1);
+
+	    // Get JSON input from POST
+	    $json = file_get_contents('php://input');
+	    $input = json_decode($json, true);
+
+	    // Define filterable fields
+	    $filters = [
+	        'docket_number' => 'f53t10.docket_number',
+	        'first_name' => 'client_profile.first_name',
+	        'middle_name' => 'client_profile.middle_name',
+	        'last_name' => 'client_profile.last_name',
+	        'cc_number' => 'f53t10.criminal_case_number',
+	        'court_of_origin' => 'f53t10.court_of_origin',
+	        'assigned_officer' => 'f53t10.assigned_officer',
+	        'field_office' => 'f53t10.field_office'
+	    ];
+
+	    foreach ($filters as $key => $column) {
+	        if (!empty($input[$key])) {
+	            if ($key === 'field_office' && strtoupper($input[$key]) === 'ALL') {
+		            continue;
+		        }
+		        $this->expansion_db->like($column, $input[$key]);
+	        }
+	    }
+
+	    // Filter for year
+	    if (!empty($input['year'])) {
+	        $year = $input['year'];
+	        $this->expansion_db->group_start()
+	            ->where("YEAR(f53t10.community_service_start) <=", $year)
+	            ->where("YEAR(f53t10.community_service_end) >=", $year)
+	            ->or_where("YEAR(f53t10.community_service_start)", $year)
+	            ->or_where("YEAR(f53t10.community_service_end)", $year)
+	            ->group_end();
+	    }
+
+	    // Date range filters
+	    if (!empty($input['start_date'])) {
+	        $this->expansion_db->where('f53t10.community_service_start >=', $input['start_date']);
+	    }
+
+	    if (!empty($input['end_date'])) {
+	        $this->expansion_db->where('f53t10.community_service_end <=', $input['end_date']);
+	    }
+
+	    // Pagination
+	    $limit = isset($input['limit']) ? (int)$input['limit'] : 100;
+	    $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
+	    $this->expansion_db->limit($limit, $offset);
+
+	    $this->expansion_db->order_by('f53t10.id', 'DESC');
+	    $query = $this->expansion_db->get();
+
+	    echo json_encode($query->result_array());
+	}
+
 }
 
 

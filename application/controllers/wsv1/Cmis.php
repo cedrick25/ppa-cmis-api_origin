@@ -385,6 +385,11 @@ class Cmis extends CI_Controller {
 		$payload = json_decode(file_get_contents('php://input'));
 		echo $this->Cmis_Probationer_model->masterlistSSP($payload);
 	}
+	public function masterlist_json()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Cmis_Probationer_model->masterlist_json($payload);
+	}
 
 	public function masterlistRequestSSP()
 	{
