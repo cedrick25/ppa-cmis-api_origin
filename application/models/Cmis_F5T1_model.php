@@ -79,12 +79,12 @@ class Cmis_F5T1_model extends CI_Model
 		{
 			$output = array();
 			foreach($sql->result() as &$row) {
-			    $row->docket_no_display = "<span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span>";
-			    $row->petitioner = "<a ><span data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+			    // $row->docket_no_display = "<span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span>";
+			    // $row->petitioner = "<a ><span data-id='".$row->docket_no."'  class='petitioner_link'>".$row->petitioner."</span></a>";
+			    $row->docket_no_display = $row->docket_no;
+			    $row->petitioner = $row->petitioner;
 			    $output[] = $row;
 			}
-
-
 
 			$response = array(
 				'status' => 'SUCCESS',
@@ -255,6 +255,11 @@ class Cmis_F5T1_model extends CI_Model
 		if(isset($payload->field_office) && !empty($payload->field_office))
 		{
 			$data = array_merge($data, array('field_office' => $payload->field_office));
+		}
+
+		if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+		{
+			$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
 		}
 
 		if(isset($payload->created_date) && !empty($payload->created_date))

@@ -340,8 +340,10 @@ class Cmis_F5T8_model extends CI_Model
 					if($sql->num_rows() > 0 )
 					{
 						foreach($sql->result() as &$row) {
-						    $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
-						    $row->probationer = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->probationer."</span></a>";
+						    // $row->docket_no_display = "<a title='Click to view Docket Record'><span data-id='".$row->docket_no."' class='docket_link'>".$row->docket_no."</span></a>";
+						    // $row->probationer = "<a ><span title='Click to open Petitioner FACT SHEET' data-id='".$row->docket_no."'  class='petitioner_link'>".$row->probationer."</span></a>";
+						    $row->docket_no_display = $row->docket_no;
+						    $row->probationer = $row->probationer;
 						}
 						$response = array(
 							'status' => 'SUCCESS',

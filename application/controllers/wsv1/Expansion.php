@@ -19,4 +19,11 @@ class Expansion extends CI_Controller {
 		$payload = json_decode(file_get_contents('php://input'));
 		echo $this->Expansion_model->communitySSP($payload);
 	}
+
+	public function community_json()
+	{
+		include APPPATH . 'third_party/ssp.php';
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Expansion_model->community_json($payload);
+	}
 }

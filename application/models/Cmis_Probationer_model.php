@@ -762,7 +762,56 @@ class Cmis_Probationer_model extends CI_Model
             SSP::simple( $_GET, $sql_details, $query, $primaryKey, $columns)
         );
 	}
-	
+	public function masterlist_json()
+	{
+	    $this->load->database();
+	    $this->db->select("id, FIRSTNAME, MIDDLENAME, LASTNAME, `ALIAS`, `SUPVOFFICE`, `REMARKS`, `SDOCKETNO`, `YEAR`, `REGION`, 
+	        CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, 
+	        CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE");
+	    $this->db->from('masterlist');
+	    $this->db->where('STATUS', 1);
+
+	    // Read JSON input from POST
+	    $json = file_get_contents('php://input');
+	    $input = json_decode($json, true);
+
+	    // Filter fields
+	    $filters = [
+	        'REGION' => 'REGION',
+	        'FIRSTNAME' => 'FIRSTNAME',
+	        'MIDDLENAME' => 'MIDDLENAME',
+	        'LASTNAME' => 'LASTNAME',
+	        'ALIAS' => 'ALIAS',
+	        'SDOCKETNO' => 'SDOCKETNO',
+	        'SUPERVOFFICE' => 'SUPVOFFICE',
+	        'REMARKS' => 'REMARKS',
+	        'YEAR' => 'YEAR',
+	        'START_DD' => 'STARTDD',
+	        'START_MM' => 'STARTMM',
+	        'START_YY' => 'STARTYY',
+	        'END_DD' => 'ENDDD',
+	        'END_MM' => 'ENDMM',
+	        'END_YY' => 'ENDYY'
+	    ];
+
+	    foreach ($filters as $key => $column) {
+	        if (!empty($input[$key])) {
+	            $this->db->like($column, utf8_encode($input[$key]));
+	        }
+	    }
+
+	    // Apply pagination
+	    $limit = isset($input['limit']) ? (int)$input['limit'] : 100; // default 100
+	    $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
+	    $this->db->limit($limit, $offset);
+
+	    $this->db->order_by('id', 'DESC');
+	    $query = $this->db->get();
+	    echo json_encode($query->result_array());
+	}
+
+
+
 }
 
 

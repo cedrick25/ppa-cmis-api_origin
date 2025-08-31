@@ -54,6 +54,11 @@ class Cmis_F21T1_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+
+					if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					$insert = $this->db->insert('F21T1', $data);
 					if($insert)
 					{

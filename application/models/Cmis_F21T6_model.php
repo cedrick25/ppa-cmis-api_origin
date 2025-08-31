@@ -54,6 +54,11 @@ class Cmis_F21T6_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+
+					if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					$insert = $this->db->insert('F21T6_CMPLTD', $data);
 					if($insert)
 					{
@@ -117,6 +122,10 @@ class Cmis_F21T6_model extends CI_Model
 					if(isset($payload->field_office) && $payload->field_office != null)
 					{
 						$this->db->set('field_office', $payload->field_office);
+					}
+					if(isset($payload->field_office_id) && $payload->field_office_id != null)
+					{
+						$this->db->set('field_office_id', $payload->field_office_id);
 					}
 					if(isset($payload->id) && $payload->id != null)
 					{
@@ -304,6 +313,11 @@ class Cmis_F21T6_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+
+					if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					$insert = $this->db->insert('F21T6_RCV', $data);
 					if($insert)
 					{
@@ -369,6 +383,10 @@ class Cmis_F21T6_model extends CI_Model
 					if(isset($payload->field_office) && $payload->field_office != null)
 					{
 						$this->db->set('field_office', $payload->field_office);
+					}
+					if(isset($payload->field_office_id) && $payload->field_office_id != null)
+					{
+						$this->db->set('field_office_id', $payload->field_office_id);
 					}
 					if(isset($payload->id) && $payload->id != null)
 					{

@@ -53,6 +53,11 @@ class Cmis_F21T5_model extends CI_Model
 					{
 						$data = array_merge($data, array('field_office' => $payload->field_office));
 					}
+
+					if(isset($payload->field_office_id) && !empty($payload->field_office_id))
+					{
+						$data = array_merge($data, array('field_office_id' => $payload->field_office_id));
+					}
 					if(isset($payload->status) && $payload->status != null)
 					{
 						$data = array_merge($data, array('status' => $payload->status));
