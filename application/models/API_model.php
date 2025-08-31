@@ -405,6 +405,8 @@
 										 					"USER_LEVEL_ID" => $user->USER_LEVEL_ID,
 										 					"USER_STATUS" => $user->USER_STATUS,
 										 					"USER_NAME" => $user->USER_NAME,
+										 					"USER_EMAIL" => $user->USER_EMAIL,
+										 					"USER_CONTACT" => $user->USER_CONTACT,
 										 					"USER_FULLNAME" => $user->USER_FULLNAME,
 										 					"FIELD_OFFICE" => $user->FIELD_OFFICE)
 										 		
