@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Import_model extends CI_Model {
 
-    private $table = 'masterlist_raw'; // ✅ actual table name
+    private $table = 'masterlist'; // ✅ actual table name
 
     public function insert_if_not_exists($row) {
         // check duplicate based on ALL 5 fields
