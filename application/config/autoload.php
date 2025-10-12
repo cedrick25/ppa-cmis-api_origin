@@ -170,5 +170,6 @@ $autoload['model'] = array(	'API_model',
 							'Cmis_Probationer_model',
 							'Cmis_Reports_model',
 							'Cmis_Widgets_model',
-							'No_reports_model');
+							'No_reports_model',
+							'Import_model');
 							
