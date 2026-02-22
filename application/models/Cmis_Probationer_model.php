@@ -457,23 +457,23 @@ class Cmis_Probationer_model extends CI_Model
 		}
 		if(isset($firstname) && !empty($firstname)){
 			if($text != ""){
-				$text .= "AND FIRSTNAME LIKE '%".utf8_encode($firstname)."%'";
+				$text .= "AND FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%'";
 			}else{
-				$text .= "FIRSTNAME LIKE '%".utf8_encode($firstname)."%' ";
+				$text .= "FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%' ";
 			}
 		}
 		if(isset($lastname) && !empty($lastname)){
 			if($text != ""){
-				$text .= "AND LASTNAME LIKE '%".utf8_encode($lastname)."%'";
+				$text .= "AND LASTNAME LIKE '%".$this->db->escape_str($lastname)."%'";
 			}else{
-				$text .= "LASTNAME LIKE '%".utf8_encode($lastname)."%' ";
+				$text .= "LASTNAME LIKE '%".$this->db->escape_str($lastname)."%' ";
 			}
 		}
 		if(isset($middlename) && !empty($middlename)){
 			if($text != ""){
-				$text .= "AND MIDDLENAME LIKE '%".utf8_encode($middlename)."%'";
+				$text .= "AND MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%'";
 			}else{
-				$text .= "MIDDLENAME LIKE '%".utf8_encode($middlename)."%' ";
+				$text .= "MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%' ";
 			}
 		}
 		if(isset($alias) && !empty($alias)){
@@ -630,23 +630,23 @@ class Cmis_Probationer_model extends CI_Model
 		}
 		if(isset($firstname) && !empty($firstname)){
 			if($text != ""){
-				$text .= "AND FIRSTNAME LIKE '%".utf8_encode($firstname)."%'";
+				$text .= "AND FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%'";
 			}else{
-				$text .= "FIRSTNAME LIKE '%".utf8_encode($firstname)."%' ";
+				$text .= "FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%' ";
 			}
 		}
 		if(isset($lastname) && !empty($lastname)){
 			if($text != ""){
-				$text .= "AND LASTNAME LIKE '%".utf8_encode($lastname)."%'";
+				$text .= "AND LASTNAME LIKE '%".$this->db->escape_str($lastname)."%'";
 			}else{
-				$text .= "LASTNAME LIKE '%".utf8_encode($lastname)."%' ";
+				$text .= "LASTNAME LIKE '%".$this->db->escape_str($lastname)."%' ";
 			}
 		}
 		if(isset($middlename) && !empty($middlename)){
 			if($text != ""){
-				$text .= "AND MIDDLENAME LIKE '%".utf8_encode($middlename)."%'";
+				$text .= "AND MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%'";
 			}else{
-				$text .= "MIDDLENAME LIKE '%".utf8_encode($middlename)."%' ";
+				$text .= "MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%' ";
 			}
 		}
 		if(isset($alias) && !empty($alias)){

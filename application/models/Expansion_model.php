@@ -124,7 +124,126 @@ class Expansion_model extends CI_Model
 	        SSP::simple($_GET, $sql_details, $query, $primaryKey, $columns)
 	    );
 	}
-	
+	// public function communitySSP()
+	// {
+	//     $this->expansion_db = $this->load->database('expansion', TRUE);
+
+	//     // Safer way to get GET values
+	//     $docket_number    = $this->input->get('docket_number', TRUE);
+	//     $first_name       = $this->input->get('first_name', TRUE);
+	//     $middle_name      = $this->input->get('middle_name', TRUE);
+	//     $last_name        = $this->input->get('last_name', TRUE);
+	//     $cc_number        = $this->input->get('cc_number', TRUE);
+	//     $court_of_origin  = $this->input->get('court_of_origin', TRUE);
+	//     $assigned_officer = $this->input->get('assigned_officer', TRUE);
+	//     $start_date       = $this->input->get('start_date', TRUE);
+	//     $end_date         = $this->input->get('end_date', TRUE);
+	//     $field_office     = $this->input->get('field_office', TRUE);
+	//     $year             = $this->input->get('year', TRUE);
+
+	//     $query = "(SELECT 
+	//                 csm.id,
+	//                 csm.docket_number,
+	//                 CONCAT(csm.first_name, ' ', IFNULL(csm.middle_name, ''), ' ', csm.last_name, ' ', IFNULL(csm.suffix, '')) AS full_name,
+	//                 csm.criminal_case_number,
+	//                 csm.court_of_origin,
+	//                 csm.assigned_officer,
+	//                 csm.date_received_by_ppo,
+	//                 csm.community_service_start,
+	//                 csm.community_service_end,
+	//                 csm.field_office,
+	//                 CASE
+	//                     WHEN csm.community_service_start IS NULL AND csm.community_service_end IS NULL THEN ''
+	//                     WHEN csm.community_service_start IS NULL THEN YEAR(csm.community_service_end)
+	//                     WHEN csm.community_service_end IS NULL THEN YEAR(csm.community_service_start)
+	//                     ELSE CONCAT(YEAR(csm.community_service_start), '-', YEAR(csm.community_service_end))
+	//                 END AS year_range
+	//             FROM community_service_masterlist csm
+	//             WHERE csm.status = 1";
+
+	//     // Filters
+	//     if (!empty($docket_number)) {
+	//         $query .= " AND csm.docket_number LIKE '%" . $this->expansion_db->escape_like_str($docket_number) . "%'";
+	//     }
+
+	//     if (!empty($first_name)) {
+	//         $query .= " AND csm.first_name LIKE '%" . $this->expansion_db->escape_like_str($first_name) . "%'";
+	//     }
+
+	//     if (!empty($middle_name)) {
+	//         $query .= " AND csm.middle_name LIKE '%" . $this->expansion_db->escape_like_str($middle_name) . "%'";
+	//     }
+
+	//     if (!empty($last_name)) {
+	//         $query .= " AND csm.last_name LIKE '%" . $this->expansion_db->escape_like_str($last_name) . "%'";
+	//     }
+
+	//     if (!empty($cc_number)) {
+	//         $query .= " AND csm.criminal_case_number LIKE '%" . $this->expansion_db->escape_like_str($cc_number) . "%'";
+	//     }
+
+	//     if (!empty($court_of_origin)) {
+	//         $query .= " AND csm.court_of_origin LIKE '%" . $this->expansion_db->escape_like_str($court_of_origin) . "%'";
+	//     }
+
+	//     if (!empty($assigned_officer)) {
+	//         $query .= " AND csm.assigned_officer LIKE '%" . $this->expansion_db->escape_like_str($assigned_officer) . "%'";
+	//     }
+
+	//     if (!empty($start_date)) {
+	//         $query .= " AND csm.community_service_start >= '" . $this->expansion_db->escape_str($start_date) . "'";
+	//     }
+
+	//     if (!empty($end_date)) {
+	//         $query .= " AND csm.community_service_end <= '" . $this->expansion_db->escape_str($end_date) . "'";
+	//     }
+
+	//     if (!empty($field_office) && $field_office !== 'ALL') {
+	//         $query .= " AND csm.field_office LIKE '%" . $this->expansion_db->escape_like_str($field_office) . "%'";
+	//     }
+
+	//     if (!empty($year)) {
+	//         $year = (int)$year; // force numeric for safety
+	//         $query .= " AND (
+	//                         YEAR(csm.community_service_start) = $year
+	//                         OR YEAR(csm.community_service_end) = $year
+	//                         OR (
+	//                             YEAR(csm.community_service_start) <= $year
+	//                             AND YEAR(csm.community_service_end) >= $year
+	//                         )
+	//                     )";
+	//     }
+
+	//     $query .= " ORDER BY csm.id DESC) temp";
+
+	//     $primaryKey = 'id';
+
+	//     $columns = array(
+	//         array('db' => 'id', 'dt' => 0),
+	//         array('db' => 'docket_number', 'dt' => 1),
+	//         array('db' => 'full_name', 'dt' => 2),
+	//         array('db' => 'criminal_case_number', 'dt' => 3),
+	//         array('db' => 'court_of_origin', 'dt' => 4),
+	//         array('db' => 'assigned_officer', 'dt' => 5),
+	//         array('db' => 'date_received_by_ppo', 'dt' => 6),
+	//         array('db' => 'year_range', 'dt' => 7),
+	//         array('db' => 'community_service_start', 'dt' => 8),
+	//         array('db' => 'community_service_end', 'dt' => 9),
+	//         array('db' => 'field_office', 'dt' => 10),
+	//     );
+
+	//     $sql_details = array(
+	//         'user' => $this->expansion_db->username,
+	//         'pass' => $this->expansion_db->password,
+	//         'db'   => $this->expansion_db->database,
+	//         'host' => $this->expansion_db->hostname,
+	//     );
+
+	//     echo json_encode(
+	//         SSP::simple($_GET, $sql_details, $query, $primaryKey, $columns)
+	//     );
+	// }
+
 	public function community_json()
 	{
 	    $this->expansion_db = $this->load->database('expansion', TRUE);
