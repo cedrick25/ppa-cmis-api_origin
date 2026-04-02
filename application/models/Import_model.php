@@ -19,36 +19,41 @@ class Import_model extends CI_Model {
     }
 
     public function insert_if_not_exists($row) {
-        // check duplicate based on ALL 5 fields
-        $this->db->where('SDOCKETNO', $row['SDOCKETNO']);
-        $this->db->where('LASTNAME', $row['LASTNAME']);
-        $this->db->where('FIRSTNAME', $row['FIRSTNAME']);
-        $this->db->where('MIDDLENAME', $row['MIDDLENAME']);
-        $this->db->where('SUPVOFFICE', $row['SUPVOFFICE']);
 
+        $where_array = [
+            'SDOCKETNO'  => $row['SDOCKETNO'],
+            'LASTNAME'   => $row['LASTNAME'],
+            'FIRSTNAME'  => $row['FIRSTNAME'],
+            'MIDDLENAME' => $row['MIDDLENAME'],
+            'SUPVOFFICE' => $row['SUPVOFFICE']
+        ];
+
+        $this->db->where($where_array);
         $query = $this->db->get($this->table);
 
+        // 🔥 ADD THIS
         if ($query === false) {
             $error = $this->db->error();
-            log_message('error', 'DB query failed: ' . json_encode($error));
+            log_message('error', 'QUERY FAILED: ' . json_encode($error));
             return false;
         }
 
-        if ($query->num_rows() > 0) {
-            // exact same record exists → skip
-            return false;
-        } else {
-            // insert new record
+        // 🔥 ADD THIS DEBUG
+        log_message('error', 'ROWS FOUND: ' . $query->num_rows());
+
+        if ($query->num_rows() == 0) {
             $inserted = $this->db->insert($this->table, $row);
 
             if (!$inserted) {
                 $error = $this->db->error();
-                log_message('error', 'Insert failed: ' . json_encode($error));
+                log_message('error', 'INSERT FAILED: ' . json_encode($error));
                 return false;
             }
 
             return true;
         }
+
+        return false;
     }
     public function insert_batch_csm($data) {
         if (empty($data)) return ['inserted' => 0, 'skipped' => 0];

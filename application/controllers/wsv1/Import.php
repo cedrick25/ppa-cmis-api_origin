@@ -19,33 +19,39 @@ class Import extends CI_Controller {
             $file_tmp = $_FILES['file']['tmp_name'];
 
             try {
-                // Load Excel file
                 $spreadsheet = IOFactory::load($file_tmp);
                 $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
                 $imported = 0;
                 $skipped = 0;
-                $skipped_rows = []; // store duplicates
+                $skipped_rows = [];
 
                 foreach ($sheetData as $key => $row) {
                     if ($key == 1) continue; // skip header row
 
+                    // Skip empty rows
+                    if (empty($row['C']) && empty($row['D'])) continue;
+
                     $data = [
-                        'SDOCKETNO'   => $row['C'],
-                        'LASTNAME'    => $row['D'],
-                        'FIRSTNAME'   => $row['E'],
-                        'MIDDLENAME'  => $row['F'],
-                        'ALIAS'       => $row['G'],
-                        'SUPVOFFICE'  => $row['H'],
-                        'REMARKS'     => $row['I'],
-                        'YEAR'        => $row['P'],
-                        'REGION'      => $row['A'],
-                        'STARTMM'     => $row['J'],
-                        'STARTDD'     => $row['K'],
-                        'STARTYY'     => $row['L'],
-                        'ENDMM'       => $row['M'],
-                        'ENDDD'       => $row['N'],
-                        'ENDYY'       => $row['O'],
+                        'SDOCKETNO'   => trim($row['C']),
+
+                        // ✅ CLEANED FIELDS ONLY
+                        'LASTNAME'    => $this->clean_text($row['D']),
+                        'FIRSTNAME'   => $this->clean_text($row['E']),
+                        'MIDDLENAME'  => $this->clean_text($row['F']),
+
+                        // ❌ normal trim only
+                        'ALIAS'       => trim($row['G']),
+                        'SUPVOFFICE'  => trim($row['H']),
+                        'REMARKS'     => trim($row['I']),
+                        'YEAR'        => trim($row['P']),
+                        'REGION'      => trim($row['A']),
+                        'STARTMM'     => trim($row['J']),
+                        'STARTDD'     => trim($row['K']),
+                        'STARTYY'     => trim($row['L']),
+                        'ENDMM'       => trim($row['M']),
+                        'ENDDD'       => trim($row['N']),
+                        'ENDYY'       => trim($row['O']),
                         'STATUS'      => "1"
                     ];
 
@@ -57,9 +63,7 @@ class Import extends CI_Controller {
                             "row_number" => $key,
                             "SDOCKETNO"  => $row['C'],
                             "LASTNAME"   => $row['D'],
-                            "FIRSTNAME"  => $row['E'],
-                            'MIDDLENAME'  => $row['F'],
-                            "SUPVOFFICE"  => $row['H'],
+                            "FIRSTNAME"  => $row['E']
                         ];
                     }
                 }
@@ -75,7 +79,7 @@ class Import extends CI_Controller {
             } catch (Exception $e) {
                 echo json_encode([
                     "success" => false,
-                    "message" => "Error reading file: " . $e->getMessage()
+                    "message" => $e->getMessage()
                 ]);
             }
         } else {
@@ -84,6 +88,11 @@ class Import extends CI_Controller {
                 "message" => "No file uploaded"
             ]);
         }
+    }
+    private function clean_text($text) {
+        $text = preg_replace('/[\r\n\t]+/', ' ', $text);
+        $text = preg_replace('/\s+/', ' ', $text);
+        return trim($text);
     }
     public function excel_upload_csm() {
         if (!isset($_FILES['file']['name'])) {
