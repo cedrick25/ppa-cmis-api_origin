@@ -604,138 +604,83 @@ class Cmis_Probationer_model extends CI_Model
 	}
 	public function masterlistSSP()
 	{
-		$region = strtoupper($_GET['REGION']);
-		$firstname = $_GET['FIRSTNAME'];
-		$middlename = $_GET['MIDDLENAME'];
-		$lastname = $_GET['LASTNAME'];
-		$alias = $_GET['ALIAS'];
-		$year = $_GET['YEAR'];
-		$sdocketno = $_GET['SDOCKETNO'];
-		$supervoffice = $_GET['SUPERVOFFICE'];
-		$remarks = $_GET['REMARKS'];
-		$start_dd = $_GET['START_DD'];
-		$start_yy = $_GET['START_YY'];
-		$start_mm = $_GET['START_MM'];
-		$end_dd =$_GET['END_DD'];
-		$end_yy =$_GET['END_YY'];
-		$end_mm =$_GET['END_MM'];
-		$query = "(SELECT id, FIRSTNAME,MIDDLENAME ,LASTNAME, `ALIAS` ,`SUPVOFFICE`, `REMARKS`,`SDOCKETNO`,`YEAR`,`REGION`, CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE FROM `masterlist`  ";
-		$text = "WHERE STATUS=1 and 1=1 ";
-		if(isset($region) && !empty($region)){
-			if($text != ""){
-				$text .= "AND REGION = '".utf8_encode($region)."'";
-			}else{
-				$text .= "REGION = '".utf8_encode($region)."' ";
-			}
-		}
-		if(isset($firstname) && !empty($firstname)){
-			if($text != ""){
-				$text .= "AND FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%'";
-			}else{
-				$text .= "FIRSTNAME LIKE '%".$this->db->escape_str($firstname)."%' ";
-			}
-		}
-		if(isset($lastname) && !empty($lastname)){
-			if($text != ""){
-				$text .= "AND LASTNAME LIKE '%".$this->db->escape_str($lastname)."%'";
-			}else{
-				$text .= "LASTNAME LIKE '%".$this->db->escape_str($lastname)."%' ";
-			}
-		}
-		if(isset($middlename) && !empty($middlename)){
-			if($text != ""){
-				$text .= "AND MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%'";
-			}else{
-				$text .= "MIDDLENAME LIKE '%".$this->db->escape_str($middlename)."%' ";
-			}
-		}
-		if(isset($alias) && !empty($alias)){
-			if($text != ""){
-				$text .= "AND ALIAS LIKE '%".utf8_encode($alias)."%'";
-			}else{
-				$text .= "ALIAS LIKE '%".utf8_encode($alias)."%' ";
-			}
-		}
-		if(isset($sdocketno) && !empty($sdocketno)){
-			if($text != ""){
-				$text .= "AND SDOCKETNO LIKE '%".utf8_encode($sdocketno)."%'";
-			}else{
-				$text .= "SDOCKETNO LIKE '%".utf8_encode($sdocketno)."%' ";
-			}
-		}
-		if(isset($supervoffice) && !empty($supervoffice)){
-			if($text != ""){
-				$text .= "AND SUPVOFFICE LIKE '%".utf8_encode($supervoffice)."%'";
-			}else{
-				$text .= "SUPVOFFICE LIKE '%".utf8_encode($supervoffice)."%' ";
-			}
-		}
-		if(isset($remarks) && !empty($remarks)){
-			if($text != ""){
-				$text .= "AND REMARKS LIKE '%".utf8_encode($remarks)."%'";
-			}else{
-				$text .= "REMARKS LIKE '%".utf8_encode($remarks)."%' ";
-			}
-		}
-		if(isset($year) && !empty($year)){
-			if($text != ""){
-				$text .= "AND YEAR LIKE '%".utf8_encode($year)."%'";
-			}else{
-				$text .= "YEAR LIKE '%".utf8_encode($year)."%' ";
-			}
-		}
-		if(isset($start_mm) && !empty($start_mm)){
-			if($text != ""){
-				$text .= "AND STARTMM LIKE '%".utf8_encode($start_mm)."%'";
-			}else{
-				$text .= "STARTMM LIKE '%".utf8_encode($start_mm)."%' ";
-			}
-		}
-		if(isset($start_dd) && !empty($start_dd)){
-			if($text != ""){
-				$text .= "AND STARTDD LIKE '%".utf8_encode($start_dd)."%'";
-			}else{
-				$text .= "STARTDD LIKE '%".utf8_encode($start_dd)."%' ";
-			}
-		}
-		if(isset($start_yy) && !empty($start_yy)){
-			if($text != ""){
-				$text .= "AND STARTYY LIKE '%".utf8_encode($start_yy)."%'";
-			}else{
-				$text .= "STARTYY LIKE '%".utf8_encode($start_yy)."%' ";
-			}
-		}
-		if(isset($end_mm) && !empty($end_mm)){
-			if($text != ""){
-				$text .= "AND ENDMM LIKE '%".utf8_encode($end_mm)."%'";
-			}else{
-				$text .= "ENDMM LIKE '%".utf8_encode($end_mm)."%' ";
-			}
-		}
-		if(isset($end_dd) && !empty($end_dd)){
-			if($text != ""){
-				$text .= "AND ENDDD LIKE '%".utf8_encode($end_dd)."%'";
-			}else{
-				$text .= "ENDDD LIKE '%".utf8_encode($end_dd)."%' ";
-			}
-		}
-		if(isset($end_yy) && !empty($end_yy)){
-			if($text != ""){
-				$text .= "AND ENDYY LIKE '%".utf8_encode($end_yy)."%'";
-			}else{
-				$text .= "ENDYY LIKE '%".utf8_encode($end_yy)."%' ";
-			}
-		}
-		
-		$query .= $text;
-		$query .= " ORDER BY id DESC) temp";
-		$primaryKey = 'id';
-		//echo $query;
-		$columns = array(
-	        array( 'db' => 'id', 'dt' =>0 ),
+	    $this->load->database();
+	    // Siguraduhin na ang connection ay naka-UTF8
+	    $this->db->query("SET NAMES 'utf8mb4'");
+
+	    // Kunin ang mga parameters mula sa GET
+	    $region       = isset($_GET['REGION']) ? $_GET['REGION'] : '';
+	    $firstname    = isset($_GET['FIRSTNAME']) ? $_GET['FIRSTNAME'] : '';
+	    $middlename   = isset($_GET['MIDDLENAME']) ? $_GET['MIDDLENAME'] : '';
+	    $lastname     = isset($_GET['LASTNAME']) ? $_GET['LASTNAME'] : '';
+	    $alias        = isset($_GET['ALIAS']) ? $_GET['ALIAS'] : '';
+	    $year         = isset($_GET['YEAR']) ? $_GET['YEAR'] : '';
+	    $sdocketno    = isset($_GET['SDOCKETNO']) ? $_GET['SDOCKETNO'] : '';
+	    $supervoffice = isset($_GET['SUPERVOFFICE']) ? $_GET['SUPERVOFFICE'] : '';
+	    $remarks      = isset($_GET['REMARKS']) ? $_GET['REMARKS'] : '';
+	    
+	    // Dates
+	    $start_dd = isset($_GET['START_DD']) ? $_GET['START_DD'] : '';
+	    $start_mm = isset($_GET['START_MM']) ? $_GET['START_MM'] : '';
+	    $start_yy = isset($_GET['START_YY']) ? $_GET['START_YY'] : '';
+	    $end_dd   = isset($_GET['END_DD']) ? $_GET['END_DD'] : '';
+	    $end_mm   = isset($_GET['END_MM']) ? $_GET['END_MM'] : '';
+	    $end_yy   = isset($_GET['END_YY']) ? $_GET['END_YY'] : '';
+
+	    $query = "(SELECT id, FIRSTNAME, MIDDLENAME, LASTNAME, `ALIAS`, `SUPVOFFICE`, `REMARKS`, `SDOCKETNO`, `YEAR`, `REGION`, 
+	              CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, 
+	              CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE FROM `masterlist` ";
+	    
+	    $text = "WHERE STATUS=1 ";
+
+	    // Helper array para sa name fields na nangangailangan ng Strict Ñ
+	    $strict_fields = [
+	        'FIRSTNAME'  => $firstname,
+	        'MIDDLENAME' => $middlename,
+	        'LASTNAME'   => $lastname
+	    ];
+
+	    foreach ($strict_fields as $col => $val) {
+	        if (!empty($val)) {
+	            $escaped = $this->db->escape_like_str($val);
+	            // STRICT Ñ LOGIC: UPPER case comparison + Binary Collation
+	            $text .= "AND UPPER($col) COLLATE utf8mb4_bin LIKE UPPER('%$escaped%') ";
+	        }
+	    }
+
+	    // NORMAL FIELDS (Standard Matching)
+	    $normal_fields = [
+	        'REGION'     => $region,
+	        'ALIAS'      => $alias,
+	        'SDOCKETNO'  => $sdocketno,
+	        'SUPVOFFICE' => $supervoffice,
+	        'REMARKS'    => $remarks,
+	        'YEAR'       => $year,
+	        'STARTMM'    => $start_mm,
+	        'STARTDD'    => $start_dd,
+	        'STARTYY'    => $start_yy,
+	        'ENDMM'      => $end_mm,
+	        'ENDDD'      => $end_dd,
+	        'ENDYY'      => $end_yy
+	    ];
+
+	    foreach ($normal_fields as $col => $val) {
+	        if (!empty($val)) {
+	            $escaped = $this->db->escape_like_str($val);
+	            $text .= "AND $col LIKE '%$escaped%' ";
+	        }
+	    }
+
+	    $query .= $text;
+	    $query .= " ORDER BY id DESC) temp";
+	    
+	    $primaryKey = 'id';
+
+	    $columns = array(
+	        array( 'db' => 'id', 'dt' => 0 ),
+	        array( 'db' => 'LASTNAME', 'dt' => 1 ),
 	        array( 'db' => 'FIRSTNAME', 'dt' => 2 ),
 	        array( 'db' => 'MIDDLENAME', 'dt' => 3 ),
-	        array( 'db' => 'LASTNAME', 'dt' => 1 ),
 	        array( 'db' => 'ALIAS', 'dt' => 4 ),
 	        array( 'db' => 'SUPVOFFICE', 'dt' => 5 ),
 	        array( 'db' => 'REMARKS', 'dt' => 6 ),
@@ -744,76 +689,28 @@ class Cmis_Probationer_model extends CI_Model
 	        array( 'db' => 'YEAR', 'dt' => 9 ),
 	        array( 'db' => 'START_DATE', 'dt' => 10 ),
 	        array( 'db' => 'END_DATE', 'dt' => 11 ),
-	        array( 'db' => 'id', 'dt' => 12,'formatter' => function( $d, $row ) {
-	        	return '<button class="access_ml_write btn btn-xs btn-primary btn-edit" data-id="'.$row['id'].'"><i class="fa fa-pencil"></i> Edit</button>'; 
+	        array( 'db' => 'id', 'dt' => 12, 'formatter' => function( $d, $row ) {
+	            return '<button class="access_ml_write btn btn-xs btn-primary btn-edit" data-id="'.$row['id'].'"><i class="fa fa-pencil"></i> Edit</button>'; 
 	        })
-	        //array( 'db' => 'YEAR', 'dt' => 6 ),
-	       
-        );
-        $this->load->database();
+	    );
+
 	    $sql_details = array(
-            'user' => $this->db->username,
-            'pass' => $this->db->password,
-            'db'   => $this->db->database,
-            'host' => $this->db->hostname
-        );
+	        'user' => $this->db->username,
+	        'pass' => $this->db->password,
+	        'db'   => $this->db->database,
+	        'host' => $this->db->hostname
+	    );
 
-        echo json_encode(
-            SSP::simple( $_GET, $sql_details, $query, $primaryKey, $columns)
-        );
+	    header('Content-Type: application/json; charset=utf-8');
+	    echo json_encode(
+	        SSP::simple( $_GET, $sql_details, $query, $primaryKey, $columns)
+	    );
 	}
-	// public function masterlist_json()
-	// {
-	//     $this->load->database();
-	//     $this->db->select("id, FIRSTNAME, MIDDLENAME, LASTNAME, `ALIAS`, `SUPVOFFICE`, `REMARKS`, `SDOCKETNO`, `YEAR`, `REGION`, 
-	//         CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, 
-	//         CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE");
-	//     $this->db->from('masterlist');
-	//     $this->db->where('STATUS', 1);
-
-	//     // Read JSON input from POST
-	//     $json = file_get_contents('php://input');
-	//     $input = json_decode($json, true);
-
-	//     // Filter fields
-	//     $filters = [
-	//         'REGION' => 'REGION',
-	//         'FIRSTNAME' => 'FIRSTNAME',
-	//         'MIDDLENAME' => 'MIDDLENAME',
-	//         'LASTNAME' => 'LASTNAME',
-	//         'ALIAS' => 'ALIAS',
-	//         'SDOCKETNO' => 'SDOCKETNO',
-	//         'SUPERVOFFICE' => 'SUPVOFFICE',
-	//         'REMARKS' => 'REMARKS',
-	//         'YEAR' => 'YEAR',
-	//         'START_DD' => 'STARTDD',
-	//         'START_MM' => 'STARTMM',
-	//         'START_YY' => 'STARTYY',
-	//         'END_DD' => 'ENDDD',
-	//         'END_MM' => 'ENDMM',
-	//         'END_YY' => 'ENDYY'
-	//     ];
-
-	//     foreach ($filters as $key => $column) {
-	//         if (!empty($input[$key])) {
-	//             $this->db->like($column, utf8_encode($input[$key]));
-	//         }
-	//     }
-
-	//     // Apply pagination
-	//     $limit = isset($input['limit']) ? (int)$input['limit'] : 100; // default 100
-	//     $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
-	//     $this->db->limit($limit, $offset);
-
-	//     $this->db->order_by('id', 'DESC');
-	//     $query = $this->db->get();
-	//     echo json_encode($query->result_array());
-	// }
 	public function masterlist_json()
 	{
 	    $this->load->database();
 
-	    // Fix: force DB connection to use utf8mb4 so ñ is handled correctly
+	    // Force DB connection to use utf8mb4 para sa tamang pag-handle ng special characters
 	    $this->db->query("SET NAMES 'utf8mb4'");
 	    $this->db->query("SET CHARACTER SET utf8mb4");
 
@@ -827,44 +724,65 @@ class Cmis_Probationer_model extends CI_Model
 	    $json = file_get_contents('php://input');
 	    $input = json_decode($json, true);
 
-	    // Filter fields
+	    // Filter mapping
 	    $filters = [
-	        'REGION'      => 'REGION',
-	        'FIRSTNAME'   => 'FIRSTNAME',
-	        'MIDDLENAME'  => 'MIDDLENAME',
-	        'LASTNAME'    => 'LASTNAME',
-	        'ALIAS'       => 'ALIAS',
-	        'SDOCKETNO'   => 'SDOCKETNO',
-	        'SUPERVOFFICE'=> 'SUPVOFFICE',
-	        'REMARKS'     => 'REMARKS',
-	        'YEAR'        => 'YEAR',
-	        'START_DD'    => 'STARTDD',
-	        'START_MM'    => 'STARTMM',
-	        'START_YY'    => 'STARTYY',
-	        'END_DD'      => 'ENDDD',
-	        'END_MM'      => 'ENDMM',
-	        'END_YY'      => 'ENDYY'
+	        'REGION'       => 'REGION',
+	        'FIRSTNAME'    => 'FIRSTNAME',
+	        'MIDDLENAME'   => 'MIDDLENAME',
+	        'LASTNAME'     => 'LASTNAME',
+	        'ALIAS'        => 'ALIAS',
+	        'SDOCKETNO'    => 'SDOCKETNO',
+	        'SUPERVOFFICE' => 'SUPVOFFICE',
+	        'REMARKS'      => 'REMARKS',
+	        'YEAR'         => 'YEAR',
+	        'START_DD'     => 'STARTDD',
+	        'START_MM'     => 'STARTMM',
+	        'START_YY'     => 'STARTYY',
+	        'END_DD'       => 'ENDDD',
+	        'END_MM'       => 'ENDMM',
+	        'END_YY'       => 'ENDYY'
 	    ];
 
-	    foreach ($filters as $key => $column) {
-	        if (!empty($input[$key])) {
-	            // Fix: removed utf8_encode() — it corrupts ñ and other UTF-8 chars
-	            $this->db->like($column, $input[$key]);
+	    if (!empty($input)) {
+	        foreach ($filters as $key => $column) {
+	            if (isset($input[$key]) && $input[$key] !== '') {
+	                $search_value = $input[$key];
+
+	                // Listahan ng fields na kailangang maging strict sa Ñ vs N
+	                $name_fields = ['LASTNAME', 'FIRSTNAME', 'MIDDLENAME'];
+
+	                if (in_array($column, $name_fields)) {
+	                    // Gawing uppercase ang input para mag-match kahit naka-binary collation
+	                    $search_upper = mb_strtoupper($search_value, 'UTF-8');
+	                    $escaped_val = $this->db->escape_like_str($search_upper);
+
+	                    /* EXPLANATION:
+	                       - UPPER($column): Ginagawang capital ang data sa DB para case-insensitive.
+	                       - COLLATE utf8mb4_bin: Ginagawang strict ang 'N' vs 'Ñ'.
+	                       - LIKE UPPER(...): Sinisigurong uppercase din ang hinahanap na pattern.
+	                    */
+	                    $this->db->where("UPPER($column) COLLATE utf8mb4_bin LIKE UPPER('%$escaped_val%')", NULL, FALSE);
+	                } else {
+	                    // Para sa ibang fields, gamit ang standard na LIKE ng CodeIgniter
+	                    $this->db->like($column, $search_value);
+	                }
+	            }
 	        }
 	    }
 
 	    // Apply pagination
 	    $limit  = isset($input['limit'])  ? (int)$input['limit']  : 100;
 	    $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
+	    
 	    $this->db->limit($limit, $offset);
 	    $this->db->order_by('id', 'DESC');
 
 	    $query = $this->db->get();
 	    $result = $query->result_array();
 
-	    // Ensure output is properly UTF-8 encoded
+	    // Siguraduhing UTF-8 ang output para hindi mag-corrupt ang 'Ñ' sa JSON result
 	    header('Content-Type: application/json; charset=utf-8');
-	    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+	    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 	}
 
 
