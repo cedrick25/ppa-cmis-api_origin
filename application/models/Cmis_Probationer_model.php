@@ -762,9 +762,61 @@ class Cmis_Probationer_model extends CI_Model
             SSP::simple( $_GET, $sql_details, $query, $primaryKey, $columns)
         );
 	}
+	// public function masterlist_json()
+	// {
+	//     $this->load->database();
+	//     $this->db->select("id, FIRSTNAME, MIDDLENAME, LASTNAME, `ALIAS`, `SUPVOFFICE`, `REMARKS`, `SDOCKETNO`, `YEAR`, `REGION`, 
+	//         CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, 
+	//         CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE");
+	//     $this->db->from('masterlist');
+	//     $this->db->where('STATUS', 1);
+
+	//     // Read JSON input from POST
+	//     $json = file_get_contents('php://input');
+	//     $input = json_decode($json, true);
+
+	//     // Filter fields
+	//     $filters = [
+	//         'REGION' => 'REGION',
+	//         'FIRSTNAME' => 'FIRSTNAME',
+	//         'MIDDLENAME' => 'MIDDLENAME',
+	//         'LASTNAME' => 'LASTNAME',
+	//         'ALIAS' => 'ALIAS',
+	//         'SDOCKETNO' => 'SDOCKETNO',
+	//         'SUPERVOFFICE' => 'SUPVOFFICE',
+	//         'REMARKS' => 'REMARKS',
+	//         'YEAR' => 'YEAR',
+	//         'START_DD' => 'STARTDD',
+	//         'START_MM' => 'STARTMM',
+	//         'START_YY' => 'STARTYY',
+	//         'END_DD' => 'ENDDD',
+	//         'END_MM' => 'ENDMM',
+	//         'END_YY' => 'ENDYY'
+	//     ];
+
+	//     foreach ($filters as $key => $column) {
+	//         if (!empty($input[$key])) {
+	//             $this->db->like($column, utf8_encode($input[$key]));
+	//         }
+	//     }
+
+	//     // Apply pagination
+	//     $limit = isset($input['limit']) ? (int)$input['limit'] : 100; // default 100
+	//     $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
+	//     $this->db->limit($limit, $offset);
+
+	//     $this->db->order_by('id', 'DESC');
+	//     $query = $this->db->get();
+	//     echo json_encode($query->result_array());
+	// }
 	public function masterlist_json()
 	{
 	    $this->load->database();
+
+	    // Fix: force DB connection to use utf8mb4 so ñ is handled correctly
+	    $this->db->query("SET NAMES 'utf8mb4'");
+	    $this->db->query("SET CHARACTER SET utf8mb4");
+
 	    $this->db->select("id, FIRSTNAME, MIDDLENAME, LASTNAME, `ALIAS`, `SUPVOFFICE`, `REMARKS`, `SDOCKETNO`, `YEAR`, `REGION`, 
 	        CONCAT(STARTYY,'-',STARTMM,'-',STARTDD) AS START_DATE, 
 	        CONCAT(ENDYY,'-',ENDMM,'-',ENDDD) AS END_DATE");
@@ -777,39 +829,43 @@ class Cmis_Probationer_model extends CI_Model
 
 	    // Filter fields
 	    $filters = [
-	        'REGION' => 'REGION',
-	        'FIRSTNAME' => 'FIRSTNAME',
-	        'MIDDLENAME' => 'MIDDLENAME',
-	        'LASTNAME' => 'LASTNAME',
-	        'ALIAS' => 'ALIAS',
-	        'SDOCKETNO' => 'SDOCKETNO',
-	        'SUPERVOFFICE' => 'SUPVOFFICE',
-	        'REMARKS' => 'REMARKS',
-	        'YEAR' => 'YEAR',
-	        'START_DD' => 'STARTDD',
-	        'START_MM' => 'STARTMM',
-	        'START_YY' => 'STARTYY',
-	        'END_DD' => 'ENDDD',
-	        'END_MM' => 'ENDMM',
-	        'END_YY' => 'ENDYY'
+	        'REGION'      => 'REGION',
+	        'FIRSTNAME'   => 'FIRSTNAME',
+	        'MIDDLENAME'  => 'MIDDLENAME',
+	        'LASTNAME'    => 'LASTNAME',
+	        'ALIAS'       => 'ALIAS',
+	        'SDOCKETNO'   => 'SDOCKETNO',
+	        'SUPERVOFFICE'=> 'SUPVOFFICE',
+	        'REMARKS'     => 'REMARKS',
+	        'YEAR'        => 'YEAR',
+	        'START_DD'    => 'STARTDD',
+	        'START_MM'    => 'STARTMM',
+	        'START_YY'    => 'STARTYY',
+	        'END_DD'      => 'ENDDD',
+	        'END_MM'      => 'ENDMM',
+	        'END_YY'      => 'ENDYY'
 	    ];
 
 	    foreach ($filters as $key => $column) {
 	        if (!empty($input[$key])) {
-	            $this->db->like($column, utf8_encode($input[$key]));
+	            // Fix: removed utf8_encode() — it corrupts ñ and other UTF-8 chars
+	            $this->db->like($column, $input[$key]);
 	        }
 	    }
 
 	    // Apply pagination
-	    $limit = isset($input['limit']) ? (int)$input['limit'] : 100; // default 100
+	    $limit  = isset($input['limit'])  ? (int)$input['limit']  : 100;
 	    $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
 	    $this->db->limit($limit, $offset);
-
 	    $this->db->order_by('id', 'DESC');
-	    $query = $this->db->get();
-	    echo json_encode($query->result_array());
-	}
 
+	    $query = $this->db->get();
+	    $result = $query->result_array();
+
+	    // Ensure output is properly UTF-8 encoded
+	    header('Content-Type: application/json; charset=utf-8');
+	    echo json_encode($result, JSON_UNESCAPED_UNICODE);
+	}
 
 
 }
