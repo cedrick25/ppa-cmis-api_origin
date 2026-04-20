@@ -257,6 +257,8 @@ class Expansion_model extends CI_Model
 	        community_service_masterlist.id, 
 	        community_service_masterlist.docket_number, 
 	        CONCAT(community_service_masterlist.first_name, ' ', IFNULL(community_service_masterlist.middle_name, ''), ' ', community_service_masterlist.last_name, ' ', IFNULL(community_service_masterlist.suffix, '')) AS full_name, 
+	        community_service_masterlist.criminal_case_number, 
+        	community_service_masterlist.court_of_origin,
 	        community_service_masterlist.assigned_officer, 
 	        community_service_masterlist.community_service_start, 
 	        community_service_masterlist.community_service_end,
