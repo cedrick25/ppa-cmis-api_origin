@@ -89,6 +89,42 @@ class Cmis_Probationer_model extends CI_Model
 						);
 					}
 					break;
+				case 'fetch_by_docket':
+				    $required_param = 2; // We need both SDOCKETNO and SUPVOFFICE
+				    
+				    // Check if both required identifiers exist in the payload
+				    if (isset($payload->SDOCKETNO) && !empty($payload->SDOCKETNO)) {
+				        $this->db->where('SDOCKETNO', $payload->SDOCKETNO);
+				        $required_param--;
+				    }
+				    
+				    if (isset($payload->SUPVOFFICE) && !empty($payload->SUPVOFFICE)) {
+				        $this->db->where('SUPVOFFICE', $payload->SUPVOFFICE);
+				        $required_param--;
+				    }
+
+				    if ($required_param == 0) {
+				        $query = $this->db->get('masterlist');
+				        $result = $query->row(); // Fetching a single record
+
+				        if ($result) {
+				            $response = array(
+				                'status' => 'SUCCESS',
+				                'data' => $result
+				            );
+				        } else {
+				            $response = array(
+				                'status' => 'ERROR',
+				                'message' => 'NO RECORD FOUND WITH THE PROVIDED DETAILS'
+				            );
+				        }
+				    } else {
+				        $response = array(
+				            'status' => 'ERROR',
+				            'message' => 'PLEASE PROVIDE BOTH SDOCKETNO AND SUPVOFFICE'
+				        );
+				    }
+				    break;
 				case 'count':
 					$fields = array('LASTNAME', 'FIRSTNAME', 'MIDDLENAME', 'ALIAS', 'SUPVOFFICE', 'REMARKS', 'SDOCKETNO', 'YEAR', 'REGION', 'STARTMM', 'STARTDD', 'STARTYY', 'ENDMM', 'ENDDD', 'ENDYY', 'STATUS');
 					foreach ($payload as $key => $value) {
