@@ -260,8 +260,10 @@ class Expansion_model extends CI_Model
 	        community_service_masterlist.criminal_case_number, 
         	community_service_masterlist.court_of_origin,
 	        community_service_masterlist.assigned_officer, 
+	        community_service_masterlist.date_received_by_ppo,
 	        community_service_masterlist.community_service_start, 
 	        community_service_masterlist.community_service_end,
+	        community_service_masterlist.field_office,
 	        CASE
 	            WHEN community_service_masterlist.community_service_start IS NULL AND community_service_masterlist.community_service_end IS NULL THEN ''
 	            WHEN community_service_masterlist.community_service_start IS NULL THEN CONCAT(YEAR(community_service_masterlist.community_service_end))
