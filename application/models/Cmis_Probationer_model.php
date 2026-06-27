@@ -722,7 +722,9 @@ class Cmis_Probationer_model extends CI_Model
 	        array( 'db' => 'REMARKS', 'dt' => 6 ),
 	        array( 'db' => 'SDOCKETNO', 'dt' => 7 ),
 	        array( 'db' => 'REGION', 'dt' => 8 ),
-	        array( 'db' => 'YEAR', 'dt' => 9 ),
+	        array( 'db' => 'YEAR', 'dt' => 9, 'formatter' => function( $d, $row ) {
+	            return $this->formatMasterlistYear($d);
+	        }),
 	        array( 'db' => 'START_DATE', 'dt' => 10 ),
 	        array( 'db' => 'END_DATE', 'dt' => 11 ),
 	        array( 'db' => 'id', 'dt' => 12, 'formatter' => function( $d, $row ) {
@@ -816,9 +818,44 @@ class Cmis_Probationer_model extends CI_Model
 	    $query = $this->db->get();
 	    $result = $query->result_array();
 
+	    foreach ($result as &$row) {
+	        if (array_key_exists('YEAR', $row)) {
+	            $row['YEAR'] = $this->formatMasterlistYear($row['YEAR']);
+	        }
+	    }
+	    unset($row);
+
 	    // Siguraduhing UTF-8 ang output para hindi mag-corrupt ang 'Ñ' sa JSON result
 	    header('Content-Type: application/json; charset=utf-8');
 	    echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+	}
+
+	private function formatMasterlistYear($year)
+	{
+	    if ($year === null) {
+	        return '';
+	    }
+
+	    $year = trim((string) $year);
+	    if ($year === '' || $year === '-') {
+	        return '';
+	    }
+
+	    if (preg_match('/^(\d{4})(-(\d{4}))?$/', $year, $matches)) {
+	        $startYear = (int) $matches[1];
+	        $endYear = isset($matches[3]) ? (int) $matches[3] : null;
+
+	        if ($startYear <= 0) {
+	            return '';
+	        }
+	        if ($endYear !== null && $endYear <= 0) {
+	            return '';
+	        }
+
+	        return $year;
+	    }
+
+	    return '';
 	}
 
 
