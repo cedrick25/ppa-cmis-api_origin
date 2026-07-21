@@ -2,6 +2,13 @@
   RewriteEngine On
   #RewriteBase /wms/
 
+  # Force HTTPS on production/staging hosts (local WAMP stays on HTTP).
+  # Skip when already HTTPS or when a reverse proxy terminated TLS.
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteCond %{HTTP_HOST} ^(stg-)?(epp)?cmis\.probation\.gov\.ph$ [NC]
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
   #RewriteCond %{REQUEST_FILENAME} !-f
   #RewriteRule ^ index.php [QSA,L]
   RewriteCond %{REQUEST_FILENAME} !-f
