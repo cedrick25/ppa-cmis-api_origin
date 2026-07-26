@@ -529,4 +529,5 @@ $config['rewrite_short_tags'] = FALSE;
 | Comma-separated:	'10.0.1.200,192.168.5.0/24'
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
-$config['proxy_ips'] = '';
+/* Trust X-Forwarded-* from Nginx Proxy Manager when identifying client IP. */
+$config['proxy_ips'] = '192.168.1.240';
