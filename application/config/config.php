@@ -24,10 +24,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 date_default_timezone_set('Asia/Manila');
-/* Build base_url from the requested host so HTTPS does not fall back to SERVER_ADDR. */
+$request_host = isset($_SERVER['HTTP_HOST']) ? strtolower(preg_replace('/:\d+$/', '', $_SERVER['HTTP_HOST'])) : '';
+$remote_addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+$proxy_ip = '192.168.1.240';
+$force_https_hosts = array(
+	'eppcmis.probation.gov.ph',
+	'stg-eppcmis.probation.gov.ph',
+	'cmis.probation.gov.ph',
+	'rpxy.probation.gov.ph',
+);
+
+/* Behind NPM, Apache still sees HTTP — force HTTPS for known hosts / proxy. */
 $is_https_req = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
 	|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
-	|| (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443');
+	|| (isset($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_SSL']) === 'on')
+	|| (isset($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443')
+	|| ($remote_addr === $proxy_ip && in_array($request_host, $force_https_hosts, TRUE))
+	|| in_array($request_host, $force_https_hosts, TRUE);
+
+if ($is_https_req) {
+	$_SERVER['HTTPS'] = 'on';
+	$_SERVER['SERVER_PORT'] = '443';
+	$_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+}
+
 $base_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 $base_path = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 $config['base_url'] = ($is_https_req ? 'https' : 'http') . '://' . $base_host . $base_path;
