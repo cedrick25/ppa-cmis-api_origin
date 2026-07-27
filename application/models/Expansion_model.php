@@ -244,13 +244,9 @@ class Expansion_model extends CI_Model
 	    );
 	}
 
-	public function community_json()
+	public function community_json($payload = null)
 	{
 	    $this->expansion_db = $this->load->database('expansion', TRUE);
-
-	    // Prefer utf8mb4 when available; ignore failure on older/latin1 servers
-	    @$this->expansion_db->query("SET NAMES 'utf8mb4'");
-	    @$this->expansion_db->query("SET CHARACTER SET utf8mb4");
 
 	    $this->expansion_db->select("
 	        community_service_masterlist.id, 
@@ -274,53 +270,50 @@ class Expansion_model extends CI_Model
 	    $this->expansion_db->from('community_service_masterlist');
 	    $this->expansion_db->where('community_service_masterlist.status', 1);
 
-	    // Get JSON input from POST (same body Report.php sends via cURL)
-	    $json = file_get_contents('php://input');
-	    $input = json_decode($json, true);
+	    // Prefer payload already read by the controller (php://input is often one-shot)
+	    if (is_array($payload)) {
+	        $input = $payload;
+	    } elseif (is_object($payload)) {
+	        $input = (array) $payload;
+	    } else {
+	        $json = file_get_contents('php://input');
+	        $input = json_decode($json, true);
+	    }
 	    if (!is_array($input)) {
 	        $input = array();
 	    }
 
-	    // Keep filter behavior aligned with communitySSP (table search)
-	    $filters = [
-	        'docket_number'    => 'community_service_masterlist.docket_number',
-	        'first_name'       => 'community_service_masterlist.first_name',
-	        'middle_name'      => 'community_service_masterlist.middle_name',
-	        'last_name'        => 'community_service_masterlist.last_name',
-	        'assigned_officer' => 'community_service_masterlist.assigned_officer',
-	        'cc_number'        => 'community_service_masterlist.criminal_case_number',
-	        'court_of_origin'  => 'community_service_masterlist.court_of_origin',
-	    ];
-
-	    $name_fields = [
-	        'community_service_masterlist.first_name',
-	        'community_service_masterlist.middle_name',
-	        'community_service_masterlist.last_name',
-	    ];
-
-	    foreach ($filters as $key => $column) {
-	        if (!isset($input[$key]) || $input[$key] === '' || $input[$key] === null) {
-	            continue;
-	        }
-
-	        $search_value = $input[$key];
-
-	        if (in_array($column, $name_fields, true)) {
-	            // CONVERT makes utf8mb4_bin valid even when the column charset is latin1
-	            // (Error 1253 was: COLLATION 'utf8mb4_bin' is not valid for CHARACTER SET 'latin1')
-	            $pattern = '%' . $this->expansion_db->escape_like_str($search_value) . '%';
-	            $escaped = $this->expansion_db->escape($pattern);
-	            $this->expansion_db->where(
-	                "UPPER(CONVERT($column USING utf8mb4)) COLLATE utf8mb4_bin LIKE UPPER($escaped)",
-	                NULL,
-	                FALSE
-	            );
-	        } else {
-	            $this->expansion_db->like($column, $search_value);
-	        }
+	    // Same plain LIKE filters as communitySSP (table search) — no COLLATE/CONVERT
+	    if (!empty($input['docket_number'])) {
+	        $this->expansion_db->like('community_service_masterlist.docket_number', $input['docket_number']);
 	    }
-
-	    // Year filter — same semantics as communitySSP
+	    if (!empty($input['first_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.first_name', $input['first_name']);
+	    }
+	    if (!empty($input['middle_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.middle_name', $input['middle_name']);
+	    }
+	    if (!empty($input['last_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.last_name', $input['last_name']);
+	    }
+	    if (!empty($input['cc_number'])) {
+	        $this->expansion_db->like('community_service_masterlist.criminal_case_number', $input['cc_number']);
+	    }
+	    if (!empty($input['court_of_origin'])) {
+	        $this->expansion_db->like('community_service_masterlist.court_of_origin', $input['court_of_origin']);
+	    }
+	    if (!empty($input['assigned_officer'])) {
+	        $this->expansion_db->like('community_service_masterlist.assigned_officer', $input['assigned_officer']);
+	    }
+	    if (!empty($input['start_date'])) {
+	        $this->expansion_db->where('community_service_masterlist.community_service_start >=', $input['start_date']);
+	    }
+	    if (!empty($input['end_date'])) {
+	        $this->expansion_db->where('community_service_masterlist.community_service_end <=', $input['end_date']);
+	    }
+	    if (!empty($input['field_office']) && strtoupper($input['field_office']) !== 'ALL') {
+	        $this->expansion_db->like('community_service_masterlist.field_office', $input['field_office']);
+	    }
 	    if (!empty($input['year'])) {
 	        $year = (int) $input['year'];
 	        $this->expansion_db->where(
@@ -337,19 +330,6 @@ class Expansion_model extends CI_Model
 	        );
 	    }
 
-	    if (!empty($input['start_date'])) {
-	        $this->expansion_db->where('community_service_masterlist.community_service_start >=', $input['start_date']);
-	    }
-	    if (!empty($input['end_date'])) {
-	        $this->expansion_db->where('community_service_masterlist.community_service_end <=', $input['end_date']);
-	    }
-
-	    // Field office — skip when empty or "ALL" (matches communitySSP / hidden select default)
-	    if (!empty($input['field_office']) && strtoupper($input['field_office']) !== 'ALL') {
-	        $this->expansion_db->like('community_service_masterlist.field_office', $input['field_office']);
-	    }
-
-	    // Pagination & Sort
 	    $limit = isset($input['limit']) ? (int) $input['limit'] : 100;
 	    $offset = isset($input['offset']) ? (int) $input['offset'] : 0;
 	    $this->expansion_db->limit($limit, $offset);
@@ -359,7 +339,6 @@ class Expansion_model extends CI_Model
 
 	    header('Content-Type: application/json; charset=utf-8');
 
-	    // Never crash PDF download with result_array() on bool — return [] on query failure
 	    if ($query === false) {
 	        echo json_encode(array(), JSON_UNESCAPED_UNICODE);
 	        return;
