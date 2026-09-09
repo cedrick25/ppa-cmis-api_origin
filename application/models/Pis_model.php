@@ -17,7 +17,7 @@
 			if($payload->USER_LEVEL_ID == 1 or $payload->USER_LEVEL_ID == 2 or $payload->FIELD_OFFICE == 'Central Office HQ'){
 				$pis_db->where('ENABLED', 1);
 				$sql = $pis_db->get('field_office');	
-			}else if($payload->USER_LEVEL_ID == 3 or $payload->USER_LEVEL_ID == 6 or $payload->USER_LEVEL_ID == 7 or $payload->USER_LEVEL_ID == 10 or $payload->USER_LEVEL_ID == 29 or $payload->USER_LEVEL_ID == 34 or $payload->USER_LEVEL_ID == 36 or $payload->USER_LEVEL_ID == 37 or $payload->USER_LEVEL_ID == 38 or $payload->USER_LEVEL_ID == 60 or $payload->USER_LEVEL_ID == 64){
+			}else if($payload->USER_LEVEL_ID == 3 or $payload->USER_LEVEL_ID == 6 or $payload->USER_LEVEL_ID == 7 or $payload->USER_LEVEL_ID == 10 or $payload->USER_LEVEL_ID == 29 or $payload->USER_LEVEL_ID == 33 or $payload->USER_LEVEL_ID == 34 or $payload->USER_LEVEL_ID == 36 or $payload->USER_LEVEL_ID == 37 or $payload->USER_LEVEL_ID == 38 or $payload->USER_LEVEL_ID == 60 or $payload->USER_LEVEL_ID == 64){
 				$pis_db->where('NAME', $payload->FIELD_OFFICE );
 				$pis_db->where('ENABLED', 1);
 				$query = $pis_db->get('field_office');
