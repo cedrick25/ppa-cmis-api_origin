@@ -244,15 +244,10 @@ class Expansion_model extends CI_Model
 	    );
 	}
 
-	public function community_json()
+	public function community_json($payload = null)
 	{
 	    $this->expansion_db = $this->load->database('expansion', TRUE);
 
-	    // Force UTF-8 connection para sa tamang pag-handle ng Ñ
-	    $this->expansion_db->query("SET NAMES 'utf8mb4'");
-	    $this->expansion_db->query("SET CHARACTER SET utf8mb4");
-
-	    // Inupdate ang table references sa SELECT
 	    $this->expansion_db->select("
 	        community_service_masterlist.id, 
 	        community_service_masterlist.docket_number, 
@@ -275,70 +270,80 @@ class Expansion_model extends CI_Model
 	    $this->expansion_db->from('community_service_masterlist');
 	    $this->expansion_db->where('community_service_masterlist.status', 1);
 
-	    // Get JSON input from POST
-	    $json = file_get_contents('php://input');
-	    $input = json_decode($json, true);
-
-	    // Define filterable fields based on community_service_masterlist structure
-	    $filters = [
-	        'docket_number'    => 'community_service_masterlist.docket_number',
-	        'first_name'       => 'community_service_masterlist.first_name',
-	        'middle_name'      => 'community_service_masterlist.middle_name',
-	        'last_name'        => 'community_service_masterlist.last_name',
-	        'assigned_officer' => 'community_service_masterlist.assigned_officer'
-	    ];
-
-	    if (!empty($input)) {
-	        foreach ($filters as $key => $column) {
-	            if (!empty($input[$key])) {
-	                $search_value = $input[$key];
-
-	                // Listahan ng fields na kailangang maging strict sa Ñ
-	                $name_fields = [
-	                    'community_service_masterlist.first_name', 
-	                    'community_service_masterlist.middle_name', 
-	                    'community_service_masterlist.last_name'
-	                ];
-
-	                if (in_array($column, $name_fields)) {
-	                    $escaped_val = $this->expansion_db->escape_like_str($search_value);
-	                    // Strict Ñ Logic
-	                    $this->expansion_db->where("UPPER($column) COLLATE utf8mb4_bin LIKE UPPER('%$escaped_val%')", NULL, FALSE);
-	                } else {
-	                    $this->expansion_db->like($column, $search_value);
-	                }
-	            }
-	        }
-
-	        // Year Filter
-	        if (!empty($input['year'])) {
-	            $year = $input['year'];
-	            $this->expansion_db->group_start()
-	                ->where("YEAR(community_service_masterlist.community_service_start) <=", $year)
-	                ->where("YEAR(community_service_masterlist.community_service_end) >=", $year)
-	                ->or_where("YEAR(community_service_masterlist.community_service_start)", $year)
-	                ->or_where("YEAR(community_service_masterlist.community_service_end)", $year)
-	                ->group_end();
-	        }
-
-	        // Date Range Filters
-	        if (!empty($input['start_date'])) {
-	            $this->expansion_db->where('community_service_masterlist.community_service_start >=', $input['start_date']);
-	        }
-	        if (!empty($input['end_date'])) {
-	            $this->expansion_db->where('community_service_masterlist.community_service_end <=', $input['end_date']);
-	        }
+	    // Prefer payload already read by the controller (php://input is often one-shot)
+	    if (is_array($payload)) {
+	        $input = $payload;
+	    } elseif (is_object($payload)) {
+	        $input = (array) $payload;
+	    } else {
+	        $json = file_get_contents('php://input');
+	        $input = json_decode($json, true);
+	    }
+	    if (!is_array($input)) {
+	        $input = array();
 	    }
 
-	    // Pagination & Sort
-	    $limit = isset($input['limit']) ? (int)$input['limit'] : 100;
-	    $offset = isset($input['offset']) ? (int)$input['offset'] : 0;
+	    // Same plain LIKE filters as communitySSP (table search) — no COLLATE/CONVERT
+	    if (!empty($input['docket_number'])) {
+	        $this->expansion_db->like('community_service_masterlist.docket_number', $input['docket_number']);
+	    }
+	    if (!empty($input['first_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.first_name', $input['first_name']);
+	    }
+	    if (!empty($input['middle_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.middle_name', $input['middle_name']);
+	    }
+	    if (!empty($input['last_name'])) {
+	        $this->expansion_db->like('community_service_masterlist.last_name', $input['last_name']);
+	    }
+	    if (!empty($input['cc_number'])) {
+	        $this->expansion_db->like('community_service_masterlist.criminal_case_number', $input['cc_number']);
+	    }
+	    if (!empty($input['court_of_origin'])) {
+	        $this->expansion_db->like('community_service_masterlist.court_of_origin', $input['court_of_origin']);
+	    }
+	    if (!empty($input['assigned_officer'])) {
+	        $this->expansion_db->like('community_service_masterlist.assigned_officer', $input['assigned_officer']);
+	    }
+	    if (!empty($input['start_date'])) {
+	        $this->expansion_db->where('community_service_masterlist.community_service_start >=', $input['start_date']);
+	    }
+	    if (!empty($input['end_date'])) {
+	        $this->expansion_db->where('community_service_masterlist.community_service_end <=', $input['end_date']);
+	    }
+	    if (!empty($input['field_office']) && strtoupper($input['field_office']) !== 'ALL') {
+	        $this->expansion_db->like('community_service_masterlist.field_office', $input['field_office']);
+	    }
+	    if (!empty($input['year'])) {
+	        $year = (int) $input['year'];
+	        $this->expansion_db->where(
+	            "(
+	                YEAR(community_service_masterlist.community_service_start) = {$year}
+	                OR YEAR(community_service_masterlist.community_service_end) = {$year}
+	                OR (
+	                    YEAR(community_service_masterlist.community_service_start) <= {$year}
+	                    AND YEAR(community_service_masterlist.community_service_end) >= {$year}
+	                )
+	            )",
+	            NULL,
+	            FALSE
+	        );
+	    }
+
+	    $limit = isset($input['limit']) ? (int) $input['limit'] : 100;
+	    $offset = isset($input['offset']) ? (int) $input['offset'] : 0;
 	    $this->expansion_db->limit($limit, $offset);
 	    $this->expansion_db->order_by('community_service_masterlist.id', 'DESC');
 
 	    $query = $this->expansion_db->get();
 
 	    header('Content-Type: application/json; charset=utf-8');
+
+	    if ($query === false) {
+	        echo json_encode(array(), JSON_UNESCAPED_UNICODE);
+	        return;
+	    }
+
 	    echo json_encode($query->result_array(), JSON_UNESCAPED_UNICODE);
 	}
 
