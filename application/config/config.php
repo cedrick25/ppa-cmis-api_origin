@@ -51,6 +51,10 @@ if ($is_https_req) {
 $base_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
 $base_path = str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
 $config['base_url'] = ($is_https_req ? 'https' : 'http') . '://' . $base_host . $base_path;
+$ppis_local = ($request_host === 'localhost' || $request_host === '127.0.0.1' || $request_host === '');
+$config['ppis_path'] = $ppis_local
+	? 'http://127.0.0.1:8000'
+	: (($is_https_req ? 'https' : 'http') . '://ppis.probation.gov.ph/8000');
 
 /*
 |--------------------------------------------------------------------------

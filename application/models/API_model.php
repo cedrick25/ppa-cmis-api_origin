@@ -2703,15 +2703,72 @@
 
 		}
 
+		private function ppis_base_url(){
+			$configured = $this->config->item('ppis_path');
+			if (!empty($configured)) {
+				return rtrim($configured, '/');
+			}
+			return 'http://127.0.0.1:8000';
+		}
+
+		private function resolveF5T1OfficeId($value, $fallbackOfficeId){
+			if (isset($value['field_office_id']) && $value['field_office_id'] !== '' && $value['field_office_id'] !== null) {
+				return $value['field_office_id'];
+			}
+			return $fallbackOfficeId;
+		}
+
+		private function pushF5T1CarryOverToPpis($value, $officeId){
+			$docketNo = isset($value['docket_no']) ? $value['docket_no'] : '';
+			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $officeId);
+			if ($docketNo === '' || $officeId === '') {
+				log_message('error', 'PPIS carry-over skipped, missing office or docket: '.$docketNo);
+				return;
+			}
+
+			$payload = array(
+				'clientType' => 'PROBATIONER',
+				'docketNumber' => $docketNo,
+				'fullName' => isset($value['petitioner']) ? $value['petitioner'] : '',
+				'firstName' => null,
+				'middleName' => null,
+				'lastName' => null,
+				'suffixName' => null,
+				'receivedDateByPPO' => isset($value['date_rcv']) ? $value['date_rcv'] : null,
+				'fieldOfficeId' => $officeId,
+				'investigatingOfficer' => isset($value['investigating_officer']) ? $value['investigating_officer'] : '',
+				'manualDocket' => false,
+				'createdBy' => '0',
+				'type' => 'PIS_INV_CARRY_OVER',
+			);
+
+			$url = $this->ppis_base_url().'/ppis/create';
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+			curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+			$body = curl_exec($ch);
+			$errno = curl_errno($ch);
+			$http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			curl_close($ch);
+			if ($errno || $http < 200 || $http >= 300) {
+				log_message('error', 'PPIS carry-over failed for '.$docketNo.' HTTP '.$http.' curl '.$errno.' body '.$body);
+			}
+		}
+
 		public function migrate_f5t1_v2($payload){
 
 			$field_office = $payload->field_office;
 			$Y_M = $payload->Y_M;
 			$datenow = date("Y-m-d H:i:s");
+			$fallbackOfficeId = (isset($payload->officeId) && $payload->officeId !== '') ? $payload->officeId : '';
 
 			// echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
-			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office,field_office_id FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
 			if($query){
@@ -2725,7 +2782,7 @@
 			}
 
 			$this->db->reconnect();
-			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office,field_office_id FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			if($query){
 				if($query->num_rows() > 0){
@@ -2777,12 +2834,17 @@
 			#var_dump($result);
 
 			foreach($result as $key => $value){
+				$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $this->resolveF5T1OfficeId($value, $fallbackOfficeId));
+				if ($officeId !== '') {
+					$value['field_office_id'] = $officeId;
+				}
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
 				if($query_check){
 					if($query_check->num_rows() > 0){
 						// echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						$this->pushF5T1CarryOverToPpis($value, $officeId);
 					}else{
 						//INSERT
 						// echo "\nINSERTING ".$value['docket_no']."...";
@@ -2796,11 +2858,12 @@
 
 						$optionalFields = [
 						    'petitioner',
-						    'investigating_officer'
+						    'investigating_officer',
+						    'field_office_id'
 						];
 
 						foreach ($optionalFields as $field) {
-						    if (isset($value[$field])) {
+						    if (isset($value[$field]) && $value[$field] !== '') {
 						        $sql .= ", $field = '".$value[$field]."'";
 						    }
 						}
@@ -2809,6 +2872,9 @@
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->db->close();
+						if ($query_insert) {
+							$this->pushF5T1CarryOverToPpis($value, $officeId);
+						}
 
 					}
 				}
@@ -7269,8 +7335,8 @@
 					echo "\nTransferring to F5 T1 Started....";
 					echo $datenow;
 					echo "------";
-					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
-
+					$fallbackOfficeId = isset($valFO->ID) ? $valFO->ID : '';
+					$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office,field_office_id FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 					$array1 = array();
 					if($query){
 						if($query->num_rows() > 0){
@@ -7282,7 +7348,7 @@
 						}
 					}
 					$this->db->reconnect();
-					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+					$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office,field_office_id FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 					if($query){
 						if($query->num_rows() > 0){
@@ -7329,6 +7395,10 @@
 					echo "\nTransferring to date: ".$date_transfer."\n";
 
 					foreach($result as $key => $value){
+						$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $this->resolveF5T1OfficeId($value, $fallbackOfficeId));
+						if ($officeId !== '') {
+							$value['field_office_id'] = $officeId;
+						}
 						$this->db->reconnect();
 						$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."' AND status = 1");
 
@@ -7336,6 +7406,7 @@
 						if($query_check){
 							if($query_check->num_rows() > 0){
 								echo "\n".$value['docket_no']." ALREADY EXISTS...";
+								$this->pushF5T1CarryOverToPpis($value, $officeId);
 							}else{
 								echo "\nINSERTING ".$value['docket_no']."...";
 								$this->db->reconnect();
@@ -7347,11 +7418,12 @@
 
 								$optionalFields = [
 								    'petitioner',
-								    'investigating_officer'
+								    'investigating_officer',
+								    'field_office_id'
 								];
 
 								foreach ($optionalFields as $field) {
-								    if (isset($value[$field])) {
+								    if (isset($value[$field]) && $value[$field] !== '') {
 								        $sql .= ", $field = '".$value[$field]."'";
 								    }
 								}
@@ -7359,6 +7431,9 @@
 								$sql .= ", status = 1, source = 2, created_by = 0";
 								$query_insert = $this->db->query($sql);
 								$this->db->close();
+								if ($query_insert) {
+									$this->pushF5T1CarryOverToPpis($value, $officeId);
+								}
 
 
 							}
