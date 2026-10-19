@@ -346,6 +346,10 @@
 											);
 						$this->UpdateUser($p3);
 
+						if ((string) $user->USER_STATUS !== '0') {
+							$this->load->library('cmis_file_token');
+							$this->cmis_file_token->establish($user);
+						}
 
 						return json_encode($response);
 				}else{
@@ -422,6 +426,11 @@
 											"USER_SESSION" => "1",
 											);
 						$this->UpdateUser($p3);
+
+						if ((string) $user->USER_STATUS !== '0') {
+							$this->load->library('cmis_file_token');
+							$this->cmis_file_token->establish($user);
+						}
 
 						return json_encode($response);
 				}else{

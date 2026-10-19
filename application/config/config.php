@@ -56,6 +56,25 @@ $config['ppis_path'] = $ppis_local
 	? 'http://127.0.0.1:8000'
 	: (($is_https_req ? 'https' : 'http') . '://ppis.probation.gov.ph/8000');
 
+/* PPIS user service (port 8088) issues the existing file token. Prod binds 127.0.0.1. */
+$ppis_user_service = getenv('PPIS_USER_SERVICE_URL');
+if (!is_string($ppis_user_service) || $ppis_user_service === '') {
+	$ppis_user_service = 'http://127.0.0.1:8088';
+}
+$config['ppis_user_service'] = rtrim($ppis_user_service, '/');
+
+/* File service used by the view/download proxy. Browser uploads still use wms-main.js. */
+$ppis_file_service = getenv('PPIS_FILE_SERVICE_URL');
+if (!is_string($ppis_file_service) || $ppis_file_service === '') {
+	$ppis_file_service = $ppis_local
+		? 'http://127.0.0.1:8080'
+		: (($is_https_req ? 'https' : 'http') . '://ppis.probation.gov.ph/8080');
+}
+$config['ppis_file_service'] = rtrim($ppis_file_service, '/');
+
+$cmis_file_service_key = getenv('CMIS_FILE_TOKEN_SERVICE_KEY');
+$config['cmis_file_service_key'] = is_string($cmis_file_service_key) ? $cmis_file_service_key : '';
+
 /*
 |--------------------------------------------------------------------------
 | Index File

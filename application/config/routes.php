@@ -49,6 +49,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
+$route['wsv1/file/token'] = 'wsv1/file_proxy/token';
+$route['wsv1/file/end'] = 'wsv1/file_proxy/end';
+$route['wsv1/file/view/(:num)'] = 'wsv1/file_proxy/view/$1';
+$route['wsv1/file/download/(:num)'] = 'wsv1/file_proxy/download/$1';
 $route['wsv1/(:any)'] = "wsv1/$1";
 $route['ws'] = "ws/version";
 
