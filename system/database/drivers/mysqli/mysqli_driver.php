@@ -231,6 +231,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	public function reconnect()
 	{
+		// PHP 8.4 deprecates mysqli::ping(). It no longer reconnects (removed in 8.2).
+		if (PHP_VERSION_ID >= 80400)
+		{
+			return;
+		}
+
 		if ($this->conn_id !== FALSE && $this->conn_id->ping() === FALSE)
 		{
 			$this->conn_id = FALSE;
