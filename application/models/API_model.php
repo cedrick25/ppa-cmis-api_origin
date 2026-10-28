@@ -3426,6 +3426,7 @@
 		}
 		
 		public function migrate_f5t1($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3538,6 +3539,7 @@
 			echo "\n\nTransferring to F5 T1 Done....";
 		}
 		public function migrate_f5t3($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3657,6 +3659,7 @@
 			//
 		}
 		public function migrate_f5t5($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3756,6 +3759,7 @@
 			echo "\n\nTransferring to F5 T5 Done....";
 		}
 		public function migrate_f5t7($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3844,6 +3848,7 @@
 			
 		}
 		public function migrate_f5t10($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3927,6 +3932,7 @@
 			
 		}
 		public function migrate_f5t12($payload){
+			$this->prepareManualCarryOver();
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -4977,6 +4983,7 @@
 
 
 		public function migrate_f21t1($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5063,6 +5070,7 @@
 
 		}
 		public function migrate_f21t3($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5164,6 +5172,7 @@
 
 		}
 		public function migrate_f21t5($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5257,6 +5266,7 @@
 
 		}
 		public function migrate_f21t7_pardon($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5350,6 +5360,7 @@
 			
 		}
 		public function migrate_f21t7_parol($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5440,6 +5451,7 @@
 
 		}
 		public function migrate_f21t10_pardon($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5517,6 +5529,7 @@
 
 		}
 		public function migrate_f21t10_parol($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5592,6 +5605,7 @@
 			
 		}
 		public function migrate_f21t12_pardon($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5658,6 +5672,7 @@
 
 		}
 		public function migrate_f21t12_parol($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5724,6 +5739,7 @@
 
 		}
 		public function migrate_f21t14_pardon($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5803,6 +5819,7 @@
 
 		}
 		public function migrate_f21t14_parol($payload){
+			$this->prepareManualCarryOver();
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5904,6 +5921,7 @@
 		}
 		public function migrate_offline()
 		{
+			$this->prepareManualCarryOver();
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
 			$datenow = date("Y-m-d H:i:s");
@@ -7374,18 +7392,32 @@
 		}
 
 		public function check_diff_multi($array1, $array2){
-					    foreach($array2 as $key=>$val){
-					    	foreach($array1 as $key2=>$val2){
-					    		$val['docket_no'] = preg_replace('/\s+/', '', $val['docket_no']);
-					    		$val2['docket_no'] = preg_replace('/\s+/', '', $val2['docket_no']);
-					    		// echo "\n".$val['docket_no'] ." ".$val2['docket_no'];
-					    		if(strtoupper($val['docket_no']) == strtoupper($val2['docket_no'])){
-					    			unset($array1[$key2]);
-					    		}
+					    $exclude = array();
+					    foreach($array2 as $val){
+					    	$docket = strtoupper(preg_replace('/\s+/', '', $val['docket_no']));
+					    	$exclude[$docket] = true;
+					    }
+					    foreach($array1 as $key2=>$val2){
+					    	$docket = strtoupper(preg_replace('/\s+/', '', $val2['docket_no']));
+					    	if(isset($exclude[$docket])){
+					    		unset($array1[$key2]);
 					    	}
 					    }
 					    return $array1;
 					}
+
+		protected function prepareManualCarryOver(){
+			@set_time_limit(0);
+			@ini_set('max_execution_time', '0');
+			@ini_set('zlib.output_compression', '0');
+			if (function_exists('apache_setenv')) {
+				@apache_setenv('no-gzip', '1');
+			}
+			while (ob_get_level() > 0) {
+				@ob_end_flush();
+			}
+			@ob_implicit_flush(true);
+		}
 
 		public function migrate_cron_per_region(){
 
