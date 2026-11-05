@@ -88,6 +88,7 @@ class Cmis_F5T2_model extends CI_Model
 		{	
 			$response = array(
 				'status' => 'SUCCESS',
+				'id' => $this->db->insert_id(),
 				'message' => 'SUCCESS INSERTING DATA ON TABLE F5T2_RCV'
 			);
 
@@ -178,6 +179,7 @@ class Cmis_F5T2_model extends CI_Model
 		{	
 			$response = array(
 				'status' => 'SUCCESS',
+				'id' => $this->db->insert_id(),
 				'message' => 'SUCCESS INSERTING DATA ON TABLE F5T2_ACTED'
 			);
 
@@ -267,6 +269,7 @@ class Cmis_F5T2_model extends CI_Model
 		{	
 			$response = array(
 				'status' => 'SUCCESS',
+				'id' => $this->db->insert_id(),
 				'message' => 'SUCCESS INSERTING DATA ON TABLE F5T2_NOTACTED'
 			);
 

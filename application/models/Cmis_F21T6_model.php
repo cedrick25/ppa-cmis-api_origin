@@ -64,6 +64,7 @@ class Cmis_F21T6_model extends CI_Model
 					{
 						$response = array(
 							'status' => 'SUCCESS',
+							'id' => $this->db->insert_id(),
 							'message' => 'SUCCESS INSERTING DATA'
 						);
 						$p2 = (object)array( "created_by" => $payload->created_by,
@@ -323,6 +324,7 @@ class Cmis_F21T6_model extends CI_Model
 					{
 						$response = array(
 							'status' => 'SUCCESS',
+							'id' => $this->db->insert_id(),
 							'message' => 'SUCCESS INSERTING DATA'
 						);
 						$p2 = (object)array( "created_by" => $payload->created_by,

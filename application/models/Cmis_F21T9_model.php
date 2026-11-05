@@ -94,6 +94,7 @@ class Cmis_F21T9_model extends CI_Model
 
 							$response = array(
 								'status' => 'SUCCESS',
+								'id' => $this->db->insert_id(),
 								'message' => 'SUCCESS INSERTING DATA'
 							);
 						}

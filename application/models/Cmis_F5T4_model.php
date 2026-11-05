@@ -174,6 +174,7 @@ class Cmis_F5T4_model extends CI_Model
 
 						$response = array(
 							'status' => 'SUCCESS',
+							'id' => $this->db->insert_id(),
 							'message' => 'SUCCESSFULLY INSERTED DATA'
 						);
 

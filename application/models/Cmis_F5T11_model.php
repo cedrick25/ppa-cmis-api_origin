@@ -82,6 +82,7 @@ class Cmis_F5T11_model extends CI_Model
 					{
 						$response = array(
 							'status' => 'SUCCESS',
+							'id' => $this->db->insert_id(),
 							'message' => 'SUCCESSFULLY INSERTED DATA'
 						);
 						$p2 = (object)array( "created_by" => $payload->created_by,
