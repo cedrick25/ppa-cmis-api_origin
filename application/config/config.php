@@ -73,6 +73,15 @@ if (!is_string($ppis_file_service) || $ppis_file_service === '') {
 $config['ppis_file_service'] = rtrim($ppis_file_service, '/');
 
 $cmis_file_service_key = getenv('CMIS_FILE_TOKEN_SERVICE_KEY');
+if (!is_string($cmis_file_service_key) || $cmis_file_service_key === '') {
+	$cmis_local_key_file = __DIR__.'/cmis_local.php';
+	if (is_file($cmis_local_key_file)) {
+		$cmis_local = include $cmis_local_key_file;
+		if (is_array($cmis_local) && isset($cmis_local['cmis_file_service_key']) && is_string($cmis_local['cmis_file_service_key'])) {
+			$cmis_file_service_key = $cmis_local['cmis_file_service_key'];
+		}
+	}
+}
 $config['cmis_file_service_key'] = is_string($cmis_file_service_key) ? $cmis_file_service_key : '';
 
 /*
