@@ -3,6 +3,8 @@
 	class API_model extends CI_Model
 	{
 
+		private $carryOverKeep = false;
+		private $ppisCarryOverQueue = array();
 
 		public function __construct() {
 	        header('Access-Control-Allow-Origin: *');
@@ -1329,7 +1331,7 @@
 						$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1423,7 +1425,7 @@
 						// echo $sql;
 
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1493,7 +1495,7 @@
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1578,7 +1580,7 @@
 						$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -1655,7 +1657,7 @@
 						$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -1718,7 +1720,7 @@
 						$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1783,7 +1785,7 @@
 						$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1838,7 +1840,7 @@
 						$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1893,7 +1895,7 @@
 						$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -1981,7 +1983,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2048,7 +2050,7 @@
 						$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2165,7 +2167,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -2217,7 +2219,7 @@
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 							}
 						}
@@ -2272,7 +2274,7 @@
 						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2364,7 +2366,7 @@
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2437,7 +2439,7 @@
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2510,7 +2512,7 @@
 						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2641,7 +2643,7 @@
 						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -2650,66 +2652,250 @@
 			echo "\n\nTransferring to F5 T10 Done....";
 			//
 		}
-		public function migrate_trigger($payload){
+		private function releaseDb(){
+			if ($this->carryOverKeep) {
+				return;
+			}
+			$this->db->close();
+		}
 
-			$field_office = $payload->field_office;
-			$Y_M = $payload->Y_M;
-			$datenow = date("Y-m-d H:i:s");
-
-		 	$startTime = microtime(true);
-    		$this->migrate_f5t1_v2($payload);
-		    $endTime = microtime(true);
-		    $executionTime = $endTime - $startTime;
-		    $minutes = $executionTime / 60;
-
-		 	$startTime1 = microtime(true);
-    		$this->migrate_f5t3_v2($payload);
-		    $endTime1 = microtime(true);
-		    $executionTime1 = $endTime1 - $startTime1;
-		    $minutes1 = $executionTime1 / 60;
-
-		 	$startTime2 = microtime(true);
-    		$this->migrate_f5t5_v2($payload);
-		    $endTime2 = microtime(true);
-		    $executionTime2 = $endTime2 - $startTime2;
-		    $minutes2 = $executionTime2 / 60;
-
-		 	$startTime3 = microtime(true);
-    		$this->migrate_f5t7_v2($payload);
-		    $endTime3 = microtime(true);
-		    $executionTime3 = $endTime3 - $startTime3;
-		    $minutes3 = $executionTime3 / 60;
-		 	
-		 	$startTime4 = microtime(true);
-    		$this->migrate_f5t10_v2($payload);
-		    $endTime4 = microtime(true);
-		    $executionTime4 = $endTime4 - $startTime4;
-		    $minutes4 = $executionTime4 / 60;
-		 	
-		 	$startTime5 = microtime(true);
-    		$this->migrate_f5t12_v2($payload);
-		    $endTime5 = microtime(true);
-		    $executionTime5 = $endTime5 - $startTime5;
-		    $minutes5 = $executionTime5 / 60;
-
-		    // echo "\nExecution time for f5t1: " . $executionTime . " seconds";
-			// echo "\nMinutes: " . $minutes . "\n";
-		    // echo "\nExecution time for f5t3: " . $executionTime1 . " seconds";
-			// echo "\nMinutes: " . $minutes1 . "\n";
-		    // echo "\nExecution time for f5t5: " . $executionTime2 . " seconds";
-			// echo "\nMinutes: " . $minutes2 . "\n";
-		    // echo "\nExecution time for f5t7: " . $executionTime3 . " seconds";
-			// echo "\nMinutes: " . $minutes3 . "\n";
-		    // echo "\nExecution time for f5t10: " . $executionTime4 . " seconds";
-			// echo "\nMinutes: " . $minutes4 . "\n";
-		    // echo "\nExecution time for f5t12: " . $executionTime5 . " seconds";
-			// echo "\nMinutes: " . $minutes5 . "\n";
-
-			$response = array('status' => 'SUCCESS',
-				'message' => 'CARRYOVER SUCCESSFULLY',
+		private function carryOverPlan($form){
+			if ($form === 'F5') {
+				return array(
+					array('label' => 'Form 5 Table 1', 'method' => 'migrate_f5t1_v2', 'table' => 'F5T1'),
+					array('label' => 'Form 5 Table 3', 'method' => 'migrate_f5t3_v2', 'table' => 'F5T3'),
+					array('label' => 'Form 5 Table 5', 'method' => 'migrate_f5t5_v2', 'table' => 'F5T5'),
+					array('label' => 'Form 5 Table 7', 'method' => 'migrate_f5t7_v2', 'table' => 'F5T7'),
+					array('label' => 'Form 5 Table 10', 'method' => 'migrate_f5t10_v2', 'table' => 'F5T10'),
+					array('label' => 'Form 5 Table 12', 'method' => 'migrate_f5t12_v2', 'table' => 'F5T12'),
 				);
-			return json_encode($response);
+			}
+			if ($form === 'F21') {
+				return array(
+					array('label' => 'Form 21 Table 1', 'method' => 'migrate_f21t1_v2', 'table' => 'F21T1'),
+					array('label' => 'Form 21 Table 3', 'method' => 'migrate_f21t3_v2', 'table' => 'F21T3'),
+					array('label' => 'Form 21 Table 5', 'method' => 'migrate_f21t5_v2', 'table' => 'F21T5'),
+					array('label' => 'Form 21 Table 7 Pardon', 'method' => 'migrate_f21t7_pardon_v2', 'table' => 'F21T7_PARDON'),
+					array('label' => 'Form 21 Table 7 Parole', 'method' => 'migrate_f21t7_parol_v2', 'table' => 'F21T7_PAROL'),
+					array('label' => 'Form 21 Table 10 Pardon', 'method' => 'migrate_f21t10_pardon_v2', 'table' => 'F21T10_PARDON'),
+					array('label' => 'Form 21 Table 10 Parole', 'method' => 'migrate_f21t10_parol_v2', 'table' => 'F21T10_PAROL'),
+					array('label' => 'Form 21 Table 12 Pardon', 'method' => 'migrate_f21t12_pardon_v2', 'table' => 'F21T12_PARDON'),
+					array('label' => 'Form 21 Table 12 Parole', 'method' => 'migrate_f21t12_parol_v2', 'table' => 'F21T12_PAROL'),
+					array('label' => 'Form 21 Table 14 Pardon', 'method' => 'migrate_f21t14_pardon_v2', 'table' => 'F21T14_PARDON'),
+					array('label' => 'Form 21 Table 14 Parole', 'method' => 'migrate_f21t14_parol_v2', 'table' => 'F21T14_PAROL'),
+				);
+			}
+			return array();
+		}
 
+		private function carryOverFail($message){
+			return json_encode(array(
+				'status' => 'FAILED',
+				'message' => $message,
+				'finished' => false,
+			));
+		}
+
+		private function carryOverNextMonth($ym){
+			if (!preg_match('/^(\d{4})-(\d{2})$/', (string) $ym, $match)) {
+				return null;
+			}
+			$year = (int) $match[1];
+			$month = (int) $match[2];
+			if ($month < 1 || $month > 12) {
+				return null;
+			}
+			if ($month === 12) {
+				return ($year + 1).'-01';
+			}
+			return sprintf('%04d-%02d', $year, $month + 1);
+		}
+
+		private function carryOverRunPath($runId){
+			if (!preg_match('/^[a-f0-9]{16}$/', (string) $runId)) {
+				return null;
+			}
+			return APPPATH.'cache/cmis_carryover/'.$runId.'.json';
+		}
+
+		private function loadCarryOverRun($runId){
+			$path = $this->carryOverRunPath($runId);
+			if ($path === null || !is_file($path)) {
+				return null;
+			}
+			$data = json_decode((string) file_get_contents($path), true);
+			return is_array($data) ? $data : null;
+		}
+
+		private function saveCarryOverRun($runId, $run){
+			$path = $this->carryOverRunPath($runId);
+			if ($path === null) {
+				return;
+			}
+			$dir = dirname($path);
+			if (!is_dir($dir)) {
+				mkdir($dir, 0700, true);
+			}
+			file_put_contents($path, json_encode($run), LOCK_EX);
+		}
+
+		private function deleteCarryOverRun($runId){
+			$path = $this->carryOverRunPath($runId);
+			if ($path !== null && is_file($path)) {
+				@unlink($path);
+			}
+		}
+
+		private function startCarryOverRun($form, $payload, $next, $runId){
+			$run = array(
+				'form' => $form,
+				'field_office' => (string) $payload->field_office,
+				'Y_M' => (string) $payload->Y_M,
+				'next' => $next,
+				'done_steps' => array(),
+			);
+			$this->saveCarryOverRun($runId, $run);
+			return $run;
+		}
+
+		private function carryOverSavedSentence($plan, $doneSteps, $next){
+			$labels = array();
+			if (is_array($doneSteps)) {
+				foreach ($doneSteps as $done) {
+					$done = (int) $done;
+					if (isset($plan[$done])) {
+						$labels[] = $plan[$done]['label'];
+					}
+				}
+			}
+			if (!$labels) {
+				return '';
+			}
+			$verb = count($labels) === 1 ? 'was saved' : 'were saved';
+			return ' '.implode(', ', $labels).' '.$verb.' for '.$next.'.';
+		}
+
+		private function flushPpisCarryOverQueue($queued){
+			$keep = $this->carryOverKeep;
+			$this->carryOverKeep = false;
+			if (is_array($queued)) {
+				foreach ($queued as $item) {
+					if (!is_array($item) || count($item) < 3) {
+						continue;
+					}
+					if ($item[0] === 't1') {
+						$this->pushF5T1CarryOverToPpis($item[1], $item[2]);
+					} else {
+						$this->pushF5T5CarryOverToPpis($item[1], $item[2]);
+					}
+				}
+			}
+			$this->carryOverKeep = $keep;
+		}
+
+		private function runCarryOver($form, $payload){
+			@set_time_limit(0);
+			$this->carryOverKeep = false;
+			$this->ppisCarryOverQueue = array();
+			if (!is_object($payload)) {
+				return $this->carryOverFail('The carry over request is not valid.');
+			}
+			if (isset($payload->action) && $payload->action === 'rollback') {
+				return json_encode(array(
+					'status' => 'KEPT',
+					'message' => 'Completed tables were kept.',
+				));
+			}
+			if (!isset($payload->field_office) || trim((string) $payload->field_office) === '' || !isset($payload->Y_M)) {
+				return $this->carryOverFail('The carry over request is missing the field office or month.');
+			}
+			$payload->field_office = trim((string) $payload->field_office);
+			$payload->Y_M = trim((string) $payload->Y_M);
+			$next = $this->carryOverNextMonth($payload->Y_M);
+			if ($next === null) {
+				return $this->carryOverFail('The encoding month is not valid.');
+			}
+			$plan = $this->carryOverPlan($form);
+			$runId = isset($payload->runId) ? (string) $payload->runId : '';
+			if ($this->carryOverRunPath($runId) === null) {
+				return $this->carryOverFail('The carry over run is not valid.');
+			}
+			if (!isset($payload->step) || is_bool($payload->step) || !is_numeric($payload->step) || (int) $payload->step != $payload->step) {
+				return $this->carryOverFail('The carry over step is not valid.');
+			}
+			$step = (int) $payload->step;
+			if ($step < 0 || $step >= count($plan)) {
+				return $this->carryOverFail('The carry over step is not valid.');
+			}
+			$run = $this->loadCarryOverRun($runId);
+			if ($run === null) {
+				if ($step !== 0) {
+					return $this->carryOverFail('Carry over could not continue this run. Tables that already finished were saved.');
+				}
+				$run = $this->startCarryOverRun($form, $payload, $next, $runId);
+			}
+			if ($run['form'] !== $form || $run['field_office'] !== $payload->field_office || $run['Y_M'] !== $payload->Y_M || $run['next'] !== $next) {
+				return $this->carryOverFail('The carry over run does not match this form.');
+			}
+			if (in_array($step, $run['done_steps'], true)) {
+				return json_encode(array(
+					'status' => 'SUCCESS',
+					'message' => $plan[$step]['label'].' complete',
+					'label' => $plan[$step]['label'],
+					'done' => $step + 1,
+					'total' => count($plan),
+					'finished' => count($run['done_steps']) >= count($plan),
+				));
+			}
+
+			$this->ppisCarryOverQueue = array();
+			$this->carryOverKeep = true;
+			$this->db->trans_begin();
+			$failed = false;
+			try {
+				$this->{$plan[$step]['method']}($payload);
+			} catch (Throwable $e) {
+				$failed = true;
+				log_message('error', 'Carry over failed at '.$plan[$step]['label']);
+			}
+			if ($failed || $this->db->trans_status() === FALSE) {
+				$this->db->trans_rollback();
+				$this->carryOverKeep = false;
+				$this->ppisCarryOverQueue = array();
+				$this->saveCarryOverRun($runId, $run);
+				return json_encode(array(
+					'status' => 'FAILED',
+					'message' => 'Carry over failed at '.$plan[$step]['label'].'.'.$this->carryOverSavedSentence($plan, $run['done_steps'], $run['next']),
+					'label' => $plan[$step]['label'],
+					'step' => $step,
+					'done' => count($run['done_steps']),
+					'total' => count($plan),
+					'finished' => false,
+				));
+			}
+			$this->db->trans_commit();
+			$this->carryOverKeep = false;
+			$this->flushPpisCarryOverQueue($this->ppisCarryOverQueue);
+			$this->ppisCarryOverQueue = array();
+			$run['done_steps'][] = $step;
+			$finished = ($step + 1) >= count($plan);
+			if ($finished) {
+				$this->deleteCarryOverRun($runId);
+			} else {
+				$this->saveCarryOverRun($runId, $run);
+			}
+			return json_encode(array(
+				'status' => 'SUCCESS',
+				'message' => $finished ? 'CARRYOVER SUCCESSFULLY' : $plan[$step]['label'].' complete',
+				'label' => $plan[$step]['label'],
+				'done' => $step + 1,
+				'total' => count($plan),
+				'finished' => $finished,
+			));
+		}
+
+		public function migrate_trigger($payload){
+			return $this->runCarryOver('F5', $payload);
 		}
 
 		private function ppis_base_url(){
@@ -2728,6 +2914,10 @@
 		}
 
 		private function pushF5T1CarryOverToPpis($value, $officeId){
+			if ($this->carryOverKeep) {
+				$this->ppisCarryOverQueue[] = array('t1', $value, $officeId);
+				return;
+			}
 			$docketNo = isset($value['docket_no']) ? $value['docket_no'] : '';
 			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $officeId);
 			if ($docketNo === '' || $officeId === '') {
@@ -2769,6 +2959,10 @@
 		}
 
 		private function pushF5T5CarryOverToPpis($value, $officeId){
+			if ($this->carryOverKeep) {
+				$this->ppisCarryOverQueue[] = array('t5', $value, $officeId);
+				return;
+			}
 			$docketNo = isset($value['docket_no']) ? $value['docket_no'] : '';
 			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $officeId);
 			if ($docketNo === '' || $officeId === '') {
@@ -2923,7 +3117,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 						if ($query_insert) {
 							$this->pushF5T1CarryOverToPpis($value, $officeId);
 						}
@@ -2988,7 +3182,7 @@
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 							}
 						}
@@ -3043,7 +3237,7 @@
 						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3154,7 +3348,7 @@
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 						if ($query_insert) {
 							$this->pushF5T5CarryOverToPpis($value, $officeId);
 						}
@@ -3244,7 +3438,7 @@
 						// var_dump($query_insert);
 						// $error = $this->db->error();
 						// echo $error['message'];
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3326,7 +3520,7 @@
 						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3414,7 +3608,7 @@
 						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3531,7 +3725,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -3594,7 +3788,7 @@
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 							}
 						}
@@ -3649,7 +3843,7 @@
 						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3751,7 +3945,7 @@
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -3838,7 +4032,7 @@
 						// var_dump($query_insert);
 						// $error = $this->db->error();
 						// echo $error['message'];
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -3921,7 +4115,7 @@
 						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4010,7 +4204,7 @@
 						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4022,48 +4216,7 @@
 		}
 		
 		public function migrate_trigger_f21($payload){
-
-			$field_office = $payload->field_office;
-			$Y_M = $payload->Y_M;
-			$datenow = date("Y-m-d H:i:s");
-
-		 	$startTime = microtime(true);
-    		$this->migrate_f21t1_v2($payload);
-		    $endTime = microtime(true);
-		    $executionTime = $endTime - $startTime;
-		    $minutes = $executionTime / 60;
-
-		 	$startTime1 = microtime(true);
-    		$this->migrate_f21t3_v2($payload);
-		    $endTime1 = microtime(true);
-		    $executionTime1 = $endTime1 - $startTime1;
-		    $minutes1 = $executionTime1 / 60;
-
-		 	$startTime2 = microtime(true);
-    		$this->migrate_f21t5_v2($payload);
-		    $endTime2 = microtime(true);
-		    $executionTime2 = $endTime2 - $startTime2;
-		    $minutes2 = $executionTime2 / 60;
-
-		 	$startTime3 = microtime(true);
-    		$this->migrate_f21t7_pardon_v2($payload);
-		    $endTime3 = microtime(true);
-		    $executionTime3 = $endTime3 - $startTime3;
-		    $minutes3 = $executionTime3 / 60;
-
-    		$this->migrate_f21t7_parol_v2($payload);
-    		$this->migrate_f21t10_pardon_v2($payload);
-    		$this->migrate_f21t10_parol_v2($payload);
-    		$this->migrate_f21t12_pardon_v2($payload);
-    		$this->migrate_f21t12_parol_v2($payload);
-    		$this->migrate_f21t14_pardon_v2($payload);
-    		$this->migrate_f21t14_parol_v2($payload);
-    		
-			$response = array('status' => 'SUCCESS',
-				'message' => 'CARRYOVER SUCCESSFULLY',
-				);
-			return json_encode($response);
-
+			return $this->runCarryOver('F21', $payload);
 		}
 
 		public function migrate_f21t1_v2($payload){
@@ -4143,7 +4296,7 @@
 						$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4244,7 +4397,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4324,7 +4477,7 @@
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4417,7 +4570,7 @@
 						$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4507,7 +4660,7 @@
 						$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4584,7 +4737,7 @@
 						$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4658,7 +4811,7 @@
 						$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4725,7 +4878,7 @@
 						$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4791,7 +4944,7 @@
 						$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -4869,7 +5022,7 @@
 						$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -4970,7 +5123,7 @@
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
 						// var_dump($query_insert);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5060,7 +5213,7 @@
 						$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5162,7 +5315,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5257,7 +5410,7 @@
 						$this->db->insert('F21T5', $data1);
 
 						
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -5350,7 +5503,7 @@
 						$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5441,7 +5594,7 @@
 						$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5519,7 +5672,7 @@
 						$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5594,7 +5747,7 @@
 						$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5662,7 +5815,7 @@
 						$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5729,7 +5882,7 @@
 						$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5809,7 +5962,7 @@
 						$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -5910,7 +6063,7 @@
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
 						// var_dump($query_insert);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6025,7 +6178,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 					}
 				}
@@ -6077,7 +6230,7 @@
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 							}
 						}
@@ -6132,7 +6285,7 @@
 						$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6224,7 +6377,7 @@
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6297,7 +6450,7 @@
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6370,7 +6523,7 @@
 						$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6501,7 +6654,7 @@
 						$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6580,7 +6733,7 @@
 						$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6673,7 +6826,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6743,7 +6896,7 @@
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
 						// echo $query_insert;
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6828,7 +6981,7 @@
 						$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6906,7 +7059,7 @@
 						$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -6970,7 +7123,7 @@
 						$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7035,7 +7188,7 @@
 						$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7090,7 +7243,7 @@
 						$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7145,7 +7298,7 @@
 						$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7233,7 +7386,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7300,7 +7453,7 @@
 						$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7382,7 +7535,7 @@
 						$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 						// echo $sql;
 						$query_insert = $this->db->query($sql);
-						$this->db->close();
+						$this->releaseDb();
 
 
 					}
@@ -7527,7 +7680,7 @@
 
 								$sql .= ", status = 1, source = 2, created_by = 0";
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 								if ($query_insert) {
 									$this->pushF5T1CarryOverToPpis($value, $officeId);
 								}
@@ -7579,7 +7732,7 @@
 										$this->db->reconnect();
 										$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 										$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 									}
 								}
@@ -7633,7 +7786,7 @@
 								$this->db->reconnect();
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -7728,7 +7881,7 @@
 								$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 								if ($query_insert) {
 									$this->pushF5T5CarryOverToPpis($value, $officeId);
 								}
@@ -7800,7 +7953,7 @@
 								$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -7873,7 +8026,7 @@
 								$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8003,7 +8156,7 @@
 								$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8081,7 +8234,7 @@
 								$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8169,7 +8322,7 @@
 								$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8235,7 +8388,7 @@
 								$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8316,7 +8469,7 @@
 								$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8396,7 +8549,7 @@
 								$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8461,7 +8614,7 @@
 								$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8525,7 +8678,7 @@
 								$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8580,7 +8733,7 @@
 								$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8635,7 +8788,7 @@
 								$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8714,7 +8867,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8781,7 +8934,7 @@
 								$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8898,7 +9051,7 @@
 
 								$sql .= ", status = 1, source = 2, created_by = 0";
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -8947,7 +9100,7 @@
 										$this->db->reconnect();
 										$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner_name']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['ppo_recommendation'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest_date'] ."' , investigating_officer=NULL, status=1,source=2,created_by=0,created_date='".$datenow."'";
 										$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 									}
 								}
@@ -9001,7 +9154,7 @@
 								$this->db->reconnect();
 								$sql = "INSERT INTO F5T3 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', petitioner = '".$value['petitioner']."',docket_no='".$value['docket_no']."', psir_rec = '".$value['psir_rec'] ."' ,psir_date = '".$value['psir_date'] ."' ,manifest = '".$value['manifest'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9087,7 +9240,7 @@
 								$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 							}
 						}
@@ -9155,7 +9308,7 @@
 								$sql = "INSERT INTO F5T7 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."',case_classification='".$value['case_classification']."', received_date = '".$value['received_date'] ."' , supervising_officer='".$value['supervising_officer']."', probation_start='".$value['probation_start']."', probation_end='".$value['probation_end']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9228,7 +9381,7 @@
 								$sql = "INSERT INTO F5T10 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9358,7 +9511,7 @@
 								$sql = "INSERT INTO F5T12 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', probationer = '".$value['probationer']."',docket_no='".$value['docket_no']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' ,case_classification = '".$value['case_classification'] ."' ,supervising_officer = '".$value['supervising_officer'] ."', status=1,source=2,created_by=0";
 								#echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9436,7 +9589,7 @@
 								$sql = "INSERT INTO F21T1 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', date_rcv = '".$value['date_rcv'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9524,7 +9677,7 @@
 								$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9590,7 +9743,7 @@
 								$sql = "INSERT INTO F21T5 SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', petitioner = '".$value['petitioner']."', referring_office = '".$value['referring_office'] ."' ,received_date = '".$value['received_date'] ."' ,reasons = '".$value['reasons'] ."' , investigating_officer='".$value['investigating_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9671,7 +9824,7 @@
 								$sql = "INSERT INTO F21T7_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9751,7 +9904,7 @@
 								$sql = "INSERT INTO F21T7_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', case_classification = '".$value['case_classification'] ."' ,received_date = '".$value['received_date'] ."' ,probation_start = '".$value['probation_start'] ."' , probation_end = '".$value['probation_end'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9816,7 +9969,7 @@
 								$sql = "INSERT INTO F21T10_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9880,7 +10033,7 @@
 								$sql = "INSERT INTO F21T10_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9935,7 +10088,7 @@
 								$sql = "INSERT INTO F21T12_PAROL SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -9990,7 +10143,7 @@
 								$sql = "INSERT INTO F21T12_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', submitted_decision = '".$value['submitted_decision'] ."' ,submitted_date = '".$value['submitted_date'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -10070,7 +10223,7 @@
 						$sql .= ", status = 1, source = 2, created_by = 0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}
@@ -10137,7 +10290,7 @@
 								$sql = "INSERT INTO F21T14_PARDON SET field_office = '".$field_office."', Y_M = '".$date_transfer."', docket_no='".$value['docket_no']."', probationer = '".$value['probationer']."', referral_office = '".$value['referral_office'] ."' ,received_date = '".$value['received_date'] ."' , case_classification = '".$value['case_classification'] ."' , supervising_officer='".$value['supervising_officer']."', status=1,source=2,created_by=0";
 								// echo $sql;
 								$query_insert = $this->db->query($sql);
-								$this->db->close();
+								$this->releaseDb();
 
 
 							}

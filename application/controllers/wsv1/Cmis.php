@@ -423,4 +423,10 @@ class Cmis extends CI_Controller {
 		echo $this->Cmis_Widgets_model->callProcedure($payload->procedure,$payload);
 	}
 
+	public function cancelFailedCreate()
+	{
+		$payload = json_decode(file_get_contents('php://input'));
+		echo $this->Cmis_Feedback_model->cancelFailedCreate($payload);
+	}
+
 }

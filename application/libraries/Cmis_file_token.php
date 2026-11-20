@@ -21,10 +21,21 @@ class Cmis_file_token {
 
 	public function establish($user) {
 		try {
+			if ($this->keepExisting($user)) {
+				return;
+			}
 			$this->issueAndStore($user);
 		} catch (Throwable $e) {
 			log_message('error', 'CMIS file token was not issued');
 		}
+	}
+
+	private function keepExisting($user) {
+		if (!is_object($user) || !isset($user->USER_ID) || (string) $user->USER_STATUS === '0') {
+			return false;
+		}
+		$record = $this->readRecord();
+		return $record !== null && (string) $record['user_id'] === (string) $user->USER_ID;
 	}
 
 	public function currentToken() {

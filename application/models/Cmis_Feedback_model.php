@@ -28,6 +28,66 @@ class Cmis_Feedback_model extends CI_Model
 		return $ip_address;
 	}
 
+	public function cancelFailedCreate($payload)
+	{
+		if ($payload == null)
+		{
+			return json_encode(array(
+				'status' => 'ERROR',
+				'message' => 'INCOMPLETE PARAMETER'
+			));
+		}
+
+		$allowed = array(
+			'F21T2_RCV', 'F21T2_ACTED', 'F21T4', 'F21T6_RCV', 'F21T6_CMPLTD',
+			'F21T8_PAROL', 'F21T8_PARDON', 'F21T9_PAROL', 'F21T9_PARDON',
+			'F21T11_PAROL', 'F21T11_PARDON', 'F21T13_PAROL', 'F21T13_PARDON',
+			'F21T15_RCV_PAROL', 'F21T15_RCV_PARDON', 'F21T15_TERM_PAROL', 'F21T15_TERM_PARDON',
+			'F5T2_RCV', 'F5T2_ACTED', 'F5T2_NOTACTED', 'F5T4', 'F5T6_RCV', 'F5T6_CMPLTD',
+			'F5T8', 'F5T9', 'F5T11', 'F5T13_RCV', 'F5T13_TERM', 'masterlist'
+		);
+
+		$table = (isset($payload->table) && is_string($payload->table)) ? $payload->table : '';
+		$id = isset($payload->id) ? $payload->id : null;
+		$id_ok = (is_int($id) && $id > 0) || (is_string($id) && ctype_digit($id) && (int)$id > 0);
+		if (!$id_ok || !in_array($table, $allowed, true))
+		{
+			return json_encode(array(
+				'status' => 'ERROR',
+				'message' => 'INCOMPLETE PARAMETER'
+			));
+		}
+
+		$this->db->where('id', (int)$id);
+		$deleted = $this->db->delete($table);
+		if (!$deleted)
+		{
+			return json_encode(array(
+				'status' => 'ERROR',
+				'message' => 'ERROR REMOVING DATA'
+			));
+		}
+
+		$docket = (isset($payload->docket_no) && is_string($payload->docket_no) && $payload->docket_no !== '')
+			? $payload->docket_no
+			: '';
+		$action = 'Removed failed PPIS docket create. Table: '.$table.', id: '.(int)$id;
+		if ($docket !== '')
+		{
+			$action .= ', docket_no: '.$docket;
+		}
+		$this->AuditInsert((object)array(
+			'created_by' => isset($payload->created_by) ? $payload->created_by : null,
+			'action' => $action,
+			'module' => 'CASELOAD'
+		));
+
+		return json_encode(array(
+			'status' => 'SUCCESS',
+			'message' => 'REMOVED FAILED DOCKET CREATE'
+		));
+	}
+
 	public function AuditInsert($payload)
 	{
 		$data = array();
