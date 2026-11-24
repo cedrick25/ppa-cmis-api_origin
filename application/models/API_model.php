@@ -5,6 +5,13 @@
 
 		private $carryOverKeep = false;
 		private $ppisCarryOverQueue = array();
+		private $manualLabel = '';
+		private $manualDone = 0;
+		private $manualTotal = 0;
+		private $manualTable = 1;
+		private $manualTables = 1;
+		private $manualOfficeId = '';
+		private $manualPpisMisses = 0;
 
 		public function __construct() {
 	        header('Access-Control-Allow-Origin: *');
@@ -2916,13 +2923,13 @@
 		private function pushF5T1CarryOverToPpis($value, $officeId){
 			if ($this->carryOverKeep) {
 				$this->ppisCarryOverQueue[] = array('t1', $value, $officeId);
-				return;
+				return true;
 			}
 			$docketNo = isset($value['docket_no']) ? $value['docket_no'] : '';
 			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $officeId);
 			if ($docketNo === '' || $officeId === '') {
 				log_message('error', 'PPIS carry-over skipped, missing office or docket: '.$docketNo);
-				return;
+				return false;
 			}
 
 			$payload = array(
@@ -2955,19 +2962,21 @@
 			curl_close($ch);
 			if ($errno || $http < 200 || $http >= 300) {
 				log_message('error', 'PPIS carry-over failed for '.$docketNo.' HTTP '.$http.' curl '.$errno.' body '.$body);
+				return false;
 			}
+			return true;
 		}
 
 		private function pushF5T5CarryOverToPpis($value, $officeId){
 			if ($this->carryOverKeep) {
 				$this->ppisCarryOverQueue[] = array('t5', $value, $officeId);
-				return;
+				return true;
 			}
 			$docketNo = isset($value['docket_no']) ? $value['docket_no'] : '';
 			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $officeId);
 			if ($docketNo === '' || $officeId === '') {
 				log_message('error', 'PPIS courtesy carry-over skipped, missing office or docket: '.$docketNo);
-				return;
+				return false;
 			}
 
 			$payload = array(
@@ -3002,7 +3011,9 @@
 			curl_close($ch);
 			if ($errno || $http < 200 || $http >= 300) {
 				log_message('error', 'PPIS courtesy carry-over failed for '.$docketNo.' HTTP '.$http.' curl '.$errno.' body '.$body);
+				return false;
 			}
+			return true;
 		}
 
 		public function migrate_f5t1_v2($payload){
@@ -3620,7 +3631,9 @@
 		}
 		
 		public function migrate_f5t1($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3628,7 +3641,7 @@
 
 			echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
-			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office,field_office_id FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
 			if($query){
@@ -3642,7 +3655,7 @@
 			}
 
 			$this->db->reconnect();
-			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office,field_office_id FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			if($query){
 				if($query->num_rows() > 0){
@@ -3693,13 +3706,17 @@
 
 			#var_dump($result);
 
+			$this->openManualSection('Form 5 Table 1', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
+				$officeId = $this->manualPpisOfficeId($value);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
 				if($query_check){
 					if($query_check->num_rows() > 0){
 						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						$this->noteManualPpis($this->pushF5T1CarryOverToPpis($value, $officeId));
 					}else{
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
@@ -3722,18 +3739,28 @@
 						    }
 						}
 
+						if (isset($value['field_office_id']) && $value['field_office_id'] !== '') {
+						    $sql .= ", field_office_id = '".$value['field_office_id']."'";
+						}
+
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->releaseDb();
+						if ($query_insert) {
+							$this->noteManualPpis($this->pushF5T1CarryOverToPpis($value, $officeId));
+						}
 
 					}
 				}
 			}
 			echo "\n\nTransferring to F5 T1 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 		}
 		public function migrate_f5t3($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3759,7 +3786,9 @@
 					
 				}
 			}
+			$this->openManualSection('Form 5 Table 3', $array1, 1, 2);
 			foreach($array1 as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
@@ -3828,7 +3857,9 @@
 				}
 			}
 			$result = $this->check_diff_multi($array1, $array2);
+			$this->openManualSection('Form 5 Table 3', $result, 2, 2);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -3850,10 +3881,13 @@
 				}
 			}
 			echo "\n\nTransferring to F5 T3 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 			//
 		}
 		public function migrate_f5t5($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -3866,7 +3900,7 @@
 			$date_transfer = date("Y-m",strtotime("+1 month",$curr_date));
 			echo "\nTransferring to date: ".$date_transfer."\n";
 
-			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,field_office_id,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
 			if($query){
@@ -3881,7 +3915,7 @@
 
 
 
-			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,field_office_id,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			
 			if($query){
@@ -3917,7 +3951,10 @@
 			#var_dump($result);
 
 
+			$this->openManualSection('Form 5 Table 5', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
+				$officeId = $this->manualPpisOfficeId($value);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -3925,6 +3962,7 @@
 				if($query_check){
 					if($query_check->num_rows() > 0){
 						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						$this->noteManualPpis($this->pushF5T5CarryOverToPpis($value, $officeId));
 					}else{
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
@@ -3942,18 +3980,28 @@
 						    $sql .= ", reasons='".$value['reasons']."'";
 						}
 
+						if (isset($value['field_office_id']) && $value['field_office_id'] !== '') {
+						    $sql .= ", field_office_id='".$value['field_office_id']."'";
+						}
+
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
 						$this->releaseDb();
+						if ($query_insert) {
+							$this->noteManualPpis($this->pushF5T5CarryOverToPpis($value, $officeId));
+						}
 
 					}
 				}
 			}
 			echo "\n\nTransferring to F5 T5 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 		}
 		public function migrate_f5t7($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -4013,7 +4061,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 5 Table 7', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -4039,10 +4089,13 @@
 				}
 			}
 			echo "\n\nTransferring to F5 T7 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 			
 		}
 		public function migrate_f5t10($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -4100,7 +4153,9 @@
 			}
 			$result = $this->check_diff_multi($array1, $array2);
 			
+			$this->openManualSection('Form 5 Table 10', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -4122,11 +4177,14 @@
 				}
 			}
 			echo "\n\nTransferring to F5 T10 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 			//
 			
 		}
 		public function migrate_f5t12($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -4189,7 +4247,9 @@
 			
 			#var_dump($array2);
 			#var_dump($result);
+			$this->openManualSection('Form 5 Table 12', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -4211,6 +4271,7 @@
 				}
 			}
 			echo "\n\nTransferring to F5 T12 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 			//
 			
 		}
@@ -5136,7 +5197,9 @@
 
 
 		public function migrate_f21t1($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5198,7 +5261,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 1', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5220,10 +5285,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T1 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t3($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5280,7 +5348,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 3', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and status = '1' and Y_M = '".$date_transfer."'");
 
@@ -5322,10 +5392,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T3 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t5($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5380,7 +5453,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 5', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5416,10 +5491,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T5 Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t7_pardon($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5488,7 +5566,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			// var_dump($result);
+			$this->openManualSection('Form 21 Table 7 Pardon', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T7_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and status = '1' and Y_M = '".$date_transfer."'");
 
@@ -5510,10 +5590,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T7 PARDON Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 			
 		}
 		public function migrate_f21t7_parol($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5579,7 +5662,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 7 Parole', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T7_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5601,10 +5686,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T7 PAROL Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t10_pardon($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5657,7 +5745,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 10 Pardon', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T10_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5679,10 +5769,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T10 PARDON Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t10_parol($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5732,7 +5825,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 10 Parole', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T10_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5754,11 +5849,14 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T10 PAROL Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 			
 		}
 		public function migrate_f21t12_pardon($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5800,7 +5898,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 12 Pardon', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T12_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5822,10 +5922,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T12 PARDON Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t12_parol($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5867,7 +5970,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 12 Parole', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T12_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5889,10 +5994,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T12 PAROL Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t14_pardon($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -5947,7 +6055,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 14 Pardon', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T14_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -5969,10 +6079,13 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T14 PARDON Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_f21t14_parol($payload){
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
@@ -6035,7 +6148,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 14 Parole', $result, 1, 1);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$sql = "SELECT docket_no FROM F21T14_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'";
 				#echo "\n".$sql;
@@ -6070,18 +6185,21 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T14 PAROL Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 		public function migrate_offline()
 		{
-			$this->prepareManualCarryOver();
+			if (!$this->prepareManualCarryOver()) {
+				return;
+			}
 			$field_office = $_GET['field'];
 			$Y_M = $_GET['date'];
 			$datenow = date("Y-m-d H:i:s");
 
 			// echo "\nTransferring to F5 T1 Started....";
 			//F5 T2 (INSERT TO T1)
-			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner_name as `petitioner`,received_date as `date_rcv`,investigating_officer_name as `investigating_officer`,field_office,field_office_id FROM F5T2_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
 			if($query){
@@ -6095,7 +6213,7 @@
 			}
 
 			$this->db->reconnect();
-			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,date_rcv,investigating_officer,field_office,field_office_id FROM F5T1 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			if($query){
 				if($query->num_rows() > 0){
@@ -6146,13 +6264,17 @@
 
 			#var_dump($result);
 
+			$this->openManualSection('Form 5 Table 1', $result, 1, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
+				$officeId = $this->manualPpisOfficeId($value);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
 				if($query_check){
 					if($query_check->num_rows() > 0){
 						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						$this->noteManualPpis($this->pushF5T1CarryOverToPpis($value, $officeId));
 					}else{
 						//INSERT
 						echo "\nINSERTING ".$value['docket_no']."...";
@@ -6175,10 +6297,17 @@
 						    }
 						}
 
+						if (isset($value['field_office_id']) && $value['field_office_id'] !== '') {
+						    $sql .= ", field_office_id = '".$value['field_office_id']."'";
+						}
+
 						$sql .= ", status = 1, source = 2, created_by = 0";
 						#echo $sql;
 						$query_insert = $this->db->query($sql);
 						$this->releaseDb();
+						if ($query_insert) {
+							$this->noteManualPpis($this->pushF5T1CarryOverToPpis($value, $officeId));
+						}
 
 					}
 				}
@@ -6201,7 +6330,9 @@
 					
 				}
 			}
+			$this->openManualSection('Form 5 Table 3', $array1, 2, 18);
 			foreach($array1 as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
@@ -6270,7 +6401,9 @@
 				}
 			}
 			$result = $this->check_diff_multi($array1, $array2);
+			$this->openManualSection('Form 5 Table 3', $result, 3, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6298,7 +6431,7 @@
 			//F5 T5 & T6
 			echo "\n\nTransferring to F5 T5 Started....";
 
-			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,field_office_id,referring_office,reasons FROM F5T5 WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			$array1 = array();
 			if($query){
@@ -6313,7 +6446,7 @@
 
 
 
-			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
+			$query = $this->db->query("SELECT docket_no,petitioner,received_date ,investigating_officer,field_office,field_office_id,referring_office,reasons FROM F5T6_RCV WHERE field_office = '".$field_office."' and Y_M = '".$Y_M."' AND status = 1");
 
 			
 			if($query){
@@ -6349,7 +6482,10 @@
 			#var_dump($result);
 
 
+			$this->openManualSection('Form 5 Table 5', $result, 4, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
+				$officeId = $this->manualPpisOfficeId($value);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6357,6 +6493,7 @@
 				if($query_check){
 					if($query_check->num_rows() > 0){
 						echo "\n".$value['docket_no']." ALREADY EXISTS...";
+						$this->noteManualPpis($this->pushF5T5CarryOverToPpis($value, $officeId));
 					}else{
 						echo "\nINSERTING ".$value['docket_no']."...";
 						$this->db->reconnect();
@@ -6374,10 +6511,17 @@
 						    $sql .= ", reasons='".$value['reasons']."'";
 						}
 
+						if (isset($value['field_office_id']) && $value['field_office_id'] !== '') {
+						    $sql .= ", field_office_id='".$value['field_office_id']."'";
+						}
+
 						$sql .= ", referring_office='".$value['referring_office']."', status=1, source=2, created_by=0";
 
 						$query_insert = $this->db->query($sql);
 						$this->releaseDb();
+						if ($query_insert) {
+							$this->noteManualPpis($this->pushF5T5CarryOverToPpis($value, $officeId));
+						}
 
 
 					}
@@ -6435,7 +6579,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 5 Table 7', $result, 5, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T7 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6508,7 +6654,9 @@
 			}
 			$result = $this->check_diff_multi($array1, $array2);
 			
+			$this->openManualSection('Form 5 Table 10', $result, 6, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T10 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6639,7 +6787,9 @@
 			
 			#var_dump($array2);
 			#var_dump($result);
+			$this->openManualSection('Form 5 Table 12', $result, 7, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F5T12 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6718,7 +6868,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 1', $result, 8, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T1 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6791,7 +6943,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 3', $result, 9, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T3 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and status = '1' and Y_M = '".$date_transfer."'");
 
@@ -6880,7 +7034,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 5', $result, 10, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T5 WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -6966,7 +7122,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			// var_dump($result);
+			$this->openManualSection('Form 21 Table 7 Pardon', $result, 11, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T7_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and status = '1' and Y_M = '".$date_transfer."'");
 
@@ -7044,7 +7202,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 7 Parole', $result, 12, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T7_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7108,7 +7268,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 10 Parole', $result, 13, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T10_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7173,7 +7335,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 10 Pardon', $result, 14, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T10_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7228,7 +7392,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 12 Parole', $result, 15, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T12_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7283,7 +7449,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 12 Pardon', $result, 16, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T12_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7359,7 +7527,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 14 Parole', $result, 17, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$sql = "SELECT docket_no FROM F21T14_PAROL WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'";
 				#echo "\n".$sql;
@@ -7438,7 +7608,9 @@
 			#var_dump($array2);
 			$result = $this->check_diff_multi($array1, $array2);
 			#var_dump($result);
+			$this->openManualSection('Form 21 Table 14 Pardon', $result, 18, 18);
 			foreach($result as $key => $value){
+				$this->reportManualCarryOver($this->manualLabel, ++$this->manualDone, $this->manualTotal, $this->manualTable, $this->manualTables);
 				$this->db->reconnect();
 				$query_check = $this->db->query("SELECT docket_no FROM F21T14_PARDON WHERE field_office = '".$field_office."' and docket_no ='".$value['docket_no']."' and Y_M = '".$date_transfer."'");
 
@@ -7460,6 +7632,7 @@
 				}
 			}
 			echo "\n\nTransferring to F21 T14 PARDON Done....";
+			$this->finishManualCarryOver('Carry over finished.');
 
 		}
 
@@ -7570,6 +7743,77 @@
 				@ob_end_flush();
 			}
 			@ob_implicit_flush(true);
+			$field = isset($_GET['field']) ? trim((string) $_GET['field']) : '';
+			$ym = isset($_GET['date']) ? trim((string) $_GET['date']) : '';
+			if ($field === '' || !preg_match('/^(19|20)\d{2}-(0[1-9]|1[0-2])$/', $ym)) {
+				$this->failManualCarryOver('The carry over request is missing the field office or month.');
+				return false;
+			}
+			$officeId = isset($_GET['officeId']) ? preg_replace('/[^A-Za-z0-9_-]/', '', (string) $_GET['officeId']) : '';
+			$this->manualOfficeId = ($officeId === 'ALL') ? '' : $officeId;
+			$this->manualPpisMisses = 0;
+			if (!headers_sent()) {
+				header('Content-Type: text/plain; charset=utf-8');
+				header('X-Accel-Buffering: no');
+				header('Cache-Control: no-cache');
+			}
+			echo str_repeat(' ', 2048)."\n";
+			@flush();
+			return true;
+		}
+
+		protected function openManualSection($label, $rows, $table, $tables){
+			$this->manualLabel = $label;
+			$this->manualDone = 0;
+			$this->manualTotal = is_array($rows) ? count($rows) : 0;
+			$this->manualTable = (int) $table;
+			$this->manualTables = (int) $tables;
+			if ($this->manualTotal === 0) {
+				$this->reportManualCarryOver($label, 0, 0, $table, $tables);
+			}
+		}
+
+		protected function reportManualCarryOver($label, $done, $total, $table, $tables){
+			echo "\n@@PROGRESS@@ ".json_encode(array(
+				'label' => $label,
+				'done' => (int) $done,
+				'total' => (int) $total,
+				'table' => (int) $table,
+				'tables' => (int) $tables,
+			))."\n";
+			@flush();
+		}
+
+		protected function finishManualCarryOver($message){
+			if ($this->manualPpisMisses === 1) {
+				$message .= ' 1 docket was not created in PPIS.';
+			} elseif ($this->manualPpisMisses > 1) {
+				$message .= ' '.$this->manualPpisMisses.' dockets were not created in PPIS.';
+			}
+			echo "\n@@DONE@@ ".json_encode(array('message' => $message))."\n";
+			@flush();
+		}
+
+		protected function manualPpisOfficeId(&$value){
+			$officeId = preg_replace('/[^A-Za-z0-9_-]/', '', (string) $this->resolveF5T1OfficeId($value, $this->manualOfficeId));
+			if ($officeId === 'ALL') {
+				$officeId = '';
+			}
+			if ($officeId !== '') {
+				$value['field_office_id'] = $officeId;
+			}
+			return $officeId;
+		}
+
+		protected function noteManualPpis($accepted){
+			if (!$accepted) {
+				$this->manualPpisMisses++;
+			}
+		}
+
+		protected function failManualCarryOver($message){
+			echo "\n@@FAILED@@ ".json_encode(array('message' => $message))."\n";
+			@flush();
 		}
 
 		public function migrate_cron_per_region(){
