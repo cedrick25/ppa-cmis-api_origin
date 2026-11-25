@@ -11,7 +11,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Cmis_file_token {
 
 	const COOKIE = 'cmis_file_sid';
-	const TTL = 7200;
+	/* 9 hours. Must match pis.file-token.ttl-seconds on the user service and the file service. */
+	const TOKEN_TTL = 32400;
+	const RENEW_WITHIN = 1800;
 
 	private $CI;
 
@@ -35,15 +37,78 @@ class Cmis_file_token {
 			return false;
 		}
 		$record = $this->readRecord();
-		return $record !== null && (string) $record['user_id'] === (string) $user->USER_ID;
+		if ($record === null || (string) $record['user_id'] !== (string) $user->USER_ID) {
+			return false;
+		}
+		$remaining = $this->tokenRemaining($record['token']);
+		return $remaining !== null && $remaining > self::RENEW_WITHIN;
 	}
 
 	public function currentToken() {
-		$record = $this->readRecord();
-		if ($record === null) {
+		return $this->ensureFresh();
+	}
+
+	/**
+	 * Returns the stored file token, asking the user service for a new one when
+	 * the HMAC exp is missing, past, or inside the renewal window.
+	 */
+	public function ensureFresh() {
+		try {
+			$record = $this->readRecord();
+			if ($record === null) {
+				return null;
+			}
+			$remaining = $this->tokenRemaining($record['token']);
+			if ($remaining !== null && $remaining > self::RENEW_WITHIN) {
+				return $record['token'];
+			}
+			$renewed = $this->reissue($record);
+			if ($renewed !== null) {
+				return $renewed;
+			}
+			if ($remaining !== null && $remaining > 0) {
+				return $record['token'];
+			}
+			return null;
+		} catch (Throwable $e) {
+			log_message('error', 'CMIS file token was not renewed');
 			return null;
 		}
-		return $record['token'];
+	}
+
+	/**
+	 * Stores a file-service renewal. The subject must be the signed-in user.
+	 * CMIS does not hold the HMAC secret, so a mismatched subject is refused.
+	 */
+	public function saveRenewed($token) {
+		$record = $this->readRecord();
+		if ($record === null) {
+			return false;
+		}
+		$claims = $this->tokenClaims($token);
+		if ($claims === null) {
+			return false;
+		}
+		if ((string) $claims['sub'] !== (string) $record['user_id']) {
+			return false;
+		}
+		if ($claims['iat'] > time() + 60 || $claims['exp'] <= time()) {
+			return false;
+		}
+		if (($claims['exp'] - $claims['iat']) > (self::TOKEN_TTL + 60)) {
+			return false;
+		}
+		$sid = $this->cookieSid();
+		$record['token'] = $token;
+		$record['exp'] = $claims['exp'];
+		$path = $this->sessionPath($sid);
+		if (file_put_contents($path, json_encode($record), LOCK_EX) === false) {
+			log_message('error', 'CMIS file token renewal could not be stored');
+			return false;
+		}
+		@chmod($path, 0600);
+		$this->writeCookie($sid, $claims['exp']);
+		return true;
 	}
 
 	public function destroy() {
@@ -129,34 +194,78 @@ class Cmis_file_token {
 		$this->deny(502);
 	}
 
+	private function reissue($record) {
+		$userId = (string) $record['user_id'];
+		$user = $this->loadUser($userId);
+		if ($user === false) {
+			$this->destroy();
+			return null;
+		}
+		if (is_object($user)) {
+			return $this->issueAndStore($user);
+		}
+		if (!isset($record['issued']) || !is_array($record['issued'])) {
+			return null;
+		}
+		$token = $this->requestToken($record['issued']);
+		if ($token === null) {
+			return null;
+		}
+		if (!$this->store($token, $userId, $record['issued'])) {
+			return null;
+		}
+		return $token;
+	}
+
+	/**
+	 * false: user is missing or disabled. null: the user row could not be read.
+	 */
+	private function loadUser($userId) {
+		if (!preg_match('/^[0-9]+$/', (string) $userId)) {
+			return false;
+		}
+		$query = $this->CI->db->get_where('USERS', array('USER_ID' => (string) $userId), 1);
+		if ($query === false) {
+			return null;
+		}
+		if ($query->num_rows() < 1) {
+			return false;
+		}
+		$user = $query->row();
+		if ((string) $user->USER_STATUS === '0') {
+			return false;
+		}
+		return $user;
+	}
+
 	private function issueAndStore($user) {
 		if (!is_object($user) || !isset($user->USER_ID) || (string) $user->USER_STATUS === '0') {
-			return;
+			return null;
 		}
 		$subject = (string) $user->USER_ID;
 		if (!preg_match('/^[0-9]+$/', $subject)) {
-			return;
+			return null;
 		}
 
 		$officeId = $this->resolveOfficeId(isset($user->FIELD_OFFICE) ? $user->FIELD_OFFICE : '');
 		if ($officeId === null) {
 			log_message('error', 'CMIS file token skipped because the user office could not be resolved');
-			return;
+			return null;
 		}
 
 		$role = $this->roleFor($user);
 		$permissions = $this->filePermissions($role['roleId']);
 		if ($permissions === null) {
 			log_message('error', 'CMIS file token skipped because user rights could not be read');
-			return;
+			return null;
 		}
 		$name = $this->userName($user);
 		if ($name === '') {
 			log_message('error', 'CMIS file token skipped because the user name is empty');
-			return;
+			return null;
 		}
 
-		$token = $this->requestToken(array(
+		$issued = array(
 			'subject' => $subject,
 			'officeId' => $officeId,
 			'roleId' => $role['roleId'],
@@ -165,11 +274,15 @@ class Cmis_file_token {
 			'canCreate' => $permissions['canCreate'],
 			'canUpdate' => $permissions['canUpdate'],
 			'canDelete' => $permissions['canDelete'],
-		));
+		);
+		$token = $this->requestToken($issued);
 		if ($token === null) {
-			return;
+			return null;
 		}
-		$this->store($token, $subject);
+		if (!$this->store($token, $subject, $issued)) {
+			return null;
+		}
+		return $token;
 	}
 
 	/**
@@ -295,7 +408,12 @@ class Cmis_file_token {
 		return $decoded['fileToken'];
 	}
 
-	private function store($token, $userId) {
+	private function store($token, $userId, $issued) {
+		$claims = $this->tokenClaims($token);
+		if ($claims === null || (string) $claims['sub'] !== (string) $userId || $claims['exp'] <= time()) {
+			log_message('error', 'CMIS file token session was not stored because the token expiry is missing');
+			return false;
+		}
 		$dir = $this->sessionDir();
 		if (!is_dir($dir)) {
 			mkdir($dir, 0700, true);
@@ -303,25 +421,63 @@ class Cmis_file_token {
 		$this->destroy();
 		$this->sweep($dir);
 		$sid = bin2hex(random_bytes(32));
-		$exp = time() + self::TTL;
+		$exp = $claims['exp'];
 		$payload = json_encode(array(
 			'token' => $token,
 			'user_id' => (string) $userId,
 			'exp' => $exp,
+			'issued' => $issued,
 		));
 		$path = $this->sessionPath($sid);
 		if (file_put_contents($path, $payload, LOCK_EX) === false) {
 			log_message('error', 'CMIS file token session could not be stored');
-			return;
+			return false;
 		}
 		@chmod($path, 0600);
-		setcookie(self::COOKIE, $sid, array(
-			'expires' => $exp,
-			'path' => '/',
-			'secure' => $this->isHttps(),
-			'httponly' => true,
-			'samesite' => 'Lax',
-		));
+		$this->writeCookie($sid, $exp);
+		return true;
+	}
+
+	private function tokenRemaining($token) {
+		$claims = $this->tokenClaims($token);
+		if ($claims === null) {
+			return null;
+		}
+		return $claims['exp'] - time();
+	}
+
+	private function tokenClaims($token) {
+		if (!is_string($token) || $token === '') {
+			return null;
+		}
+		$parts = explode('.', $token);
+		if (count($parts) !== 3) {
+			return null;
+		}
+		$json = $this->base64UrlDecode($parts[1]);
+		$payload = json_decode($json, true);
+		if (!is_array($payload) || !isset($payload['sub']) || !isset($payload['exp']) || !isset($payload['iat'])) {
+			return null;
+		}
+		$sub = (string) $payload['sub'];
+		if (!preg_match('/^[0-9]+$/', $sub)) {
+			return null;
+		}
+		return array(
+			'sub' => $sub,
+			'iat' => (int) $payload['iat'],
+			'exp' => (int) $payload['exp'],
+		);
+	}
+
+	private function base64UrlDecode($value) {
+		$value = strtr((string) $value, '-_', '+/');
+		$pad = strlen($value) % 4;
+		if ($pad > 0) {
+			$value .= str_repeat('=', 4 - $pad);
+		}
+		$decoded = base64_decode($value, true);
+		return $decoded === false ? '' : $decoded;
 	}
 
 	private function readRecord() {
@@ -335,7 +491,7 @@ class Cmis_file_token {
 			return null;
 		}
 		$decoded = json_decode((string) file_get_contents($path), true);
-		if (!is_array($decoded) || empty($decoded['token']) || empty($decoded['exp']) || (int) $decoded['exp'] < time()) {
+		if (!is_array($decoded) || empty($decoded['token']) || empty($decoded['user_id'])) {
 			@unlink($path);
 			$this->clearCookie();
 			return null;
@@ -362,8 +518,18 @@ class Cmis_file_token {
 		return $this->sessionDir().'/'.$sid;
 	}
 
+	private function writeCookie($sid, $exp) {
+		setcookie(self::COOKIE, $sid, array(
+			'expires' => (int) $exp,
+			'path' => '/',
+			'secure' => $this->isHttps(),
+			'httponly' => true,
+			'samesite' => 'Lax',
+		));
+	}
+
 	private function sweep($dir) {
-		$cutoff = time() - (self::TTL * 4);
+		$cutoff = time() - (self::TOKEN_TTL * 4);
 		foreach (glob($dir.'/*') as $file) {
 			if (is_file($file) && filemtime($file) < $cutoff) {
 				@unlink($file);
