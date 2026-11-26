@@ -557,7 +557,7 @@ class Cmis_file_token {
 
 	private function sendSuccessHeaders($contentType, $disposition, $download) {
 		$contentType = $this->headerValue($contentType);
-		if (!preg_match('#^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+#', $contentType)) {
+		if (!preg_match('~^[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+~', $contentType)) {
 			$contentType = 'application/octet-stream';
 		}
 		$disposition = $this->headerValue($disposition);
